@@ -1,0 +1,4 @@
+attn_implementation: flash_attention_2
+torch_dtype: auto
+use_cache: False
+device_map: 
