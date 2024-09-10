@@ -1,0 +1,78 @@
+training_type: "huggingface"
+
+bitsandbytes_args:
+  load_in_4bit: True
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: 
+
+model_kwargs:
+  attn_implementation:
+  torch_dtype: auto
+  use_cache: False
+  device_map: 
+
+training_args:
+  # per_device_train_batch_size: 2,
+  gradient_accumulation_steps: 64
+  warmup_steps: 5
+  num_train_epochs: 3  
+  learning_rate: 0.00002
+  fp16: false
+  bf16: true
+  logging_steps: 20
+  logging_strategy: "steps"
+  optim: "adamw_8bit"
+  weight_decay: 0.01
+  lr_scheduler_type: "linear"
+  seed: 3407
+  report_to: "wandb"
+  output_dir: "./assets_local/smollm/outputs"
+  # Experiment on eval params
+  load_best_model_at_end: 1
+  metric_for_best_model: "eval_loss"
+  save_total_limit: 2
+  eval_strategy: "steps"
+  eval_steps: 200
+  save_steps: 400
+  eval_on_start: True
+  # hub stuff
+  hub_model_id: "masa-research/smollm-135m-preskripsi"
+  hub_private_repo: True
+  hub_strategy: "every_save"
+  push_to_hub: True
+  # Experimental
+  auto_find_batch_size: True
+  include_tokens_per_second: True
+  include_num_input_tokens_seen: True
+  # Different from unsloth here
+  gradient_checkpointing: True
+  gradient_checkpointing_kwargs: 
+    # THIS IS MANDATORY
+    use_reentrant: False
+
+peft_args:
+  r: 64
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+  lora_alpha: 16
+  lora_dropout: 0
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  use_rslora: true
+  loftq_config: null
+
+load_config:
+  dtype:
+  model_name: HuggingFaceTB/SmolLM-135M
+
+dataset_config:
+  path: masa-research/news_absa_entities_filtered_10k
+
+instruct_tokenizer_name_or_path: HuggingFaceTB/SmolLM-135M-Instruct
+use_instruct_tokenizer_as_tokenizer: True

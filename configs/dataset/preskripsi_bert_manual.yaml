@@ -1,0 +1,5 @@
+class_name: preskripsi_training.data.preskripsi.PreskripsiBERTDataset
+
+dataset_kwargs:
+  path: masa-research/manual_absa_annotation__dgv__20240903_103
+  tokenizer_name_or_path: bert-base-uncased
