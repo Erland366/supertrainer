@@ -1,0 +1,14 @@
+defaults:
+  - _self_
+  - bitsandbytes_kwargs: nf4
+  - model_kwargs: sdpa
+  - peft_kwargs: classification
+  - training_kwargs: default
+
+class_name: preskripsi_training.trainers.hf_trainer.HuggingFaceBERTTrainer
+classes: 
+  - positif
+  - negatif
+  - netral
+# TODO: Find better place for this
+model_name: bert-base-uncased
