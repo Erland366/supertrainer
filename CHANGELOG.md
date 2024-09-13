@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+
 ## [0.0.2] - 2024-09-13
 ### Added
 - `StrictDict` to solve the problem of missing keys in a dictionary, which quite iritating if we keep using `addict.Dict`
