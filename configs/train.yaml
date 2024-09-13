@@ -1,9 +1,8 @@
 defaults:  
   - _self_  
-  - trainer: hf_trainer_kwargs
-  - dataset: preskripsi_bert_manual
   - override hydra/hydra_logging: default  
   - override hydra/job_logging: default  
+
   
 hydra:
   job:
@@ -11,4 +10,3 @@ hydra:
   run:
     dir: ${oc.env:OUTPUT_DIR,./hydra_outputs}/${hydra.job.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
 
-hf_config: ${oc.env:HUGGINGFACE_API_TOKEN,null}

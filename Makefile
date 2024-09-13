@@ -28,9 +28,36 @@ test-full: ## Run all tests
 # Define variables with default values
 CFG ?= job
 ARGS ?= 
-
 train: ## Train model, arguments is CFG={, train, all, job}. By default CFG=job
-	python src/preskripsi_training/main.py $(if $(filter-out train,$(CFG)),--cfg $(CFG)) $(ARGS)
+	python src/supertrainer/main.py $(if $(filter-out train,$(CFG)),--cfg $(CFG)) $(ARGS)
 
 dir_tree:
 	find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+
+dir_tree_configs:
+	find configs/ | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+
+export_conda_env: # export conda environment to environment.yaml
+	bash ./scripts/export_conda_env.sh
+
+CONDA_ENV ?= project
+ENV_FILE ?= environment.yaml
+
+install_conda_env: # install conda environment, pass CONDA_ENV=<env_name> and ENV_FILE=<file_name> to specify environment name and file
+	bash ./scripts/install_conda_env.sh $(CONDA_ENV) $(ENV_FILE)
+
+replace_name:
+	@if [ -z "$(STRING1)" ] || [ -z "$(STRING2)" ]; then \
+		echo "Error: Both STRING1 and STRING2 must be provided and non-empty."; \
+		echo "Usage: make replace STRING1=<old_string> STRING2=<new_string>"; \
+		exit 1; \
+	fi
+	@echo "Replacing '$(STRING1)' with '$(STRING2)' in filenames..."
+	@find . -type f -name "*$(STRING1)*" | while read file; do \
+		newname=$$(echo $$file | sed 's/$(STRING1)/$(STRING2)/g'); \
+		if [ "$$file" != "$$newname" ]; then \
+			mv "$$file" "$$newname"; \
+			echo "Renamed: $$file -> $$newname"; \
+		fi; \
+	done
+	@echo "Rename operation completed."

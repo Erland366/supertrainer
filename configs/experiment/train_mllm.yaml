@@ -1,0 +1,5 @@
+# @package _global_
+
+defaults:
+  - /mllm/trainer@trainer: mllm_kwargs
+  - /mllm/dataset@dataset: supertrainer_moondream

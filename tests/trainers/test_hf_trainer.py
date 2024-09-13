@@ -4,9 +4,9 @@ from omegaconf import DictConfig
 
 @pytest.fixture
 def hf_bert_trainer():
-    from preskripsi_training.trainers.hf_trainer import HuggingFaceBERTTrainer
+    from supertrainer.trainers.hf_trainer import BERTTrainer
 
-    return HuggingFaceBERTTrainer(DictConfig({"classes": ["a", "b", "c"]}))
+    return BERTTrainer(DictConfig({"classes": ["a", "b", "c"]}))
 
 
 def test_config(hf_bert_trainer):

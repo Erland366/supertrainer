@@ -1,5 +1,7 @@
 import unittest
-from preskripsi_training.models.model import Model
+
+from supertrainer.models.model import Model
+
 
 class TestModel(unittest.TestCase):
     def test_model_prediction(self):
@@ -12,5 +14,6 @@ class TestModel(unittest.TestCase):
         # Assert the expected result
         self.assertEqual(result, "Prediction")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
