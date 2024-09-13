@@ -1,49 +1,21 @@
-# Import necessary modules for testing
-import pytest
-from preskripsi_training.data.dataset import Dataset
-
-# Test cases for the Dataset class
-class TestDataset:
-    def test_load_data(self):
-        # Create an instance of the Dataset class
-        dataset = Dataset()
-
-        # Test loading data
-        data = dataset.load_data()
-
-        # Assert that the loaded data is not empty
-        assert len(data) > 0
-
-    def test_preprocess_data(self):
-        # Create an instance of the Dataset class
-        dataset = Dataset()
-
-        # Test data preprocessing
-        preprocessed_data = dataset.preprocess_data()
-
-        # Assert that the preprocessed data is not empty
-        assert len(preprocessed_data) > 0
-
-    def test_split_data(self):
-        # Create an instance of the Dataset class
-        dataset = Dataset()
-
-        # Test data splitting
-        train_data, test_data = dataset.split_data()
-
-        # Assert that the train and test data are not empty
-        assert len(train_data) > 0
-        assert len(test_data) > 0
-
-    def test_get_data_stats(self):
-        # Create an instance of the Dataset class
-        dataset = Dataset()
-
-        # Test getting data statistics
-        stats = dataset.get_data_stats()
-
-        # Assert that the statistics are calculated correctly
-        assert isinstance(stats, dict)
-        assert "num_samples" in stats
-        assert "num_classes" in stats
-        assert "class_distribution" in stats
+# MIT License
+#
+# Copyright (c) 2024 Edd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.

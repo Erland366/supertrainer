@@ -1,0 +1,24 @@
+defaults:
+  - _self_
+  - bitsandbytes_kwargs: nf4
+  - model_kwargs: flash_attention_2
+  - peft_kwargs: mllm
+  - training_kwargs: default
+
+class_name: supertrainer.trainers.hf_trainer.MLLMTrainer
+
+# TODO: Find better place for this
+model_name: "vikhyatk/moondream2"
+revision: "2024-04-02"
+set_trainable: 
+  trainable_params_names:
+    - "lm_head"
+    - "embd"
+  set_other_trainable:
+
+# I think below is hardcoded
+num_imgs_tokens: 729
+
+# TODO: Find better place for this
+answer_eos: <|endoftext|>
+batch_size: 4

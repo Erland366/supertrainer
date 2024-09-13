@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "preskripsi_training"
+name = "supertrainer"
 dynamic = ["version"]
 description = "A template project for machine learning"
 readme = "README.md"
@@ -19,14 +19,14 @@ classifiers = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = "preskripsi_training.__version__"}
+version = {attr = "supertrainer.__version__"}
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["preskripsi_training*"]
+include = ["supertrainer*"]
 exclude = ["tests*"]
 
 [project.optional-dependencies]
@@ -80,7 +80,7 @@ exclude_lines = [
 
 [tool.ruff]
 select = ["E", "F", "I"]
-ignore = ["E203", "E266", "E501"]
+# ignore = ["E266", "E501"]
 fixable = ["A", "B", "C", "D", "E", "F", "I"]
 unfixable = []
 exclude = [
@@ -113,4 +113,4 @@ target-version = "py39"
 max-complexity = 10
 
 [tool.ruff.isort]
-known-first-party = ["preskripsi_training"]
+known-first-party = ["supertrainer"]

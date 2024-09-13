@@ -1,0 +1,5 @@
+class_name: supertrainer.data.supertrainer.SupertrainerDataset
+
+dataset_kwargs:
+  path: masa-research/manual_absa_annotation__dgv__20240903_103
+  tokenizer_name_or_path: Qwen/Qwen2-0.5B-Instruct
