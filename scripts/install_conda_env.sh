@@ -34,6 +34,9 @@ pip install -e .
 
 echo "Conda environment '$CONDA_ENV' installation and project setup completed."
 
+echo "Install pre-commit hooks..."
+pre-commit install
+
 # Deactivate the environment
 conda deactivate
 
