@@ -1,0 +1,47 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+#
+# Types:
+#   feat     (new feature)
+#   fix      (bug fix)
+#   docs     (changes to documentation)
+#   style    (formatting, missing semi colons, etc; no code change)
+#   refactor (refactoring production code)
+#   test     (adding missing tests, refactoring tests; no production code change)
+#   chore    (updating grunt tasks etc; no production code change)
+#
+# Scope:
+#   Anything specifying place of the commit change (optional)
+#   Examples:
+#     auth      (authentication related changes)
+#     db        (database related changes)
+#     api       (API related changes)
+#     ui        (user interface changes)
+#     config    (configuration changes)
+#     perf      (performance improvements)
+#     deps      (dependency updates)
+#     i18n      (internationalization/localization changes)
+#     security  (security-related changes)
+#     ci        (continuous integration related changes)
+#
+# Subject:
+#   Short description of the change in present tense. Not capitalized. No period at the end.
+#
+# Body:
+#   More detailed description of the change (optional). Use blank lines to separate paragraphs.
+#
+# Footer:
+#   References to issue trackers, breaking changes, etc. (optional)
+#
+# Example:
+# feat(auth): add password reset functionality
+#
+# Implement a secure password reset flow using email verification.
+# - Add PasswordResetController
+# - Create email templates for reset instructions
+# - Update user model with reset token field
+#
+# Closes #123

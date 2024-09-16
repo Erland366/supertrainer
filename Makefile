@@ -37,6 +37,9 @@ dir_tree:
 dir_tree_configs:
 	find configs/ | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
+dir_tree_supertrainer:
+	find src/supertrainer/ | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+
 export_conda_env: # export conda environment to environment.yaml
 	bash ./scripts/export_conda_env.sh
 
