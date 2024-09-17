@@ -1,0 +1,18 @@
+defaults:
+  - /trainer/common/model_kwargs@model_kwargs: flash_attention_2
+  - /trainer/common/bitsandbytes_kwargs@bitsandbytes_kwargs: nf4
+  - /trainer/common/training_kwargs@training_kwargs: default
+  - _self_
+
+# INSERT ADDITIONAL PARAMS HERE
+class_name: preskripsi_training.trainers.hf_trainer.HuggingFaceBERTTrainer
+classes:
+  - positif
+  - negatif
+  - netral
+# TODO: Find better place for this
+model_name: bert-base-uncased
+
+# INSERT OVERRIDE CONFIGS HERE
+training_kwargs:
+  hub_model_id: "masa-research/bert-preskripsi"

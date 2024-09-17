@@ -1,5 +1,5 @@
 # @package _global_
 
 defaults:
-  - /bert/trainer@trainer: hf_trainer_kwargs
-  - /bert/dataset@dataset: supertrainer_bert_manual
+  - /trainer: bert/bert_kwargs
+  - /dataset: bert/bert

@@ -4,4 +4,3 @@ assistant_col: "caption"
 
 dataset_kwargs:
   path: "Trelis/chess_pieces"
-  

@@ -1,6 +1,6 @@
 gradient_accumulation_steps: 64
 warmup_steps: 5
-num_train_epochs: 3  
+num_train_epochs: 3
 learning_rate: 0.00002
 fp16: false
 bf16: true
@@ -31,6 +31,6 @@ include_tokens_per_second: True
 include_num_input_tokens_seen: True
 # Different from unsloth here
 gradient_checkpointing: True
-gradient_checkpointing_kwargs: 
+gradient_checkpointing_kwargs:
   # THIS IS MANDATORY
   use_reentrant: False
