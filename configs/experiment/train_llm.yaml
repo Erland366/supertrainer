@@ -1,0 +1,5 @@
+# @package _global_
+
+defaults:
+  - /trainer: llm/llm_kwargs
+  - /dataset: llm/llm

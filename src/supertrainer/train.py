@@ -47,20 +47,23 @@ def main(cfg: DictConfig):
     login_wandb()
     memory_stats()
 
-    # temporary, will move this!
-    classes = cfg.trainer.classes
-    num_classes = len(classes)
-    class2id = {class_: i for i, class_ in enumerate(classes)}
-    id2class = {i: class_ for i, class_ in enumerate(classes)}
-    cfg.dataset.class2id = class2id
-    cfg.dataset.id2class = id2class
-    cfg.dataset.num_classes = num_classes
+    # # temporary, will move this!
+    # classes = cfg.trainer.classes
+    # num_classes = len(classes)
+    # class2id = {class_: i for i, class_ in enumerate(classes)}
+    # id2class = {i: class_ for i, class_ in enumerate(classes)}
+    # cfg.dataset.class2id = class2id
+    # cfg.dataset.id2class = id2class
+    # cfg.dataset.num_classes = num_classes
 
     dataset = import_class(cfg.dataset.class_name)(cfg.dataset)
     dataset = dataset.prepare_dataset()
 
     # TODO: This is a hacky way to pass the dataset config
-    cfg.trainer.dataset_config = cfg.dataset
+    with cfg.allow_modification():
+        cfg.trainer.dataset_config = cfg.dataset
+
+    # cfg.set_value("trainer.dataset_config", cfg.dataset)
 
     trainer = import_class(cfg.trainer.class_name)(cfg.trainer, dataset)
     trainer.train()

@@ -1,3 +1,25 @@
+# MIT License
+#
+# Copyright (c) 2024 Edd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import annotations
 
 import os
@@ -8,6 +30,7 @@ from huggingface_hub import login
 
 import wandb
 
+from .. import types
 from .logger import logger
 
 
@@ -49,7 +72,7 @@ def memory_stats():
 
 
 def find_max_tokens(
-    dataset_name_or_path: str | os.PathLike | "DatasetDict" | "Dataset",  # noqa: F821 # type: ignore
+    dataset_name_or_path: str | os.PathLike | types.Dataset,  # noqa: F821 # type: ignore
     tokenizer_name_or_path: str | os.PathLike,
     set: str = "train",
     is_chat_formatted: bool = False,
@@ -59,10 +82,12 @@ def find_max_tokens(
     Finds the maximum number of tokens in a dataset.
 
     Args:
-        dataset_name_or_path (str | os.PathLike | "DatasetDict" | "Dataset"): The name or path of the dataset, or a DatasetDict or Dataset object.
+        dataset_name_or_path (str | os.PathLike | types.Dataset):
+            The name or path of the dataset, or a DatasetDict or Dataset object.
         tokenizer_name_or_path (str | os.PathLike): The name or path of the tokenizer.
         set (str, optional): The dataset split to use. Defaults to "train".
-        is_chat_formatted (bool, optional): Whether the dataset is chat-formatted. Defaults to False.
+        is_chat_formatted (bool, optional): Whether the dataset is chat-formatted.
+            Defaults to False.
         chat_template (str, optional): The chat template. Defaults to "{instr} {inp} {out}".
 
     Returns:
@@ -79,7 +104,8 @@ def find_max_tokens(
 
     if isinstance(dataset, DatasetDict):
         logger.debug(
-            "You put DatasetDict but did not specify the argument 'set'. Assuming you're going to use the 'train' dataset."
+            "You put DatasetDict but did not specify the argument 'set'. "
+            "Assuming you're going to use the 'train' dataset."
         )
         dataset = dataset[set]
 
@@ -145,3 +171,77 @@ def import_class(class_path: str) -> Any:
         return getattr(module, class_name)
     except (ImportError, AttributeError) as e:
         raise ImportError(f"Error importing {class_path}: {str(e)}")
+
+
+def clean_gpu_cache(model: Any | None = None):
+    """
+    Cleans the GPU cache by deleting the model object and emptying the CUDA cache.
+
+    Args:
+        model (Any | None, optional): The model object to be deleted. Defaults to None.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    """
+    import gc
+
+    import torch
+
+    if model is not None:
+        try:
+            del model
+        except Exception:
+            pass
+
+    for _ in range(10):
+        torch.cuda.empty_cache()
+        gc.collect()
+
+    print("GPU cache cleaned")
+
+
+def split_train_test_validation(
+    dataset: types.Dataset, select_subset: int | float = 0
+) -> types.Dataset:
+    """
+    Splits the dataset into train, validation, and test subsets.
+    Args:
+        dataset (types.Dataset): The dataset to be split.
+        select_subset (int | float, optional): The size of the subset to select.
+            If float, it represents the percentage of the dataset to select.
+            If int, it represents the number of samples to select.
+            Defaults to 0, which means no subset will be selected.
+    Returns:
+        types.Dataset: A DatasetDict containing the train, validation, and test subsets.
+    """
+    from datasets import DatasetDict
+
+    if isinstance(dataset, DatasetDict):
+        logger.warning("Dataset is a DatasetDict. We will you're going to use the 'train' dataset.")
+        dataset = dataset["train"]
+
+    if select_subset > 0:
+        if isinstance(select_subset, float):
+            select_subset = int(len(dataset) * select_subset)
+        dataset = dataset.select(range(select_subset))
+
+    # shuffle dataset
+    dataset = dataset.shuffle(seed=42)
+
+    train_test_split = dataset.train_test_split(test_size=0.2)
+    train_dataset = train_test_split["train"]
+    test_dataset = train_test_split["test"]
+
+    train_valid_split = train_dataset.train_test_split(test_size=0.2)
+    train_dataset = train_valid_split["train"]
+    valid_dataset = train_valid_split["test"]
+
+    split_dataset = DatasetDict(
+        {"train": train_dataset, "validation": valid_dataset, "test": test_dataset}
+    )
+
+    return split_dataset

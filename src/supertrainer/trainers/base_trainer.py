@@ -1,3 +1,25 @@
+# MIT License
+#
+# Copyright (c) 2024 Edd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from __future__ import annotations
 
 import datetime
@@ -7,10 +29,11 @@ from abc import ABC, abstractmethod
 
 import torch
 from huggingface_hub import HfApi, create_repo
-from supertrainer import logger, types
-from supertrainer.utils import memory_stats
+from transformers import BitsAndBytesConfig
 
 import wandb
+from supertrainer import logger, types
+from supertrainer.utils import memory_stats
 
 
 class ABCTrainer(ABC):
@@ -52,27 +75,51 @@ class BaseTrainer(ABCTrainer):
 
     def postprocess_config(self, config: types.Config) -> types.Config:
         # TODO: Move it from here since it's not modular enough
-        config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        config.training_kwargs.fp16 = not torch.cuda.is_bf16_supported()
-        config.training_kwargs.bf16 = torch.cuda.is_bf16_supported()
-        config.training_kwargs.hub_model_id = (
-            config.training_kwargs.hub_model_id + datetime.datetime.now().strftime("_%Y%m%d_%H%M%S")
-        )
-        config.dtype = torch.bfloat16 if config.training_kwargs.bf16 else torch.float36
-        # Construct the run_name
-        model_name = config.model_name.split("/")[-1]
-        dataset_name = config.dataset_config.dataset_kwargs.path.split("/")[-1]
-        lora_rank = config.peft_kwargs.r
-        learning_rate = config.training_kwargs.learning_rate
-        num_epochs = config.training_kwargs.num_train_epochs
+        with config.allow_modification():
+            config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            config.training_kwargs.fp16 = not torch.cuda.is_bf16_supported()
+            config.training_kwargs.bf16 = torch.cuda.is_bf16_supported()
+            config.training_kwargs.hub_model_id = (
+                config.training_kwargs.hub_model_id
+                + datetime.datetime.now().strftime("_%Y%m%d_%H%M%S")
+            )
 
-        run_name = f"{model_name}_{dataset_name}_r{lora_rank}_lr{learning_rate}_e{num_epochs}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        config.training_kwargs.run_name = run_name
+            # mainly for data type casting purpose
+            config.dtype = torch.bfloat16 if config.training_kwargs.bf16 else torch.float36
 
-        # output_dir add run_name
-        config.training_kwargs.output_dir = os.path.join(
-            config.training_kwargs.output_dir, run_name
-        )
+            # Construct the run_name
+            model_name = config.model_name.split("/")[-1]
+            dataset_name = config.dataset_config.dataset_kwargs.path.split("/")[-1]
+            lora_rank = config.peft_kwargs.r
+            learning_rate = config.training_kwargs.learning_rate
+            num_epochs = config.training_kwargs.num_train_epochs
+
+            run_name = (
+                f"{model_name}_{dataset_name}_r{lora_rank}_lr{learning_rate}_e{num_epochs}_"
+                f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            )
+            config.training_kwargs.run_name = run_name
+
+            # output_dir add run_name
+            config.training_kwargs.output_dir = os.path.join(
+                config.training_kwargs.output_dir, run_name
+            )
+
+            # TRAINING STUFF HERE
+            config.bitsandbytes_kwargs.bnb_4bit_compute_dtype = (
+                config.bitsandbytes_kwargs.bnb_4bit_compute_dtype or "bfloat16"
+                if torch.cuda.is_bf16_supported()
+                else "float16"
+            )
+            quantization_config = BitsAndBytesConfig(**config.bitsandbytes_kwargs)
+
+            config.model_kwargs.device_map = config.model_kwargs.device_map or {
+                "": torch.cuda.current_device() if torch.cuda.is_available() else None
+            }
+            config.model_kwargs.attn_implementation = (
+                config.model_kwargs.attn_implementation or "sdpa"
+            )
+            config.model_kwargs.quantization_config = quantization_config
 
         logger.debug(f"Configuration loaded: {config}")
         return config
@@ -90,7 +137,7 @@ class BaseTrainer(ABCTrainer):
         api = HfApi()
 
         # TODO: This is still error since many object can't be serialized
-        config_json = json.dumps(config.to_dict(), indent=2)
+        config_json = json.dumps(config.to_serializable_dict(), indent=2)
 
         api.upload_file(
             path_or_fileobj=config_json.encode(),
@@ -105,7 +152,7 @@ class BaseTrainer(ABCTrainer):
         wandb.init(
             project=os.getenv("PROJECT_NAME"),  # Replace with your actual project name
             name=config.training_kwargs.run_name,
-            config=config.to_dict(),
+            config=config.to_serializable_dict(),
         )
         logger.info(f"Config pushed to wandb: {config.training_kwargs.run_name}")
 

@@ -4,6 +4,10 @@ defaults:
   - override hydra/job_logging: default
 
 
+trainer:
+  testing: False
+dataset:
+  testing: False
 hydra:
   job:
     name: default

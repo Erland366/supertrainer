@@ -2,7 +2,7 @@
 
 ## Overview
 
-Supertrainer is a unified repository for various trainers, inspired by projects like [Axolotl](https://github.com/axolotl-ai-cloud/axolotl) and [Torchtune](https://github.com/pytorch/torchtune). It aims to provide a flexible and extensible framework for training, inferencing, and benchmarking different types of models (e.g., BERT, LLM, MLLM) using a configuration-driven approach.
+Supertrainer is a unified repository for various trainers, inspired by projects like [Axolotl](https://github.com/axolotl-ai-cloud/axolotl), [Torchtune](https://github.com/pytorch/torchtune), and [Unsloth](https://github.com/unslothai/unsloth). It aims to provide a flexible and extensible framework for training, inferencing, and benchmarking different types of models (e.g., BERT, LLM, MLLM) using a configuration-driven approach.
 
 ## Resources
 - For moondream training, my main resource of this is [this youtube channel](https://www.youtube.com/watch?v=5rH_VjKXuzg)
@@ -208,11 +208,27 @@ supertrainer/
 - **Reproducibility**: Experiments can be easily reproduced by sharing configuration files.
 - **Performance Optimization**: Support for various inference engines allows for optimized deployment.
 
+## Next Milestone
+- [ ] Implement LLM Training with Unsloth
+- [ ] Refactor dataset to follow the structure plan
+- [ ] Implement LLM Training with HuggingFace Trainer?
+
+## Known Bugs
+- [ ] I implemented `self.config.testing` but I don't really use it for the testing. Maybe I shoud really think better of this!
+- [ ] In `mllm` we actually need to pass the column name `image_col` for `DataCollatorWithPadding`, sadly we only pass the config name to `dataset/` and not in `trainers/`. This means I have to explicitly pass the `image_col` in the `postprocess_config` of `mllm`. One solution that I can think of is to not separately the config between `trainer` and `dataset` (Even though currently it's not splitted in `.yaml`, it'll get splitted in `src/supertrainer/train.py`)
+- [ ] Every single `push_to_hub` is still buggy :(. What I want is to be kinda like the [unsloth](https://github.com/unslothai/unsloth/blob/62c989ef0ae0e9fbac714a4cb21eda76c1fe84b6/unsloth/save.py#L183-L210) codebase where you can push the model to the hub while solving every single problem (basically just ready to inference).
+   - One single "simple" example (only simple if you know the thing, if not you are screwed!) is to do padding to the left like [this](https://github.com/unslothai/unsloth/blob/62c989ef0ae0e9fbac714a4cb21eda76c1fe84b6/unsloth/save.py#L328-L329C37). Their repo is so gooodddd!!!!
+- [ ] I need to consider more in `supertrainer/data/base.py` where for now I commented the `prepare_dataset` function since it's clash with `supertrainer/data/llm.py` of `ConversationLLMDataset`. I need better design for this!
+- [ ] We haven't use the `tokenizer` instruct for the `llm` which is bad since we want that `chat_template`!
+- [ ] When `sanity_check`, we should remove evaluaton dataset (maybe?). Which means we need to remove certain config like `eval_dataset`, `auto_batch_size`, etc
+- [ ] Fix `FA2` in the `environment.yaml`
+
 ## Future Considerations
 
- - [] Fused Kernels
- - [] Distributed training support
- - [] Automated hyperparameter tuning
- - [] Support for additional model architectures and tasks
+ - [ ] Fused Kernels
+ - [ ] Early Fusion training support
+ - [ ] Distributed training support
+ - [ ] Automated hyperparameter tuning
+ - [ ] Support for additional model architectures and tasks
 
 By following this structure and philosophy, SuperTrainer aims to provide a flexible and powerful tool for researchers and practitioners working with a variety of machine learning models and tasks.

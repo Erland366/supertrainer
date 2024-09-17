@@ -3,6 +3,7 @@ defaults:
   - /trainer/common/model_kwargs@model_kwargs: flash_attention_2
   - /trainer/common/bitsandbytes_kwargs@bitsandbytes_kwargs: nf4
   - /trainer/common/training_kwargs@training_kwargs: default
+  - /trainer/mllm@peft_kwargs: peft_kwargs
   - _self_
 
 class_name: supertrainer.trainers.hf_trainer.MLLMTrainer

@@ -26,7 +26,7 @@ from omegaconf import DictConfig
 
 @pytest.fixture
 def hf_bert_trainer():
-    from supertrainer.trainers.hf_trainer import BERTTrainer
+    from supertrainer.trainers.mllm_trainer import BERTTrainer
 
     return BERTTrainer(DictConfig({"classes": ["a", "b", "c"]}))
 

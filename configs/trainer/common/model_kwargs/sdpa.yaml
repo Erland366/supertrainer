@@ -1,4 +1,4 @@
 attn_implementation: sdpa
 torch_dtype: auto
 use_cache: False
-device_map:
+device_map: "auto"

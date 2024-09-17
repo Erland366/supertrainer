@@ -1,21 +1,39 @@
+# MIT License
+#
+# Copyright (c) 2024 Edd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import json
 from contextlib import contextmanager
 from typing import Any
 
 from addict import Dict
 
-from supertrainer.utils.helpers import logger
-
 
 class StrictDict(Dict):
     def __init__(self, *args, **kwargs):
-        self.__dict__["_allow_missing"] = False
-        self.__dict__["_allow_modifications"] = (
-            True  # Temporarily allow modifications during initialization
-        )
-        super().__init__()  # Initialize an empty Dict first
-        self.update(self._convert_dict(*args, **kwargs))  # Use our custom update method
-        self.__dict__["_allow_modifications"] = False  # Lock after initialization
+        object.__setattr__(self, "_allow_missing", False)
+        object.__setattr__(self, "_allow_modifications", True)
+        super().__init__()
+        self.update(self._convert_dict(*args, **kwargs))
+        object.__setattr__(self, "_allow_modifications", False)
 
     def _convert_dict(self, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], dict):
@@ -42,9 +60,6 @@ class StrictDict(Dict):
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{item}'")
         return super().__getattr__(item)
 
-    def __missing__(self, name):
-        return None
-
     def __getitem__(self, key):
         str_key = str(key)
         if str_key not in self:
@@ -52,15 +67,18 @@ class StrictDict(Dict):
         return super().__getitem__(str_key)
 
     def __setattr__(self, key, value):
-        if not self._allow_modifications:
+        if not object.__getattribute__(self, "_allow_modifications"):
             raise AttributeError(
                 "StrictDict is locked. Use method 'set_value' or contextmanager "
                 "'.allow_modification' to modify"
             )
-        super().__setattr__(str(key), value)
+        if key.startswith("_"):
+            object.__setattr__(self, key, value)
+        else:
+            self[key] = value
 
     def __setitem__(self, key, value):
-        if not self._allow_modifications:
+        if not object.__getattribute__(self, "_allow_modifications"):
             raise KeyError(
                 "StrictDict is locked. Use method 'set_value' or contextmanager "
                 "'.allow_modification' to modify"
@@ -91,12 +109,27 @@ class StrictDict(Dict):
 
     @contextmanager
     def allow_modification(self):
-        original_allow_modifications = self._allow_modifications
-        self.__dict__["_allow_modifications"] = True
+        # Save original states
+        original_states = {}
+
+        def set_allow_modifications(d):
+            original_states[id(d)] = object.__getattribute__(d, "_allow_modifications")
+            object.__setattr__(d, "_allow_modifications", True)
+            for value in d.values():
+                if isinstance(value, StrictDict):
+                    set_allow_modifications(value)
+
+        def restore_allow_modifications(d):
+            object.__setattr__(d, "_allow_modifications", original_states[id(d)])
+            for value in d.values():
+                if isinstance(value, StrictDict):
+                    restore_allow_modifications(value)
+
+        set_allow_modifications(self)
         try:
             yield self
         finally:
-            self.__dict__["_allow_modifications"] = original_allow_modifications
+            restore_allow_modifications(self)
 
     def is_serializable(self, value):
         try:
@@ -113,14 +146,8 @@ class StrictDict(Dict):
             elif self.is_serializable(v):
                 result[k] = v
             else:
-                logger.warning_once(
-                    f"Key '{k}' contains an unserializable value of "
-                    f"type {type(v).__name__}. Skipping."
-                )
+                pass  # Handle unserializable values if necessary
         return result
 
     def to_dict(self):
         return {k: v.to_dict() if isinstance(v, StrictDict) else v for k, v in self.items()}
-
-    # def __repr__(self):
-    #     return f"StrictDict({super().__repr__()})"

@@ -1,9 +1,14 @@
 # @package _global_
 
-override hydra/hydra_logging: disabled  
-override hydra/job_logging: disabled  
-  
-hydra:  
-  output_subdir: null  
-  run:  
+override hydra/hydra_logging: disabled
+override hydra/job_logging: disabled
+
+trainer:
+  testing: True
+dataset:
+  testing: True
+
+hydra:
+  output_subdir: null
+  run:
     dir: .
