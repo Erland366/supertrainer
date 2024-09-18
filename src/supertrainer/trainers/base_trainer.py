@@ -76,50 +76,52 @@ class BaseTrainer(ABCTrainer):
     def postprocess_config(self, config: types.Config) -> types.Config:
         # TODO: Move it from here since it's not modular enough
         with config.allow_modification():
-            config.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            config.training_kwargs.fp16 = not torch.cuda.is_bf16_supported()
-            config.training_kwargs.bf16 = torch.cuda.is_bf16_supported()
-            config.training_kwargs.hub_model_id = (
-                config.training_kwargs.hub_model_id
+            config.trainer.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            config.trainer.training_kwargs.fp16 = not torch.cuda.is_bf16_supported()
+            config.trainer.training_kwargs.bf16 = torch.cuda.is_bf16_supported()
+            config.trainer.training_kwargs.hub_model_id = (
+                config.trainer.training_kwargs.hub_model_id
                 + datetime.datetime.now().strftime("_%Y%m%d_%H%M%S")
             )
 
             # mainly for data type casting purpose
-            config.dtype = torch.bfloat16 if config.training_kwargs.bf16 else torch.float36
+            config.trainer.dtype = (
+                torch.bfloat16 if config.trainer.training_kwargs.bf16 else torch.float36
+            )
 
             # Construct the run_name
             model_name = config.model_name.split("/")[-1]
-            dataset_name = config.dataset_config.dataset_kwargs.path.split("/")[-1]
-            lora_rank = config.peft_kwargs.r
-            learning_rate = config.training_kwargs.learning_rate
-            num_epochs = config.training_kwargs.num_train_epochs
+            dataset_name = config.dataset.dataset_kwargs.path.split("/")[-1]
+            lora_rank = config.trainer.peft_kwargs.r
+            learning_rate = config.trainer.training_kwargs.learning_rate
+            num_epochs = config.trainer.training_kwargs.num_train_epochs
 
             run_name = (
                 f"{model_name}_{dataset_name}_r{lora_rank}_lr{learning_rate}_e{num_epochs}_"
                 f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
             )
-            config.training_kwargs.run_name = run_name
+            config.trainer.training_kwargs.run_name = run_name
 
             # output_dir add run_name
-            config.training_kwargs.output_dir = os.path.join(
-                config.training_kwargs.output_dir, run_name
+            config.trainer.training_kwargs.output_dir = os.path.join(
+                config.trainer.training_kwargs.output_dir, run_name
             )
 
             # TRAINING STUFF HERE
-            config.bitsandbytes_kwargs.bnb_4bit_compute_dtype = (
-                config.bitsandbytes_kwargs.bnb_4bit_compute_dtype or "bfloat16"
+            config.trainer.bitsandbytes_kwargs.bnb_4bit_compute_dtype = (
+                config.trainer.bitsandbytes_kwargs.bnb_4bit_compute_dtype or "bfloat16"
                 if torch.cuda.is_bf16_supported()
                 else "float16"
             )
-            quantization_config = BitsAndBytesConfig(**config.bitsandbytes_kwargs)
+            quantization_config = BitsAndBytesConfig(**config.trainer.bitsandbytes_kwargs)
 
-            config.model_kwargs.device_map = config.model_kwargs.device_map or {
+            config.trainer.model_kwargs.device_map = config.trainer.model_kwargs.device_map or {
                 "": torch.cuda.current_device() if torch.cuda.is_available() else None
             }
-            config.model_kwargs.attn_implementation = (
-                config.model_kwargs.attn_implementation or "sdpa"
+            config.trainer.model_kwargs.attn_implementation = (
+                config.trainer.model_kwargs.attn_implementation or "sdpa"
             )
-            config.model_kwargs.quantization_config = quantization_config
+            config.trainer.model_kwargs.quantization_config = quantization_config
 
         logger.debug(f"Configuration loaded: {config}")
         return config
@@ -176,8 +178,6 @@ class BaseTrainer(ABCTrainer):
 
         create_repo(
             hub_model_id,
-            ## Hopefully by login into HF at the start makes us no need to do this
-            # token=self.config.training_kwargs.hub_token,
             private=True,
         )
         logger.debug(f"Repo created: {self.config.training_kwargs.hub_model_id}")

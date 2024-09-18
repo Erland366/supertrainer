@@ -3,3 +3,7 @@
 defaults:
   - /trainer: mllm/mllm_kwargs
   - /dataset: mllm/mllm
+
+# TODO: Find better place to put this
+postprocess_config:
+  class_name: supertrainer.postprocess_config.mllm.MLLMPostprocessConfig

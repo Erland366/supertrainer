@@ -46,18 +46,16 @@ class MLLMTrainer(BaseTrainer):
 
         # Set up lora config since we didn't use Unsloth
         with config.allow_modification():
-            config.peft_config = LoraConfig(
-                **config.peft_kwargs,
+            config.trainer.peft_config = LoraConfig(
+                **config.trainer.peft_kwargs,
             )
 
             # Ugh this is disgusting
-            del config.model_kwargs.torch_dtype
+            del config.trainer.model_kwargs.torch_dtype
 
-            # TODO: THIS IS STILL HARDCODED, WE NEED TO CREATE TRANSFER CONFIG THINGY
-            config.image_col = "image"
+            config.dataset.image_col = "image"
 
-            # Add HF to config
-            config.training_kwargs.run_name += "-mllm"
+            config.trainer.training_kwargs.run_name += "-mllm"
 
         return config
 
@@ -68,14 +66,14 @@ class MLLMTrainer(BaseTrainer):
 
             logger.debug("Lazy loading model")
             lora_config = LoraConfig(
-                **self.config.peft_kwargs,
+                **self.config.trainer.peft_kwargs,
             )
             model = AutoModelForCausalLM.from_pretrained(
-                self.config.model_name,
-                revision=self.config.revision,
+                self.config.trainer.model_name,
+                revision=self.config.trainer.revision,
                 trust_remote_code=True,
                 torch_dtype=torch.bfloat16,
-                **self.config.model_kwargs,
+                **self.config.trainer.model_kwargs,
             )
             model = get_peft_model(model, lora_config)
             model.print_trainable_parameters()
@@ -87,7 +85,7 @@ class MLLMTrainer(BaseTrainer):
         if self._tokenizer is None:
             logger.info("Lazy loading tokenizer")
             self._tokenizer = AutoTokenizer.from_pretrained(
-                self.config.model_name, revision=self.config.revision
+                self.config.trainer.model_name, revision=self.config.trainer.revision
             )
         return self._tokenizer
 
@@ -119,7 +117,7 @@ class MLLMTrainer(BaseTrainer):
         dataset = self.dataset
         logger.debug("Initializing Trainer")
 
-        set_trainable_config = self.config.set_trainable
+        set_trainable_config = self.config.trainer.set_trainable
 
         if set_trainable_config:
             self.set_trainable(  # type: ignore
@@ -131,13 +129,13 @@ class MLLMTrainer(BaseTrainer):
 
         with self.config.allow_modification():
             # self.config.training_kwargs.do_eval = not self.config.testing
-            self.config.training_kwargs.do_eval = False
+            self.config.trainer.training_kwargs.do_eval = False
 
         # TODO: Move somewhere, need a lot of refactoring tho then .-.
         dataloaders = {
             key: torch.utils.data.DataLoader(
                 dataset[key],
-                batch_size=self.config.batch_size,
+                batch_size=self.config.trainer.batch_size,
                 shuffle=True if key != "test" else False,
                 collate_fn=self.collate_fn,
             )
@@ -146,13 +144,13 @@ class MLLMTrainer(BaseTrainer):
 
         self.model.text_model.train()
         self.model.text_model.transformer.gradient_checkpointing_enable(
-            gradient_checkpointing_kwargs=self.config.training_kwargs.gradient_checkpointing_kwargs
+            gradient_checkpointing_kwargs=self.config.trainer.training_kwargs.gradient_checkpointing_kwargs
         )
 
         total_steps = (
             len(dataloaders["train"])
-            * self.config.training_kwargs.num_train_epochs
-            // self.config.training_kwargs.gradient_accumulation_steps
+            * self.config.trainer.training_kwargs.num_train_epochs
+            // self.config.trainer.training_kwargs.gradient_accumulation_steps
         )
 
         # Finetuning LoRA params
@@ -163,53 +161,54 @@ class MLLMTrainer(BaseTrainer):
 
         optimizer = AdamW8bit(
             [{"params": lora_params}],
-            lr=self.config.training_kwargs.learning_rate,
-            betas=(self.config.training_kwargs.adam_beta1, self.config.training_kwargs.adam_beta2),
-            eps=self.config.training_kwargs.adam_epsilon,
+            lr=self.config.trainer.training_kwargs.learning_rate,
+            betas=(
+                self.config.trainer.training_kwargs.adam_beta1,
+                self.config.trainer.training_kwargs.adam_beta2,
+            ),
+            eps=self.config.trainer.training_kwargs.adam_epsilon,
         )
 
         # # For finetuning all text model params
         # optimizer = AdamW8bit(
         #     [{"params": self.model.text_model.parameters()}],
-        #     lr=self.config.training_kwargs.learning_rate,
-        #     betas=(self.config.training_kwargs.adam_beta1,
-        #               self.config.training_kwargs.adam_beta2),
-        #     eps=self.config.training_kwargs.adam_epsilon,
+        #     lr=self.config.trainer.training_kwargs.learning_rate,
+        #     betas=(self.config.trainer.training_kwargs.adam_beta1,
+        #               self.config.trainer.training_kwargs.adam_beta2),
+        #     eps=self.config.trainer.training_kwargs.adam_epsilon,
         # )
 
-        if self.config.training_kwargs.report_to == "wandb":
+        if self.config.trainer.training_kwargs.report_to == "wandb":
             # TODO: Fix this
             wandb.init(
-                name=self.config.training_kwargs.run_name,
+                name=self.config.trainer.training_kwargs.run_name,
                 project="ai701",
-                config={
-                    "epochs": self.config.training_kwargs.num_train_epochs,
-                    "batch_size": self.config.batch_size,
-                    "grad_accum_steps": self.config.training_kwargs.gradient_accumulation_steps,
-                    "lr": self.config.training_kwargs.learning_rate,
-                },
+                config=self.config.to_serializable_dict(),
             )
 
         i = 0
 
-        lr_scaling = self.config.peft_kwargs.lora_alpha / (self.config.peft_kwargs.r**0.5)
-        for epoch in range(self.config.training_kwargs.num_train_epochs):
+        lr_scaling = self.config.trainer.peft_kwargs.lora_alpha / (
+            self.config.trainer.peft_kwargs.r**0.5
+        )
+        for epoch in range(self.config.trainer.training_kwargs.num_train_epochs):
             for batch in tqdm(
                 dataloaders["train"],
-                desc=f"Epoch : {epoch + 1} / {self.config.training_kwargs.num_train_epochs}",
+                desc=f"Epoch : {epoch + 1} / "
+                f"{self.config.trainer.training_kwargs.num_train_epochs}",
             ):
                 i += 1
                 loss = self.compute_loss(batch)
                 loss.backward()
 
-                if i % self.config.training_kwargs.gradient_accumulation_steps == 0:
+                if i % self.config.trainer.training_kwargs.gradient_accumulation_steps == 0:
                     optimizer.zero_grad()
                     optimizer.step()
 
                 lr = self.linear_learning_rate_scheduler(
-                    initial_lr=self.config.training_kwargs.learning_rate,
+                    initial_lr=self.config.trainer.training_kwargs.learning_rate,
                     current_step=i,
-                    warmup_steps=self.config.training_kwargs.warmup_steps,
+                    warmup_steps=self.config.trainer.training_kwargs.warmup_steps,
                     total_steps=total_steps,
                 )
 
@@ -219,15 +218,15 @@ class MLLMTrainer(BaseTrainer):
                     else:
                         param_group["lr"] = lr
 
-                if i % self.config.training_kwargs.logging_steps == 0:
+                if i % self.config.trainer.training_kwargs.logging_steps == 0:
                     logger.info(f"Epoch: {epoch}, Loss: {loss.item()}")
-                    if self.config.training_kwargs.report_to == "wandb":
+                    if self.config.trainer.training_kwargs.report_to == "wandb":
                         wandb.log({"loss": loss.item()})
 
                 if (
-                    self.config.training_kwargs.do_eval
-                    and i % self.config.training_kwargs.eval_steps == 0
-                    and self.config.training_kwargs.report_to == "wandb"
+                    self.config.trainer.training_kwargs.do_eval
+                    and i % self.config.trainer.training_kwargs.eval_steps == 0
+                    and self.config.trainer.training_kwargs.report_to == "wandb"
                 ):
                     val_loss = 0
                     for val_batch in tqdm(dataloaders["validation"], desc="Validation"):
@@ -235,25 +234,25 @@ class MLLMTrainer(BaseTrainer):
                             val_loss += self.compute_loss(val_batch).item()
                     val_loss /= len(dataloaders["validation"])
 
-                if self.config.training_kwargs.report_to == "wandb":
+                if self.config.trainer.training_kwargs.report_to == "wandb":
                     wandb.log(
                         {"train/loss": loss.item(), "lr": optimizer.param_groups[0]["lr"]}
                         | (
                             {"val/loss": val_loss}
-                            if self.config.training_kwargs.do_eval
-                            and i % self.config.training_kwargs.eval_steps == 0
+                            if self.config.trainer.training_kwargs.do_eval
+                            and i % self.config.trainer.training_kwargs.eval_steps == 0
                             else {}
                         )
                     )
-        if self.config.training_kwargs.report_to == "wandb":
+        if self.config.trainer.training_kwargs.report_to == "wandb":
             wandb.finish()
 
-        self.model.save_pretrained(self.config.training_kwargs.output_dir)
+        self.model.save_pretrained(self.config.trainer.training_kwargs.output_dir)
 
-        self.tokenizer.save_pretrained(self.config.training_kwargs.output_dir)
+        self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
 
     def collate_fn(self, batch):
-        images = [sample[self.config.image_col] for sample in batch]
+        images = [sample[self.config.dataset.image_col] for sample in batch]
         images = torch.stack(self.model.vision_encoder.preprocess(images))
         # I think p1 and p2 here is hardcoded for SigLIP
         images = rearrange(images, "b c (h p1) (w p2) -> b (h w) (c p1 p2)", p1=14, p2=14)
@@ -262,7 +261,7 @@ class MLLMTrainer(BaseTrainer):
 
         for sample in batch:
             toks = [self.tokenizer.bos_token_id]
-            labs = [-100] * (self.config.num_imgs_tokens + 1)
+            labs = [-100] * (self.config.trainer.num_imgs_tokens + 1)
 
             for qa in sample["qa"]:
                 q_t = self.tokenizer(
@@ -273,7 +272,7 @@ class MLLMTrainer(BaseTrainer):
                 labs.extend([-100] * len(q_t))
 
                 a_t = self.tokenizer(
-                    f"{qa['answer']}{self.config.answer_eos}", add_special_tokens=False
+                    f"{qa['answer']}{self.config.trainer.answer_eos}", add_special_tokens=False
                 ).input_ids
                 toks.extend(a_t)
                 labs.extend(a_t)
@@ -294,7 +293,7 @@ class MLLMTrainer(BaseTrainer):
             attn_mask_acc.append([1] * len_i + [0] * pad_i)
 
         return (
-            images.to(dtype=self.config.dtype),
+            images.to(dtype=self.config.trainer.dtype),
             torch.stack([torch.tensor(token, dtype=torch.long) for token in tokens_acc]),
             torch.stack([torch.tensor(label, dtype=torch.long) for label in labels_acc]),
             torch.stack([torch.tensor(attn_mask, dtype=torch.bool) for attn_mask in attn_mask_acc]),
@@ -303,10 +302,10 @@ class MLLMTrainer(BaseTrainer):
     def compute_loss(self, batch):
         images, tokens, labels, attn_mask = batch
 
-        images = images.to(self.config.device)
-        tokens = tokens.to(self.config.device)
-        labels = labels.to(self.config.device)
-        attn_mask = attn_mask.to(self.config.device)
+        images = images.to(self.config.trainer.device)
+        tokens = tokens.to(self.config.trainer.device)
+        labels = labels.to(self.config.trainer.device)
+        attn_mask = attn_mask.to(self.config.trainer.device)
 
         with torch.no_grad():
             img_embs = self.model.vision_encoder.encoder(images)

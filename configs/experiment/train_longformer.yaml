@@ -4,6 +4,13 @@ defaults:
   - /trainer: bert/bert_kwargs
   - /dataset: bert/bert
 
+trainer:
+  model_name: markussagen/xlm-roberta-longformer-base-4096
+
+dataset:
+  dataset_kwargs:
+    tokenizer_name_or_path: ${trainer.model_name}
+
 # TODO: Find better place to put this
 postprocess_config:
   class_name: supertrainer.postprocess_config.bert.BERTPostprocessConfig

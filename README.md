@@ -215,13 +215,14 @@ supertrainer/
 
 ## Known Bugs
 - [ ] I implemented `self.config.testing` but I don't really use it for the testing. Maybe I shoud really think better of this!
-- [ ] In `mllm` we actually need to pass the column name `image_col` for `DataCollatorWithPadding`, sadly we only pass the config name to `dataset/` and not in `trainers/`. This means I have to explicitly pass the `image_col` in the `postprocess_config` of `mllm`. One solution that I can think of is to not separately the config between `trainer` and `dataset` (Even though currently it's not splitted in `.yaml`, it'll get splitted in `src/supertrainer/train.py`)
+- [x] In `mllm` we actually need to pass the column name `image_col` for `DataCollatorWithPadding`, sadly we only pass the config name to `dataset/` and not in `trainers/`. This means I have to explicitly pass the `image_col` in the `postprocess_config` of `mllm`. One solution that I can think of is to not separately the config between `trainer` and `dataset` (Even though currently it's not splitted in `.yaml`, it'll get splitted in `src/supertrainer/train.py`)
 - [ ] Every single `push_to_hub` is still buggy :(. What I want is to be kinda like the [unsloth](https://github.com/unslothai/unsloth/blob/62c989ef0ae0e9fbac714a4cb21eda76c1fe84b6/unsloth/save.py#L183-L210) codebase where you can push the model to the hub while solving every single problem (basically just ready to inference).
    - One single "simple" example (only simple if you know the thing, if not you are screwed!) is to do padding to the left like [this](https://github.com/unslothai/unsloth/blob/62c989ef0ae0e9fbac714a4cb21eda76c1fe84b6/unsloth/save.py#L328-L329C37). Their repo is so gooodddd!!!!
 - [ ] I need to consider more in `supertrainer/data/base.py` where for now I commented the `prepare_dataset` function since it's clash with `supertrainer/data/llm.py` of `ConversationLLMDataset`. I need better design for this!
 - [ ] We haven't use the `tokenizer` instruct for the `llm` which is bad since we want that `chat_template`!
 - [ ] When `sanity_check`, we should remove evaluaton dataset (maybe?). Which means we need to remove certain config like `eval_dataset`, `auto_batch_size`, etc
 - [ ] Fix `FA2` in the `environment.yaml`
+- [ ] Hardcoded settings in `train.py` for `bert` since I have to postprocess config for the dataset and the model of the same config. One way that I can think to solve this is to create a class of postprocess config that we will pass in the yaml config of which postprocess type that we want to use (just like `dataset` and `trainer`). I already create a boilerplate and I just need to execute this. Which means I need to remove postprocess config at all from the trainer (which fixes te comment that I put there where I said that it's weird to do this etc)
 
 ## Future Considerations
 

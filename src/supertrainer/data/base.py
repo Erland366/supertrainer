@@ -62,7 +62,9 @@ class BaseDataset(ABCDataset):
 
     def test_tokenization(self, dataset):
         # I don't know if this is the best way to test tokenization
-        logger.debug(f"Testing tokenization for {self.config.dataset_kwargs.path} on 5 examples")
+        logger.debug(
+            f"Testing tokenization for {self.config.dataset.dataset_kwargs.path} on 5 examples"
+        )
         for i in range(5):
             text = dataset["train"][i]["text"]
             tokens = self.tokenizer.encode(text)
@@ -87,7 +89,7 @@ class BaseDataset(ABCDataset):
     @property
     def dataset(self) -> Dataset | DatasetDict:
         if self._dataset is None:
-            self._dataset = load_dataset(path=self.config.dataset_kwargs.path)
+            self._dataset = load_dataset(path=self.config.dataset.dataset_kwargs.path)
         return self._dataset
 
     @staticmethod
@@ -103,7 +105,7 @@ class BaseDataset(ABCDataset):
     def tokenizer(self) -> AutoTokenizer:
         if self._tokenizer is None:
             self._tokenizer = AutoTokenizer.from_pretrained(
-                self.config.dataset_kwargs.tokenizer_name_or_path
+                self.config.dataset.dataset_kwargs.tokenizer_name_or_path
             )
         return self._tokenizer
 

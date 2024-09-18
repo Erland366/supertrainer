@@ -41,11 +41,11 @@ class LLMTrainer(BaseTrainer):
         config = super().postprocess_config(config)
 
         with config.allow_modification():
-            config.training_kwargs.run_name += "-llm"
+            config.trainer.training_kwargs.run_name += "-llm"
 
             # This both argument is set up in peft_kwargs of Unsloth
-            del config.training_kwargs.gradient_checkpointing
-            del config.training_kwargs.gradient_checkpointing_kwargs
+            del config.trainer.training_kwargs.gradient_checkpointing
+            del config.trainer.training_kwargs.gradient_checkpointing_kwargs
         return config
 
     @property
@@ -55,9 +55,11 @@ class LLMTrainer(BaseTrainer):
 
             logger.info("Lazy loading both model and tokenizer")
             self._model, self._tokenizer = FastLanguageModel.from_pretrained(
-                **self.config.load_config
+                **self.config.trainer.load_config
             )
-            self._model = FastLanguageModel.get_peft_model(self._model, **self.config.peft_kwargs)
+            self._model = FastLanguageModel.get_peft_model(
+                self._model, **self.config.trainer.peft_kwargs
+            )
         return self._model
 
     @property
@@ -67,9 +69,11 @@ class LLMTrainer(BaseTrainer):
 
             logger.info("Lazy loading both model and tokenizer")
             self._model, self._tokenizer = FastLanguageModel.from_pretrained(
-                **self.config.load_config
+                **self.config.trainer.load_config
             )
-            self._model = FastLanguageModel.get_peft_model(self._model, **self.config.peft_kwargs)
+            self._model = FastLanguageModel.get_peft_model(
+                self._model, **self.config.trainer.peft_kwargs
+            )
         return self._tokenizer
 
     def train(self) -> None:
@@ -86,7 +90,7 @@ class LLMTrainer(BaseTrainer):
         eval_dataset = dataset["validation"] if not self.config.testing else None
 
         with self.config.allow_modification():
-            self.config.training_kwargs.do_eval = not self.config.testing
+            self.config.trainer.training_kwargs.do_eval = not self.config.testing
 
         # TODO: STILL BUG WHEN SANITY CHECKING, NEED TO REMOVE CERTAIN ARGS WHEN MODE=SANITY_CHECK
         trainer = SFTTrainer(
@@ -95,12 +99,12 @@ class LLMTrainer(BaseTrainer):
             train_dataset=dataset["train"],
             eval_dataset=eval_dataset,
             dataset_text_field="text",
-            max_seq_length=self.config.load_config.max_seq_length,
+            max_seq_length=self.config.trainer.load_config.max_seq_length,
             dataset_num_proc=2,
             # Packing still buggy for unsloth (incorrect masking)
             packing=False,  # Can make training 5x faster for short sequences.
             args=TrainingArguments(
-                **self.config.training_kwargs,
+                **self.config.trainer.training_kwargs,
             ),
         )
         self.memory_stats()
@@ -116,17 +120,17 @@ class LLMTrainer(BaseTrainer):
             self.push_config_to_hf(self.config)
             self.push_config_to_wandb(self.config)
             self.model.push_to_hub(
-                self.config.training_kwargs.output_dir,
+                self.config.trainer.training_kwargs.output_dir,
                 self.tokenizer,
                 save_method="lora",
             )
             # Save and push the updated tokenizer
-            self.tokenizer.save_pretrained(self.config.training_kwargs.output_dir)
+            self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
             self.tokenizer.push_to_hub(
-                self.config.training_kwargs.hub_model_id,
+                self.config.trainer.training_kwargs.hub_model_id,
                 tokenizer=self.tokenizer,  # Pass the tokenizer explicitly
                 save_method="lora",
-                token=self.config.training_kwargs.hub_token,
+                token=self.config.trainer.training_kwargs.hub_token,
                 private=True,
             )
         print(trainer_stats)

@@ -43,7 +43,7 @@ class BERTTrainer(BaseTrainer):
         # even though it's guarantee that we will always call the super
         config = super().postprocess_config(config)
 
-        classes = config.classes
+        classes = config.trainer.classes
 
         # create mapping and num of class first
         num_classes = len(classes)
@@ -51,20 +51,20 @@ class BERTTrainer(BaseTrainer):
         id2class = {i: class_ for i, class_ in enumerate(classes)}
 
         with config.allow_modification():
-            config.num_classes = num_classes
-            config.class2id = class2id
-            config.id2class = id2class
+            config.trainer.num_classes = num_classes
+            config.trainer.class2id = class2id
+            config.trainer.id2class = id2class
 
             # amount of label
-            config.model_kwargs.num_labels = num_classes
+            config.trainer.model_kwargs.num_labels = num_classes
 
             # Set up lora config since we didn't use Unsloth
-            config.peft_config = LoraConfig(
-                **config.peft_kwargs,
+            config.trainer.peft_config = LoraConfig(
+                **config.trainer.peft_kwargs,
             )
 
             # Add HF to config
-            config.training_kwargs.run_name += "-bert"
+            config.trainer.training_kwargs.run_name += "-bert"
 
         return config
 
@@ -75,10 +75,10 @@ class BERTTrainer(BaseTrainer):
 
             logger.debug("Lazy loading model")
             lora_config = LoraConfig(
-                **self.config.peft_kwargs,
+                **self.config.trainer.peft_kwargs,
             )
             model = AutoModelForSequenceClassification.from_pretrained(
-                self.config.model_name, **self.config.model_kwargs
+                self.config.trainer.model_name, **self.config.trainer.model_kwargs
             )
             model = get_peft_model(model, lora_config)
             model.print_trainable_parameters()
@@ -89,7 +89,7 @@ class BERTTrainer(BaseTrainer):
     def tokenizer(self):
         if self._tokenizer is None:
             logger.info("Lazy loading tokenizer")
-            self._tokenizer = AutoTokenizer.from_pretrained(self.config.model_name)
+            self._tokenizer = AutoTokenizer.from_pretrained(self.config.trainer.model_name)
 
             if self._tokenizer.pad_token is None:
                 self._tokenizer.add_special_tokens({"pad_token": self._tokenizer.eos_token})
@@ -109,7 +109,7 @@ class BERTTrainer(BaseTrainer):
         eval_dataset = dataset["validation"] if not self.config.testing else None
 
         with self.config.allow_modification():
-            self.config.training_kwargs.do_eval = not self.config.testing
+            self.config.trainer.training_kwargs.do_eval = not self.config.testing
 
         data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
 
@@ -121,7 +121,7 @@ class BERTTrainer(BaseTrainer):
             eval_dataset=eval_dataset,
             compute_metrics=compute_metrics,
             args=TrainingArguments(
-                **self.config.training_kwargs,
+                **self.config.trainer.training_kwargs,
             ),
             data_collator=data_collator,
         )
@@ -136,17 +136,17 @@ class BERTTrainer(BaseTrainer):
             self.push_config_to_hf(self.config)
             self.push_config_to_wandb(self.config)
             self.model.push_to_hub(
-                self.config.training_kwargs.output_dir,
+                self.config.trainer.training_kwargs.output_dir,
                 self.tokenizer,
                 save_method="lora",
             )
             # Save and push the updated tokenizer
-            self.tokenizer.save_pretrained(self.config.training_kwargs.output_dir)
+            self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
             self.tokenizer.push_to_hub(
-                self.config.training_kwargs.hub_model_id,
+                self.config.trainer.training_kwargs.hub_model_id,
                 tokenizer=self.tokenizer,  # Pass the tokenizer explicitly
                 save_method="lora",
-                token=self.config.training_kwargs.hub_token,
+                token=self.config.trainer.training_kwargs.hub_token,
                 private=True,
             )
         print(trainer_stats)

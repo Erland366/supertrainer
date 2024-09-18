@@ -3,3 +3,7 @@
 defaults:
   - /trainer: llm/llm_kwargs
   - /dataset: llm/llm
+
+# TODO: Find better place to put this
+postprocess_config:
+  class_name: supertrainer.postprocess_config.llm.LLMPostprocessConfig

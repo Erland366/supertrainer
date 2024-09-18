@@ -1,3 +1,25 @@
+# MIT License
+#
+# Copyright (c) 2024 Edd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -21,7 +43,7 @@ class MLLMDatasetLoader(TorchDataset):
         sample = self.dataset[idx]
         image = sample[self.config.image_col]
 
-        if isinstance(image, str):  # If image is a file path
+        if isinstance(image, str):
             image = Image.open(image).convert("RGB")
 
         if self.transform:
@@ -30,7 +52,12 @@ class MLLMDatasetLoader(TorchDataset):
         return {
             "image": image,
             # TODO: Change the self.user_col part
-            "qa": [{"question": "What do you see?", "answer": sample[self.config.assistant_col]}],
+            "qa": [
+                {
+                    "question": "What do you see?",
+                    "answer": sample[self.config.dataset.assistant_col],
+                }
+            ],
         }
 
     def show_image(self, idx):
@@ -54,7 +81,7 @@ class MLLMDataset:
     @property
     def dataset(self) -> Dataset | DatasetDict:
         if self._dataset is None:
-            self._dataset = load_dataset(self.config.dataset_kwargs.path)
+            self._dataset = load_dataset(self.config.dataset.dataset_kwargs.path)
             if isinstance(self._dataset, DatasetDict):
                 dataset_dict = DatasetDict()
                 for split in self._dataset.keys():
@@ -62,11 +89,11 @@ class MLLMDataset:
                         dataset_pick = self._dataset[split].select(range(10))
                     else:
                         dataset_pick = self._dataset[split]
-                    dataset_dict[split] = MLLMDatasetLoader(dataset_pick, self.config)
+                    dataset_dict[split] = MLLMDatasetLoader(dataset_pick, self.config.dataset)
                 self._dataset = dataset_dict
             else:
                 self._dataset = DatasetDict(
-                    {"train": MLLMDatasetLoader(self._dataset, self.config)}
+                    {"train": MLLMDatasetLoader(self._dataset, self.config.dataset)}
                 )
 
         return self._dataset
