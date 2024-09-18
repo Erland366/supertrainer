@@ -223,6 +223,7 @@ supertrainer/
 - [ ] When `sanity_check`, we should remove evaluaton dataset (maybe?). Which means we need to remove certain config like `eval_dataset`, `auto_batch_size`, etc
 - [ ] Fix `FA2` in the `environment.yaml`
 - [ ] Hardcoded settings in `train.py` for `bert` since I have to postprocess config for the dataset and the model of the same config. One way that I can think to solve this is to create a class of postprocess config that we will pass in the yaml config of which postprocess type that we want to use (just like `dataset` and `trainer`). I already create a boilerplate and I just need to execute this. Which means I need to remove postprocess config at all from the trainer (which fixes te comment that I put there where I said that it's weird to do this etc)
+   - But what happens when the `postprocess_config` is instantiating something like `LoraConfig` which is I always instantiate it in `postprocess_config` of trainer? Need to think more about that
 
 ## Future Considerations
 
