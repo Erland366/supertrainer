@@ -1,12 +1,12 @@
 defaults:
-  - /trainer/common/model_kwargs@model_kwargs: flash_attention_2
+  - /trainer/common/model_kwargs@model_kwargs: sdpa
   - /trainer/common/bitsandbytes_kwargs@bitsandbytes_kwargs: nf4
   - /trainer/common/training_kwargs@training_kwargs: default
   - /trainer/bert@peft_kwargs: peft_kwargs
   - _self_
 
 # INSERT ADDITIONAL PARAMS HERE
-class_name: supertrainer.trainers.hf_trainer.HuggingFaceBERTTrainer
+class_name: supertrainer.trainers.bert_trainer.BERTTrainer
 classes:
   - positif
   - negatif

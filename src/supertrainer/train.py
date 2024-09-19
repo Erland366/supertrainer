@@ -56,9 +56,10 @@ def main(cfg: DictConfig):
         num_classes = len(classes)
         class2id = {class_: i for i, class_ in enumerate(classes)}
         id2class = {i: class_ for i, class_ in enumerate(classes)}
-        cfg.dataset.class2id = class2id
-        cfg.dataset.id2class = id2class
-        cfg.dataset.num_classes = num_classes
+        with cfg.allow_modification():
+            cfg.dataset.class2id = class2id
+            cfg.dataset.id2class = id2class
+            cfg.dataset.num_classes = num_classes
 
     dataset = import_class(cfg.dataset.class_name)(cfg)
     dataset = dataset.prepare_dataset()

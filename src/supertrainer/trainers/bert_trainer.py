@@ -135,18 +135,12 @@ class BERTTrainer(BaseTrainer):
             # push configs
             self.push_config_to_hf(self.config)
             self.push_config_to_wandb(self.config)
-            self.model.push_to_hub(
-                self.config.trainer.training_kwargs.output_dir,
-                self.tokenizer,
-                save_method="lora",
-            )
+            self.model.save_pretrained(self.config.trainer.training_kwargs.output_dir)
+            self.model.push_to_hub(self.config.trainer.training_kwargs.hub_model_id, private=True)
             # Save and push the updated tokenizer
             self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
             self.tokenizer.push_to_hub(
                 self.config.trainer.training_kwargs.hub_model_id,
-                tokenizer=self.tokenizer,  # Pass the tokenizer explicitly
-                save_method="lora",
-                token=self.config.trainer.training_kwargs.hub_token,
                 private=True,
             )
         print(trainer_stats)

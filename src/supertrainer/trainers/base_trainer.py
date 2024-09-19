@@ -90,7 +90,7 @@ class BaseTrainer(ABCTrainer):
             )
 
             # Construct the run_name
-            model_name = config.model_name.split("/")[-1]
+            model_name = config.trainer.model_name.split("/")[-1]
             dataset_name = config.dataset.dataset_kwargs.path.split("/")[-1]
             lora_rank = config.trainer.peft_kwargs.r
             learning_rate = config.trainer.training_kwargs.learning_rate
@@ -144,43 +144,43 @@ class BaseTrainer(ABCTrainer):
         api.upload_file(
             path_or_fileobj=config_json.encode(),
             path_in_repo="config.json",
-            repo_id=config.training_kwargs.hub_model_id,
+            repo_id=config.trainer.training_kwargs.hub_model_id,
             repo_type="model",
         )
-        logger.info(f"Config pushed to HuggingFace: {config.training_kwargs.hub_model_id}")
+        logger.info(f"Config pushed to HuggingFace: {config.trainer.training_kwargs.hub_model_id}")
 
     @staticmethod
     def push_config_to_wandb(config: types.Config) -> None:
         wandb.init(
             project=os.getenv("PROJECT_NAME"),  # Replace with your actual project name
-            name=config.training_kwargs.run_name,
-            config=config.to_serializable_dict(),
+            name=config.trainer.training_kwargs.run_name,
+            config=config.trainer.to_serializable_dict(),
         )
-        logger.info(f"Config pushed to wandb: {config.training_kwargs.run_name}")
+        logger.info(f"Config pushed to wandb: {config.trainer.training_kwargs.run_name}")
 
     def add_new_eos_token(self, eos_token: str, push_to_hub: bool = False):
         self._tokenizer.eos_token_id = [
             self._tokenizer.eos_token_id,
             self._tokenizer.convert_tokens_to_ids(eos_token),
         ]
-        self._tokenizer.save_pretrained(self.config.training_kwargs.output_dir)
+        self._tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
         if push_to_hub:
             self._tokenizer.push_to_hub(
-                self.config.training_kwargs.hub_model_id,
-                token=self.config.training_kwargs.hub_token,
+                self.config.trainer.training_kwargs.hub_model_id,
+                token=self.config.trainer.training_kwargs.hub_token,
                 private=True,
             )
 
         logger.info(f"Add new eos token of {eos_token} completed")
 
     def create_repo(self, hub_model_id: str | None = None) -> None:
-        hub_model_id = hub_model_id or self.config.training_kwargs.hub_model_id
+        hub_model_id = hub_model_id or self.config.trainer.training_kwargs.hub_model_id
 
         create_repo(
             hub_model_id,
             private=True,
         )
-        logger.debug(f"Repo created: {self.config.training_kwargs.hub_model_id}")
+        logger.debug(f"Repo created: {self.config.trainer.training_kwargs.hub_model_id}")
 
     def memory_stats(self):
         memory_stats()

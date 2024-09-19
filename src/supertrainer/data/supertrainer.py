@@ -47,7 +47,7 @@ class SupertrainerBERTDataset(EncoderDataset):
             input_text = DEFAULT_INPUT_TEMPLATE.format(
                 title=example["Title"], content=example["Content"]
             )
-            output_text = self.config.class2id[example["Sentiment Correction"].lower()]
+            output_text = self.config.dataset.class2id[example["Sentiment Correction"].lower()]
             return {
                 "entity": entity,
                 "input": input_text,

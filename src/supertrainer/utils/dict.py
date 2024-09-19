@@ -67,15 +67,16 @@ class StrictDict(Dict):
         return super().__getitem__(str_key)
 
     def __setattr__(self, key, value):
-        if not object.__getattribute__(self, "_allow_modifications"):
+        if key.startswith('_'):
+            object.__setattr__(self, key, value)
+        elif not object.__getattribute__(self, "_allow_modifications"):
             raise AttributeError(
                 "StrictDict is locked. Use method 'set_value' or contextmanager "
                 "'.allow_modification' to modify"
             )
-        if key.startswith("_"):
-            object.__setattr__(self, key, value)
         else:
             self[key] = value
+
 
     def __setitem__(self, key, value):
         if not object.__getattribute__(self, "_allow_modifications"):

@@ -3,9 +3,16 @@
 defaults:
   - /trainer: bert/bert_kwargs
   - /dataset: bert/bert
+  - override /trainer/common/model_kwargs@trainer.model_kwargs: eager
 
 trainer:
   model_name: markussagen/xlm-roberta-longformer-base-4096
+  training_kwargs:
+    hub_model_id: "masa-research/longformer-preskripsi"
+  bitsandbytes_kwargs:
+    llm_int8_skip_modules:
+      - classifier
+
 
 dataset:
   dataset_kwargs:

@@ -1,4 +1,4 @@
-attn_implementation: flash_attention_2
+attn_implementation: eager
 torch_dtype: auto
 use_cache: False
 device_map:

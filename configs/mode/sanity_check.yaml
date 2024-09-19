@@ -3,10 +3,7 @@
 override hydra/hydra_logging: disabled
 override hydra/job_logging: disabled
 
-trainer:
-  testing: True
-dataset:
-  testing: True
+testing: True
 
 hydra:
   output_subdir: null

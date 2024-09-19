@@ -9,4 +9,3 @@ lora_dropout: 0
 bias: "none"
 task_type: "SEQ_CLS"
 use_rslora: true
-loftq_config: null
