@@ -27,6 +27,7 @@ import hydra
 from dotenv import load_dotenv
 from omegaconf import DictConfig, OmegaConf
 
+import wandb
 from supertrainer import StrictDict, logger
 from supertrainer.utils import import_class, login_hf, login_wandb, memory_stats
 
@@ -47,6 +48,8 @@ def main(cfg: DictConfig):
     login_wandb()
     memory_stats()
 
+    os.environ["WANDB_PROJECT"] = cfg.wandb_project
+
     ## Will use this instead of below code
     # cfg = import_class(cfg.postprocess_config.class_name)().postprocess(cfg)
 
@@ -66,6 +69,8 @@ def main(cfg: DictConfig):
 
     trainer = import_class(cfg.trainer.class_name)(cfg, dataset)
     trainer.train()
+
+    wandb.finish()
 
 
 if __name__ == "__main__":

@@ -31,32 +31,34 @@ ARGS ?=
 train: ## Train model, arguments is CFG={, train, all, job}. By default CFG=job
 	python src/supertrainer/train.py $(if $(filter-out train,$(CFG)),--cfg $(CFG)) $(ARGS)
 
-dir_tree:
+dir_tree: ## Print directory tree
 	find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
-dir_tree_configs:
+dir_tree_configs: ## Print directory tree for configs
 	find configs/ | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
-dir_tree_supertrainer:
+dir_tree_supertrainer: ## Print directory tree for supertrainer
 	find src/supertrainer/ | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
-export_conda_env: # export conda environment to environment.yaml
-	bash ./scripts/export_conda_env.sh
-
+# Define variables with default values
 CONDA_ENV ?= supertrainer
 ENV_FILE ?= environment.yaml
+OUTPUT_FILE ?= environment.yaml
 
-install_conda_env: # install conda environment, pass CONDA_ENV=<env_name> and ENV_FILE=<file_name> to specify environment name and file, by default CONDA_ENV=supertrainer and ENV_FILE=environment.yaml
+export_conda_env: ## export conda environment to specified file. OUTPUT_FILE=<file_name>?environment.yaml
+	bash ./scripts/export_conda_env.sh $(OUTPUT_FILE)
+
+install_conda_env: ## install conda environment. CONDA_ENV=<env_name>?supertrainer ENV_FILE=<file_name>?environment.yaml
 	bash ./scripts/install_conda_env.sh $(CONDA_ENV) $(ENV_FILE)
 
 CODE_FILE ?= *.py
 OUTPUT_FILE ?= code_output.txt
 
-copy_code:
+copy_code: ## Copy code to a single file, mainly for copying code to ChatGPT or Aider. CODE_FILE=<file_name>?*.py OUTPUT_FILE=<file_name>?code_output.txt
 	for file in $(CODE_FILE); do echo "File: $$file"; cat "$$file"; echo ""; done > $(OUTPUT_FILE)
 	@echo "Code has been copied to $(OUTPUT_FILE)."
 
-replace_name:
+replace_name: ## Replace string in filenames, STRING1=<old_string> STRING2=<new_string>
 	@if [ -z "$(STRING1)" ] || [ -z "$(STRING2)" ]; then \
 		echo "Error: Both STRING1 and STRING2 must be provided and non-empty."; \
 		echo "Usage: make replace STRING1=<old_string> STRING2=<new_string>"; \

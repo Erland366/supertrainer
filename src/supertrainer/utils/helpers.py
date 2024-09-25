@@ -23,9 +23,11 @@
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
 from importlib import import_module
 from typing import Any
 
+import psutil
 from huggingface_hub import login
 
 import wandb
@@ -245,3 +247,74 @@ def split_train_test_validation(
     )
 
     return split_dataset
+
+
+def convert_size_to_mb(size: int) -> float:
+    return size / 1024 / 1024
+
+
+class MemoryTracker:
+    def __init__(self) -> None:
+        self.max_ram_usage = 0
+        self.max_vram_usage = 0
+        self.torch_available = False
+        try:
+            import torch
+
+            self.torch_available = torch.cuda.is_available()
+        except ImportError:
+            logger.warning(
+                "Torch is not available. VRAM tracking will not be available.",
+            )
+
+    @contextmanager
+    def track_memory(self, description: str):
+        process = psutil.Process()
+        mem_info_start = process.memory_info()
+
+        if self.torch_available:
+            import torch
+
+            gpu_mem_info_start = (
+                convert_size_to_mb(torch.cuda.memory_allocated())
+                if torch.cuda.is_available()
+                else 0
+            )
+            gpu_mem_reserved_start = (
+                convert_size_to_mb(torch.cuda.memory_reserved()) if torch.cuda.is_available() else 0
+            )
+
+        yield
+
+        mem_info_end = convert_size_to_mb(process.memory_info().rss - mem_info_start.rss)
+
+        if self.torch_available:
+            gpu_mem_info_end = (
+                convert_size_to_mb(torch.cuda.memory_allocated())
+                if torch.cuda.is_available()
+                else 0
+            ) - gpu_mem_info_start
+            gpu_mem_reserved_end = (
+                convert_size_to_mb(torch.cuda.memory_reserved()) if torch.cuda.is_available() else 0
+            ) - gpu_mem_reserved_start
+
+        self.max_ram_usage = max(self.max_ram_usage, mem_info_end)
+        self.max_vram_usage = max(self.max_vram_usage, gpu_mem_info_end)
+
+        print_and_log(
+            f"{description} - RAM Usage: RSS: {mem_info_end:.2f} MB",
+            depth=1,
+        )
+        if self.torch_available:
+            print_and_log(
+                f"{description} - VRAM Usage: Allocated: {gpu_mem_info_end:.2f} MB, "
+                f"Reserved: {gpu_mem_reserved_end:.2f} MB",
+                depth=1,
+            )
+        else:
+            print_and_log(f"{description} - CUDA is not available.", depth=1)
+
+    def print_summary(self):
+        print_and_log(f"Maximum RAM Usage: {self.max_ram_usage:.2f} MB", depth=1)
+        if self.torch_available:
+            print_and_log(f"Maximum VRAM Usage: {self.max_vram_usage:.2f} MB", depth=1)

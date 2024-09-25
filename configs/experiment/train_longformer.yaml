@@ -9,15 +9,30 @@ trainer:
   model_name: markussagen/xlm-roberta-longformer-base-4096
   training_kwargs:
     hub_model_id: "masa-research/longformer-preskripsi"
+    per_device_train_batch_size: 8
+    gradient_accumulation_steps: 8
+    auto_find_batch_size: False
+    logging_steps: 1
+    eval_steps: 0.1
+    save_steps: 0.2
+    num_train_epochs: 10
+    warmup_steps: 10
+    learning_rate: 0.0001
+    output_dir: "./assets_local/longformer/outputs"
+  peft_kwargs:
+    r: 128
+    lora_alpha: 64
   bitsandbytes_kwargs:
     llm_int8_skip_modules:
       - classifier
 
-
 dataset:
   dataset_kwargs:
     tokenizer_name_or_path: ${trainer.model_name}
+    path: masa-research/news_absa_v2_annotated_with_token_usage
 
 # TODO: Find better place to put this
 postprocess_config:
   class_name: supertrainer.postprocess_config.bert.BERTPostprocessConfig
+
+wandb_project: "preskripsi"

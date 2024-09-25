@@ -102,6 +102,13 @@ class BaseTrainer(ABCTrainer):
             )
             config.trainer.training_kwargs.run_name = run_name
 
+            # TODO: Move this
+            wandb.init(
+                project=config.wandb_project,  # Replace with your actual project name
+                name=config.trainer.training_kwargs.run_name,
+                # config=config.trainer.to_serializable_dict(),
+            )
+
             # output_dir add run_name
             config.trainer.training_kwargs.output_dir = os.path.join(
                 config.trainer.training_kwargs.output_dir, run_name
@@ -143,7 +150,7 @@ class BaseTrainer(ABCTrainer):
 
         api.upload_file(
             path_or_fileobj=config_json.encode(),
-            path_in_repo="config.json",
+            path_in_repo="config_hydra.json",
             repo_id=config.trainer.training_kwargs.hub_model_id,
             repo_type="model",
         )
@@ -151,12 +158,14 @@ class BaseTrainer(ABCTrainer):
 
     @staticmethod
     def push_config_to_wandb(config: types.Config) -> None:
-        wandb.init(
-            project=os.getenv("PROJECT_NAME"),  # Replace with your actual project name
-            name=config.trainer.training_kwargs.run_name,
-            config=config.trainer.to_serializable_dict(),
-        )
+        import json
+        import tempfile
+
         logger.info(f"Config pushed to wandb: {config.trainer.training_kwargs.run_name}")
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:
+            json.dump(config.to_serializable_dict(), f, indent=2)
+            wandb.save(f.name)
 
     def add_new_eos_token(self, eos_token: str, push_to_hub: bool = False):
         self._tokenizer.eos_token_id = [

@@ -79,6 +79,8 @@ exclude_lines = [
 ]
 
 [tool.ruff]
+# Uncomment below since pre-commit don't want this
+# extend-include = ["*.ipynb"]
 select = ["E", "F", "I"]
 # ignore = ["E266", "E501"]
 fixable = ["A", "B", "C", "D", "E", "F", "I"]

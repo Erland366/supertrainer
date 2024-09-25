@@ -1,4 +1,26 @@
-#!/bin/bash
+# MIT License
+#
+# Copyright (c) 2024 Edd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# !/bin/bash
 # Initialize conda
 CONDA_PATH="/apps/local/anaconda2023/etc/profile.d/conda.sh"
 if [ -f "$CONDA_PATH" ]; then
@@ -11,11 +33,27 @@ fi
 
 echo "Starting export of conda environment..."
 
-# Remove the existing environment.yaml file if it exists
-echo "Removing existing environment.yaml if it exists..."
-rm -f environment.yaml
+OUTPUT_FILE="$1"
 
-# Extract project name from setup.py or pyproject.toml
+
+echo "Removing existing $OUTPUT_FILE if it exists..."
+rm -f $OUTPUT_FILE
+
+
+if [ -z "$1" ]; then
+    echo "Error: No output file name provided."
+    echo "Usage: $0 <output_file>"
+    exit 1
+fi
+
+
+echo "Starting export of conda environment..."
+
+
+echo "Removing existing $OUTPUT_FILE if it exists..."
+rm -f "$OUTPUT_FILE"
+
+
 if [ -f "setup.py" ]; then
     PROJECT_NAME=$(python -c "import setuptools; setup_cfg = setuptools.config.read_configuration('setup.py'); print(setup_cfg['metadata']['name'])")
 elif [ -f "pyproject.toml" ]; then
@@ -27,8 +65,8 @@ fi
 
 echo "Project name identified as: $PROJECT_NAME"
 
-# Export the conda environment to environment.yaml, excluding the prefix, name lines, and the project name
-echo "Exporting conda environment to environment.yaml..."
-conda env export --no-builds | grep -v "^prefix: " | grep -v "^name: " | grep -v "$PROJECT_NAME" > environment.yaml
+
+echo "Exporting conda environment to $OUTPUT_FILE..."
+conda env export --no-builds | grep -v "^prefix: " | grep -v "^name: " | grep -v "$PROJECT_NAME" > "$OUTPUT_FILE"
 
 echo "Conda environment export completed."

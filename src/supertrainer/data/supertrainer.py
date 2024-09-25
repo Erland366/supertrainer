@@ -47,7 +47,8 @@ class SupertrainerBERTDataset(EncoderDataset):
             input_text = DEFAULT_INPUT_TEMPLATE.format(
                 title=example["Title"], content=example["Content"]
             )
-            output_text = self.config.dataset.class2id[example["Sentiment Correction"].lower()]
+            # TODO: The column shouldn't be hardcoded here!
+            output_text = self.config.dataset.class2id[example["Entity Sentiment"].lower()]
             return {
                 "entity": entity,
                 "input": input_text,
@@ -120,7 +121,8 @@ class SupertrainerDataset(LLMDataset):
             input_text = DEFAULT_INPUT_TEMPLATE.format(
                 title=example["Title"], content=example["Content"]
             )
-            output_text = example["Sentiment Correction"]
+            # TODO: The column shouldn't be hardcoded here!
+            output_text = example["Entity Sentiment"].lower()
             return {
                 "instruction": instruction,
                 "input": input_text,
