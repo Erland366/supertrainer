@@ -38,7 +38,50 @@ from supertrainer.data.templates.supertrainer_template import (
 class SupertrainerBERTDataset(EncoderDataset):
     def __init__(self, config: types.Config, is_testing: bool = False) -> None:
         super().__init__(config, is_testing)
+        self._is_prepared = None
 
+    # consideration:
+    # make this method an abstractmethod in BaseDataset if you want to implement `is_prepared` 
+    # each specific dataset will need its own validator as they have specific characteristics 
+    def validate_if_prepared(self) -> None:
+        """
+        This method aims to validate if the dataset is prepared by checking the required columns.
+        It ensures that each split of the dataset contains columns below:
+        'input_ids', 'attention_mask', and 'labels'.
+
+        If any of these columns are missing, it raises a ValueError.
+        """
+        if not all(
+            all(col in ds.column_names for col in ["input_ids", "attention_mask", "labels"])
+            for ds in self.dataset.values()
+        ):
+            # consideration: make this a specific error
+            raise ValueError(
+                "dataset.dataset_kwargs.is_prepared is set to True. "
+                "Dataset must contain 'input_ids', 'attention_mask', and 'labels' in each split. "
+            )
+        self._is_prepared = True
+
+    @property
+    def is_prepared(self) -> bool:
+        """
+        Checks if the dataset is prepared by validating the presence of required columns.
+        
+        This property will trigger the validation process if the dataset has not been 
+        prepared yet and the configuration indicates that it should be prepared. 
+        It raises a ValueError if any of the required columns ('input_ids', 
+        'attention_mask', and 'labels') are missing in any split of the dataset.
+
+        Returns:
+            bool: True if the dataset is prepared, False otherwise.
+        """
+        is_prepared_config = self.config.dataset.dataset_kwargs.get("is_prepared", False)
+        if self._is_prepared is None and is_prepared_config:
+            self.validate_if_prepared()
+        else:
+            self._is_prepared = False
+        return self._is_prepared
+    
     def format_for_aspect_sentiment_analysis(self, dataset: DatasetDict) -> DatasetDict:
         logger.debug("Formatting dataset for aspect sentiment analysis")
 
@@ -84,26 +127,32 @@ class SupertrainerBERTDataset(EncoderDataset):
         dataset_dict = self.dataset
         logger.debug(f"Dataset loaded: {dataset_dict}")
 
-        logger.debug("Splitting dataset")
-        split_dataset = self.split_dataset(dataset_dict)
-        logger.debug(f"Dataset split: {split_dataset}")
+        if not self.is_prepared:
+            logger.info("Splitting dataset")
+            split_dataset = self.split_dataset(dataset_dict)
+            logger.info(f"Dataset split: {split_dataset}")
 
-        logger.debug("Formatting dataset for aspect sentiment analysis")
-        formatted_dataset = self.format_for_aspect_sentiment_analysis(split_dataset)
-        logger.debug(f"Dataset formatted: {formatted_dataset}")
+            logger.info("Formatting dataset for aspect sentiment analysis")
+            formatted_dataset = self.format_for_aspect_sentiment_analysis(split_dataset)
+            logger.info(f"Dataset formatted: {formatted_dataset}")
 
-        logger.debug("Applying formatting prompts")
-        dataset = self.format_dataset(formatted_dataset)
-        self.test_tokenization(dataset)
-        dataset = self.tokenized_dataset(dataset)
-        # Print some examples from the dataset to inspect the tokenizer's output
-        print("*** Example from the dataset ***")
-        for i in range(5):
-            print(f"Example {i+1}:")
-            self.print_text_after_substring(dataset["train"][i]["text"], "[/Judul]")
-            print("-" * 20)
+            logger.info("Applying formatting prompts")
+            dataset = self.format_dataset(formatted_dataset)
+            self.test_tokenization(dataset)
+            dataset = self.tokenized_dataset(dataset)
+        
+            # Print some examples from the dataset to inspect the tokenizer's output
 
-        logger.debug("Dataset preparation completed")
+            print("*** Example from the dataset ***")
+            for i in range(5):
+                print(f"Example {i+1}:")
+                self.print_text_after_substring(dataset["train"][i]["text"], "[/Judul]")
+                print("-" * 20)
+
+            logger.info("Dataset preparation completed")
+        else:
+            logger.info("Dataset has already been prepared")
+            dataset = dataset_dict
 
         return dataset
 
