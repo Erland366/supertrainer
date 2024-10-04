@@ -16,12 +16,12 @@ trainer:
     eval_steps: 0.1
     save_steps: 0.2
     num_train_epochs: 10
-    warmup_steps: 10
-    learning_rate: 0.0001
+    warmup_steps: 10 # dari kecil
+    learning_rate: 0.0003
     output_dir: "./assets_local/longformer/outputs"
   peft_kwargs:
-    r: 128
-    lora_alpha: 64
+    r: 128 # minimum 64
+    lora_alpha: 256 # ganti 2x r
   bitsandbytes_kwargs:
     llm_int8_skip_modules:
       - classifier
@@ -29,7 +29,14 @@ trainer:
 dataset:
   dataset_kwargs:
     tokenizer_name_or_path: ${trainer.model_name}
-    path: masa-research/news_absa_v2_annotated_with_token_usage
+    # path: masa-research/news_absa_v2_annotated_with_token_usage
+    # is_prepared: false
+
+    # path: masa-research/news_absa_v2_annotated_with_token_usage__prepared__longformer_202410041600
+    # is_prepared: true
+
+    path: masa-research/absa_news__1.5k__20240923_154258
+    is_prepared: false
 
 # TODO: Find better place to put this
 postprocess_config:
