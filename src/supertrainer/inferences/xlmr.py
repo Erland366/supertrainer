@@ -20,36 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# src/supertrainer/evaluations/base_evaluation.py
-
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List
-
-from supertrainer import logger, types
+from supertrainer.inferences.bert import BERTInference
 
 
-class BaseEvaluation(ABC):
-    def __init__(self, config: types.Config, dataset: types.Dataset) -> None:
-        self.config = self.postprocess_config(config)
-        self.dataset = dataset
-
-    def postprocess_config(self, config: types.Config) -> types.Config:
-        # Implement any common post-processing of config here
-        return config
-
-    @abstractmethod
-    def evaluate(self) -> Dict[str, Any]:
-        """Perform evaluation and return metrics."""
-        pass
-
-    @abstractmethod
-    def compute_metrics(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Compute and return evaluation metrics based on results."""
-        pass
-
-    def run_evaluation(self):
-        """Run the evaluation process."""
-        logger.info("Starting evaluation process.")
-        metrics = self.evaluate()
-        logger.info(f"Evaluation completed. Metrics: {metrics}")
-        return metrics
+class XLMRInference(BERTInference):
+    # Generally, everything is able to be used on the parent class without modification here
+    pass

@@ -318,3 +318,19 @@ class MemoryTracker:
         print_and_log(f"Maximum RAM Usage: {self.max_ram_usage:.2f} MB", depth=1)
         if self.torch_available:
             print_and_log(f"Maximum VRAM Usage: {self.max_vram_usage:.2f} MB", depth=1)
+
+def get_model_name(model: Any) -> str:
+    """
+    Get the name of the model.
+
+    Args:
+        model (Any): The model object.
+
+    Returns:
+        str: The name of the model.
+    """
+    try:
+        name = model.config.architectures[0]
+    except AttributeError:
+        name = model.__class__.__name__
+    return name

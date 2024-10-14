@@ -20,4 +20,39 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# TODO:
+import os
+import sys
+
+import hydra
+from dotenv import load_dotenv
+from omegaconf import DictConfig, OmegaConf
+
+from supertrainer import StrictDict, logger
+from supertrainer.utils import import_class, login_hf, memory_stats
+
+load_dotenv()
+
+# Enable HF Transfer
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+
+logger.remove()
+logger.add(sys.stderr, level="DEBUG")
+
+
+@hydra.main(config_path="../../configs/", config_name="train", version_base=None)
+def main(cfg: DictConfig):
+    # Enable editing on the omegaconf
+    cfg = StrictDict(OmegaConf.to_container(cfg, resolve=True))
+    login_hf()
+    memory_stats()
+
+    dataset = import_class(cfg.dataset.class_name)(cfg)
+    dataset = dataset.prepare_dataset()
+
+    evaluation = import_class(cfg.evaluation.class_name)(cfg, dataset)
+    metrics = evaluation.evaluate()
+    print(metrics)
+
+
+if __name__ == "__main__":
+    main()

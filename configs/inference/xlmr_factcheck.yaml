@@ -1,0 +1,10 @@
+defaults:
+  - /trainer/common/model_kwargs@model_kwargs: eager
+
+class_name: supertrainer.inferences.xlmr.XLMRInference
+classes:
+  - REFUTES
+  - SUPPORTS
+  - NOT_ENOUGH_INFO
+
+model_name: FacebookAI/xlm-roberta-base

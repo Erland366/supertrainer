@@ -75,6 +75,11 @@ python src/supertrainer/main.py +experiment=train_mllm trainer.training_kwargs.n
 
 Now our run will ran for 10 epochs.
 
+## Dataset
+We will assume that the dataset that you are going to feed here is ready to be fed into the model. What we meant by ready to be fed is that it already in the form of text that can be immediately feed into tokenizer. The tokenization process will be in the model respected class instead! We will make a guide of what column is needed for each task.
+
+Also, we will also put a program on how to transform each dataset into the correct form. This is important especially for LLM!
+
 
 ## Project Structure
 <details>
@@ -222,8 +227,10 @@ supertrainer/
 - [ ] We haven't use the `tokenizer` instruct for the `llm` which is bad since we want that `chat_template`!
 - [ ] When `sanity_check`, we should remove evaluaton dataset (maybe?). Which means we need to remove certain config like `eval_dataset`, `auto_batch_size`, etc
 - [ ] Fix `FA2` in the `environment.yaml`
-- [ ] Hardcoded settings in `train.py` for `bert` since I have to postprocess config for the dataset and the model of the same config. One way that I can think to solve this is to create a class of postprocess config that we will pass in the yaml config of which postprocess type that we want to use (just like `dataset` and `trainer`). I already create a boilerplate and I just need to execute this. Which means I need to remove postprocess config at all from the trainer (which fixes te comment that I put there where I said that it's weird to do this etc)
+- [x] Hardcoded settings in `train.py` for `bert` since I have to postprocess config for the dataset and the model of the same config. One way that I can think to solve this is to create a class of postprocess config that we will pass in the yaml config of which postprocess type that we want to use (just like `dataset` and `trainer`). I already create a boilerplate and I just need to execute this. Which means I need to remove postprocess config at all from the trainer (which fixes te comment that I put there where I said that it's weird to do this etc)
    - But what happens when the `postprocess_config` is instantiating something like `LoraConfig` which is I always instantiate it in `postprocess_config` of trainer? Need to think more about that
+   - Fixed by modifying config in each class. Apparently, `StrictDict` is a modular object. Hence, if we modify it in place. It will keep that changes outside of the scope. Therefore we can just modify the `config` directly whenever we want
+
 
 ## Future Considerations
 

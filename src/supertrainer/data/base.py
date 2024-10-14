@@ -22,12 +22,14 @@
 
 from __future__ import annotations
 
+import os
 from abc import ABC, abstractmethod
 
 from datasets import Dataset, DatasetDict, load_dataset
+from huggingface_hub import whoami
 from transformers import AutoTokenizer
 
-from supertrainer import logger, types
+from supertrainer import SUPERTRAINER_ROOT, logger, types
 
 
 class ABCDataset(ABC):
@@ -50,9 +52,10 @@ class ABCDataset(ABC):
     def dataset(self) -> Dataset | DatasetDict:
         pass
 
-    @abstractmethod
-    def formatting_prompt_func(self):
-        pass
+    # TODO: Since we will assume that the dataset is prepared, we can remove this
+    # @abstractmethod
+    # def formatting_prompt_func(self):
+    #     pass
 
 
 class BaseDataset(ABCDataset):
@@ -89,7 +92,16 @@ class BaseDataset(ABCDataset):
     @property
     def dataset(self) -> Dataset | DatasetDict:
         if self._dataset is None:
-            self._dataset = load_dataset(path=self.config.dataset.dataset_kwargs.path)
+            try:
+                self._dataset = load_dataset(path=self.config.dataset.dataset_kwargs.path)
+            except ValueError as e:
+                if str(e) == (
+                    "You are trying to load a dataset that was saved using "
+                    "`save_to_disk`. Please use `load_from_disk` instead."
+                ):
+                    self._dataset = Dataset.load_from_disk(self.config.dataset.dataset_kwargs.path)
+                else:
+                    raise e
         return self._dataset
 
     @staticmethod
@@ -136,3 +148,57 @@ class BaseDataset(ABCDataset):
             )
 
         return split_dataset
+
+
+class ABCDatasetFormatter(ABC):
+    @property
+    @abstractmethod
+    def dataset(self) -> Dataset | DatasetDict:
+        pass
+
+    # TODO: Is this clean?
+    def process_dataset(self):
+        self.transform_dataset()
+        self.save_formatted_dataset()
+
+    @abstractmethod
+    def transform_dataset(self):
+        pass
+
+    @abstractmethod
+    def save_formatted_dataset(self):
+        pass
+
+
+class BaseDatasetFormatter(ABCDatasetFormatter):
+    @property
+    def dataset(self) -> Dataset | DatasetDict:
+        if self._dataset is None:
+            try:
+                self._dataset = load_dataset(path=self.config.dataset.dataset_kwargs.path)
+            except ValueError as e:
+                if str(e) == (
+                    "You are trying to load a dataset that was saved using "
+                    "`save_to_disk`. Please use `load_from_disk` instead."
+                ):
+                    self._dataset = Dataset.load_from_disk(self.config.dataset.dataset_kwargs.path)
+                else:
+                    raise e
+        return self._dataset
+
+    def save_formatted_dataset(self):
+        logger.debug("Saving formatted dataset to disk")
+        self.dataset.save_to_disk(
+            os.path.join(
+                os.getenv(SUPERTRAINER_ROOT),
+                "datasets",
+                self.config.dataset.dataset_kwargs.dataset_name,
+            )
+        )
+        # TODO: Thinking about pushing the dataset to hub
+        if self.config.dataset.dataset_kwargs.get("dataset_hub_id", None):
+            logger.debug("Pushing dataset to hub")
+            hf_id = whoami()["name"]
+            self.dataset.push_to_hub(
+                os.path.join(hf_id, self.config.dataset.dataset_kwargs.dataset_name)
+            )
