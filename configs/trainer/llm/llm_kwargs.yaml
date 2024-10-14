@@ -1,0 +1,22 @@
+defaults:
+  - /trainer/common/model_kwargs@model_kwargs: flash_attention_2
+  - /trainer/common/bitsandbytes_kwargs@bitsandbytes_kwargs: nf4
+  - /trainer/common/training_kwargs@training_kwargs: default
+  - /trainer/llm@peft_kwargs: peft_kwargs
+  - _self_
+
+# INSERT ADDITIONAL PARAMS HERE
+class_name: supertrainer.trainers.llm_trainer.LLMTrainer
+
+# TODO: Find better place for this
+load_config:
+  max_seq_length : 4096
+  dtype:
+  load_in_4bit: True
+  model_name: unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit
+
+model_name: ${trainer.load_config.model_name}
+
+# INSERT OVERRIDE CONFIGS HERE
+training_kwargs:
+  hub_model_id: "Erland/llm-preskripsi"

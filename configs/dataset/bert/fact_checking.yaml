@@ -1,0 +1,4 @@
+class_name: supertrainer.data.fact_checking.FactCheckingBERTEvaluationDataset
+
+dataset_kwargs:
+  path: Yoonseong/climatebert_factcheck

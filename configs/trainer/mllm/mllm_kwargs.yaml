@@ -1,0 +1,28 @@
+defaults:
+  # Directly include with new path mappings under trainer
+  - /trainer/common/model_kwargs@model_kwargs: flash_attention_2
+  - /trainer/common/bitsandbytes_kwargs@bitsandbytes_kwargs: nf4
+  - /trainer/common/training_kwargs@training_kwargs: default
+  - /trainer/mllm@peft_kwargs: peft_kwargs
+  - _self_
+
+class_name: supertrainer.trainers.hf_trainer.MLLMTrainer
+
+# TODO: Find better place for this
+model_name: "vikhyatk/moondream2"
+revision: "2024-04-02"
+set_trainable:
+  trainable_params_names:
+    - "lm_head"
+    - "embd"
+  set_other_trainable:
+
+# I think below is hardcoded
+num_imgs_tokens: 729
+
+# TODO: Find better place for this
+answer_eos: <|endoftext|>
+batch_size: 4
+
+training_kwargs:
+  hub_model_id: "supertrainer/moondream2-finetuned"

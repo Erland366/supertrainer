@@ -1,0 +1,5 @@
+class_name: supertrainer.data.supertrainer.SupertrainerBERTDataset
+
+dataset_kwargs:
+  path: masa-research/news_absa_v2_annotated_with_token_usage
+  tokenizer_name_or_path:  markussagen/xlm-roberta-longformer-base-4096

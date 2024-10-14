@@ -1,0 +1,4 @@
+attn_implementation: eager
+torch_dtype: auto
+use_cache: False
+device_map:

@@ -1,5 +1,0 @@
-class_name: preskripsi_training.data.preskripsi.PreskripsiDataset
-
-dataset_kwargs:
-  path: masa-research/manual_absa_annotation__dgv__20240903_103
-  tokenizer_name_or_path: Qwen/Qwen2-0.5B-Instruct
