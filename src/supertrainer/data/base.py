@@ -25,11 +25,12 @@ from __future__ import annotations
 import os
 from abc import ABC, abstractmethod
 
-from datasets import Dataset, DatasetDict, load_dataset
+from datasets import Dataset, DatasetDict
 from huggingface_hub import whoami
 from transformers import AutoTokenizer
 
 from supertrainer import SUPERTRAINER_ROOT, logger, types
+from supertrainer.utils.helpers import load_dataset_plus_plus
 
 
 class ABCDataset(ABC):
@@ -92,16 +93,7 @@ class BaseDataset(ABCDataset):
     @property
     def dataset(self) -> Dataset | DatasetDict:
         if self._dataset is None:
-            try:
-                self._dataset = load_dataset(path=self.config.dataset.dataset_kwargs.path)
-            except ValueError as e:
-                if str(e) == (
-                    "You are trying to load a dataset that was saved using "
-                    "`save_to_disk`. Please use `load_from_disk` instead."
-                ):
-                    self._dataset = Dataset.load_from_disk(self.config.dataset.dataset_kwargs.path)
-                else:
-                    raise e
+            self._dataset = load_dataset_plus_plus(path=self.config.dataset.dataset_kwargs.path)
         return self._dataset
 
     @staticmethod
@@ -174,16 +166,7 @@ class BaseDatasetFormatter(ABCDatasetFormatter):
     @property
     def dataset(self) -> Dataset | DatasetDict:
         if self._dataset is None:
-            try:
-                self._dataset = load_dataset(path=self.config.dataset.dataset_kwargs.path)
-            except ValueError as e:
-                if str(e) == (
-                    "You are trying to load a dataset that was saved using "
-                    "`save_to_disk`. Please use `load_from_disk` instead."
-                ):
-                    self._dataset = Dataset.load_from_disk(self.config.dataset.dataset_kwargs.path)
-                else:
-                    raise e
+            self._dataset = load_dataset_plus_plus(path=self.config.dataset.dataset_kwargs.path)
         return self._dataset
 
     def save_formatted_dataset(self):

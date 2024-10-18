@@ -31,18 +31,25 @@ from .utils.dict import StrictDict
 from .utils.logger import logger
 
 SUPERTRAINER_ROOT = "SUPERTRAINER_ROOT"
-DEFAULT_PATH = str(Path.home() / ".supertrainer")
+SUPERTRAINER_PUBLIC_ROOT = "SUPERTRAINER_PUBLIC_ROOT"
 
-if SUPERTRAINER_ROOT not in os.environ:
-    os.environ[SUPERTRAINER_ROOT] = DEFAULT_PATH
+def initialize_supertrainer_root(root_env_var, default_subdir):
+    default_path = str(Path.home() / default_subdir)
 
-supertrainer_root = Path(os.environ[SUPERTRAINER_ROOT])
+    if root_env_var not in os.environ:
+        os.environ[root_env_var] = default_path
 
-if not (supertrainer_root.exists() and os.access(supertrainer_root, os.W_OK)):
-    home_path = Path.home() / ".supertrainer"
-    supertrainer_root = home_path
-    os.environ[SUPERTRAINER_ROOT] = str(supertrainer_root)
+    root_path = Path(os.environ[root_env_var])
 
-supertrainer_root.mkdir(parents=True, exist_ok=True)
+    if not (root_path.exists() and os.access(root_path, os.W_OK)):
+        home_path = Path.home() / default_subdir
+        root_path = home_path
+        os.environ[root_env_var] = str(root_path)
+
+    root_path.mkdir(parents=True, exist_ok=True)
+    return root_path
+
+supertrainer_root = initialize_supertrainer_root(SUPERTRAINER_ROOT, ".supertrainer")
+supertrainer_root = initialize_supertrainer_root(SUPERTRAINER_PUBLIC_ROOT, "supertrainer")
 
 __all__ = ["logger", "StrictDict"]
