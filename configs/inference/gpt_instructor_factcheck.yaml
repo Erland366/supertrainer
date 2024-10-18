@@ -1,0 +1,22 @@
+class_name: supertrainer.inferences.gpt.GPTInstructorInference
+classes:
+  - REFUTES
+  - SUPPORTS
+  - NOT_ENOUGH_INFO
+
+system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"
+
+batch_name: "gpt_factcheck"
+batch_dataset: "assets_local/subset_dataset"
+batch_kwargs:
+  endpoint: "/v1/chat/completions"
+  completion_window: 24h
+  metadata:
+    description: "GPT-4o-mini fact-checking"
+
+
+client_kwargs:
+  model: "gpt-4o-mini"
+  max_tokens: 64
+  temperature: 0.8
+  top_p: 1

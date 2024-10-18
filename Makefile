@@ -73,3 +73,6 @@ replace_name: ## Replace string in filenames, STRING1=<old_string> STRING2=<new_
 		fi; \
 	done
 	@echo "Rename operation completed."
+
+openai_batch: ## List OpenAI batch job
+	export $(cat .env | xargs) && instructor batch list --limit 9
