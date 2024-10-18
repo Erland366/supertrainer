@@ -1,0 +1,23 @@
+# @package _global_
+
+defaults:
+  - /trainer/llm@inference.peft_kwargs : peft_kwargs
+
+
+inference:
+  class_name: supertrainer.inferences.qwen.QwenInference
+
+  # TODO: Make this better and more unify with other config!
+  model_kwargs:
+    model_name: unsloth/Qwen2.5-7B-bnb-4bit
+    max_seq_length: 2048
+    dtype:
+    load_in_4bit: True
+
+  inference_kwargs:
+    max_new_tokens: 128
+    use_cache: True
+    temperature: 1.5
+    min_p: 0.1
+
+  system_prompt:

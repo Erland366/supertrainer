@@ -35,6 +35,7 @@ class LlamaInference(BaseInference):
         # Unsloth load model and tokenizer at the same time! Need buffer for them
         self._buffer_model = None
         self._buffer_tokenizer = None
+        self.chat_template = "llama-3.1"
 
     def postprocess_config(self, config: types.Config) -> types.Config:
         return config
@@ -46,7 +47,7 @@ class LlamaInference(BaseInference):
             )
             model = FastLanguageModel.get_peft_model(model, **self.config.inference.peft_kwargs)
             FastLanguageModel.for_inference(model)
-            tokenizer = get_chat_template(tokenizer, "llama-3.1")
+            tokenizer = get_chat_template(tokenizer, self.chat_template)
             self._buffer_model = model
             self._buffer_tokenizer = tokenizer
         return self._buffer_model
@@ -58,7 +59,7 @@ class LlamaInference(BaseInference):
             )
             model = FastLanguageModel.get_peft_model(model, **self.config.inference.peft_kwargs)
             FastLanguageModel.for_inference(model)
-            tokenizer = get_chat_template(tokenizer, "llama-3.1")
+            tokenizer = get_chat_template(tokenizer, self.chat_template)
             self._buffer_model = model
             self._buffer_tokenizer = tokenizer
         return self._buffer_tokenizer
@@ -95,4 +96,52 @@ class LlamaInference(BaseInference):
                 input_ids=inputs, **self.config.inference.inference_kwargs
             )
         prediction = self.postprocess(outputs[0][inputs.shape[1] :])
+        return prediction
+
+
+class LlamaOutlinesInference(BaseInference):
+    def __init__(self, config: types.Config) -> None:
+        self.config = self.postprocess_config(config)
+        super().__init__(config)
+
+        self._buffer_model = None
+
+    def postprocess_config(self, config: types.Config) -> types.Config:
+        return config
+
+    def load_model(self):
+        import outlines
+
+        if self._buffer_model is None:
+            dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+            self._buffer_model = outlines.models.transformers(
+                self.config.inference.model_kwargs.model_name,
+                device=self.device,
+                model_kwargs={"torch_dtype": dtype},
+            )
+        return self._buffer_model
+
+    def load_tokenizer(self):
+        return True # so it's not None
+
+    def preprocess(self, text: str) -> str:
+        return text
+
+    def postprocess(self, outputs: str) -> str:
+        return outputs
+
+    def predict(self, text: str) -> str:
+        import outlines
+
+        prompt = self.preprocess(text)
+
+        model = self.load_model()
+
+        classes: list[str] = self.config.inference.classes
+
+        generator = outlines.generate.choice(model, classes)
+
+        answer = generator(prompt)
+
+        prediction = self.postprocess(answer)
         return prediction

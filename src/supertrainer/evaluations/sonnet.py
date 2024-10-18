@@ -30,7 +30,7 @@ from supertrainer.inferences.sonnet import SonnetInstructorInference
 from supertrainer.utils.helpers import get_model_name
 
 
-class BertEvaluation(BaseEvaluation):
+class SonnetEvaluation(BaseEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
         self.config = self.postprocess_config(config)
         self.inference = SonnetInstructorInference(self.config)

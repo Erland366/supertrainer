@@ -83,7 +83,7 @@ class SonnetInstructorInference(BaseInferenceProprietary):
 
         self.client = instructor.from_anthropic(Anthropic())
         if system:
-            partial(
+            model = partial(
                 self.client.messages.create, system=system, **self.config.inference.client_kwargs
             )
         else:
