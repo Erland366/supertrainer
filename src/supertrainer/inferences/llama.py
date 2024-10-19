@@ -25,7 +25,7 @@ from __future__ import annotations
 import torch
 
 from supertrainer import types
-from supertrainer.inferences.base import BaseInference
+from supertrainer.inferences.base import BaseInference, BaseOutlinesInference
 
 
 class LlamaInference(BaseInference):
@@ -104,7 +104,7 @@ class LlamaInference(BaseInference):
         return prediction
 
 
-class LlamaOutlinesInference(BaseInference):
+class LlamaOutlinesInference(BaseOutlinesInference):
     def __init__(self, config: types.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
@@ -140,11 +140,10 @@ class LlamaOutlinesInference(BaseInference):
 
         prompt = self.preprocess(text)
 
-        model = self.load_model()
 
         classes: list[str] = self.config.inference.classes
 
-        generator = outlines.generate.choice(model, classes)
+        generator = outlines.generate.choice(self.model, classes)
 
         answer = generator(prompt)
 

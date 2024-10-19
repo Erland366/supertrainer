@@ -104,3 +104,26 @@ class FactCheckingSonnetEvaluationDataset(FactCheckingBERTEvaluationDataset):
     # This dataset is used for the Sonnet model
     # Should be the same here
     pass
+
+
+class FactCheckingGemmaEvaluationDataset(FactCheckingBERTEvaluationDataset):
+    # This dataset is used for the Gemma model
+    # Should be the same here
+    pass
+
+
+class FactCheckingMistralEvaluationDataset(FactCheckingBERTEvaluationDataset):
+    # This dataset is used for the Mistral model
+    # Should be the same here
+    pass
+
+class FactCheckingLlamaEvaluationDataset(FactCheckingBERTEvaluationDataset):
+    # This dataset is used for the Mistral model
+    # Should be the same here
+    pass
+
+
+class FactCheckingQwenEvaluationDataset(FactCheckingBERTEvaluationDataset):
+    # This dataset is used for the Mistral model
+    # Should be the same here
+    pass
