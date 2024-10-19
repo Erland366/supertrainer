@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from supertrainer.inferences.llama import LlamaInference
+from supertrainer.inferences.llama import LlamaInference, LlamaOutlinesInference
 
 
 class QwenInference(LlamaInference):
@@ -28,3 +28,7 @@ class QwenInference(LlamaInference):
     def __init__(self, config):
         super().__init__(config)
         self.chat_template = "qwen-2.5"
+
+class QwenOutlinesInference(LlamaOutlinesInference):
+    # Generally, everything is able to be used on the parent class without modification here
+    pass

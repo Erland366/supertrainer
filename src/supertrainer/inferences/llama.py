@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 import torch
-from unsloth import FastLanguageModel, get_chat_template
 
 from supertrainer import types
 from supertrainer.inferences.base import BaseInference
@@ -40,8 +41,10 @@ class LlamaInference(BaseInference):
     def postprocess_config(self, config: types.Config) -> types.Config:
         return config
 
-    def load_model(self) -> FastLanguageModel:
+    def load_model(self) -> "FastLanguageModel": # type: ignore # noqa: F821
         if self._buffer_model is None or self._buffer_tokenizer is None:
+            from unsloth import FastLanguageModel, get_chat_template
+
             model, tokenizer = FastLanguageModel.from_pretrained(
                 **self.config.inference.model_kwargs
             )
@@ -52,8 +55,10 @@ class LlamaInference(BaseInference):
             self._buffer_tokenizer = tokenizer
         return self._buffer_model
 
-    def load_tokenizer(self) -> FastLanguageModel:
+    def load_tokenizer(self) -> "FastLanguageModel": # type: ignore # noqa: F821
         if self._buffer_model is None or self._buffer_tokenizer is None:
+            from unsloth import FastLanguageModel, get_chat_template
+
             model, tokenizer = FastLanguageModel.from_pretrained(
                 **self.config.inference.model_kwargs
             )
