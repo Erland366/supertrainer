@@ -24,11 +24,13 @@ import os
 import sys
 
 import hydra
+from datasets import DatasetDict
 from dotenv import load_dotenv
 from omegaconf import DictConfig, OmegaConf
 
 from supertrainer import StrictDict, logger
 from supertrainer.utils import import_class, login_hf, memory_stats
+from supertrainer.utils.helpers import load_dataset_plus_plus
 
 load_dotenv()
 
@@ -46,12 +48,14 @@ def main(cfg: DictConfig):
     login_hf()
     memory_stats()
 
-    # dataset = import_class(cfg.dataset.class_name)(cfg)
-    # dataset = dataset.prepare_dataset()
-
     inference = import_class(cfg.inference.class_name)(cfg)
-    inference.iterative_predict()
-
+    if cfg.get("batch", False):
+        dataset = load_dataset_plus_plus(cfg.inference.batch_dataset)
+        if isinstance(dataset, DatasetDict):
+            dataset = dataset["test"]
+        inference.batch_predict(dataset)
+    else:
+        inference.iterative_predict()
 
 
 if __name__ == "__main__":

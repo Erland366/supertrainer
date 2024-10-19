@@ -20,36 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# This file intentionally left blank
-__version__ = "0.0.1"
+from supertrainer.inferences.llama import LlamaInference, LlamaOutlinesInference
 
 
-import os
-from pathlib import Path
+class QwenInference(LlamaInference):
+    # Generally, everything is able to be used on the parent class without modification here
+    def __init__(self, config):
+        super().__init__(config)
+        self.chat_template = "qwen-2.5"
 
-from .utils.dict import StrictDict
-from .utils.logger import logger
-
-SUPERTRAINER_ROOT = "SUPERTRAINER_ROOT"
-SUPERTRAINER_PUBLIC_ROOT = "SUPERTRAINER_PUBLIC_ROOT"
-
-def initialize_supertrainer_root(root_env_var, default_subdir):
-    default_path = str(Path.home() / default_subdir)
-
-    if root_env_var not in os.environ:
-        os.environ[root_env_var] = default_path
-
-    root_path = Path(os.environ[root_env_var])
-
-    if not (root_path.exists() and os.access(root_path, os.W_OK)):
-        home_path = Path.home() / default_subdir
-        root_path = home_path
-        os.environ[root_env_var] = str(root_path)
-
-    root_path.mkdir(parents=True, exist_ok=True)
-    return root_path
-
-supertrainer_root = initialize_supertrainer_root(SUPERTRAINER_ROOT, ".supertrainer")
-supertrainer_root = initialize_supertrainer_root(SUPERTRAINER_PUBLIC_ROOT, "supertrainer")
-
-__all__ = ["logger", "StrictDict"]
+class QwenOutlinesInference(LlamaOutlinesInference):
+    # Generally, everything is able to be used on the parent class without modification here
+    pass

@@ -250,6 +250,15 @@ def split_train_test_validation(
 
 
 def convert_size_to_mb(size: int) -> float:
+    """
+    Convert a size from bytes to megabytes.
+
+    Args:
+        size (int): The size in bytes.
+
+    Returns:
+        float: The size in megabytes.
+    """
     return size / 1024 / 1024
 
 
@@ -334,3 +343,36 @@ def get_model_name(model: Any) -> str:
     except AttributeError:
         name = model.__class__.__name__
     return name
+
+def load_dataset_plus_plus(path: str) -> "Dataset": # noqa: F821 # type: ignore
+    """
+    Load a dataset from the specified path.
+
+    This function attempts to load a dataset using the `load_dataset`
+    function from the `datasets` library.
+    If a `ValueError` is raised indicating that the dataset was saved using
+    `save_to_disk`, it will instead
+    load the dataset using the `load_from_disk` method.
+
+    Args:
+        path (str): The path to the dataset.
+
+    Returns:
+        Dataset: The loaded dataset.
+
+    Raises:
+        ValueError: If the dataset cannot be loaded using either `load_dataset` or `load_from_disk`.
+    """
+    from datasets import Dataset, load_dataset
+
+    try:
+        dataset = load_dataset(path=path)
+    except ValueError as e:
+        if str(e) == (
+            "You are trying to load a dataset that was saved using "
+            "`save_to_disk`. Please use `load_from_disk` instead."
+        ):
+            dataset = Dataset.load_from_disk(dataset_path=path)
+        else:
+            raise e
+    return dataset

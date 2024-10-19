@@ -98,3 +98,9 @@ class FactCheckingBERTEvaluationDatasetFormatter(BaseDatasetFormatter):
             self.format_dataset, batched=True, remove_columns=self.dataset.column_names
         )
         return self.formatted_dataset
+
+
+class FactCheckingSonnetEvaluationDataset(FactCheckingBERTEvaluationDataset):
+    # This dataset is used for the Sonnet model
+    # Should be the same here
+    pass
