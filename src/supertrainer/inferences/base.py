@@ -165,3 +165,11 @@ class BaseInferenceProprietary(ABC):
                 print(f"Prediction: {prediction}")
         except KeyboardInterrupt:
             logger.info("Iterative inference interrupted by user.")
+
+class BaseOutlinesInference(BaseInferenceProprietary):
+    @property
+    def tokenizer(self) -> PreTrainedTokenizer:
+        if self._tokenizer is None:
+            logger.info("Loading tokenizer")
+            self._tokenizer = self.load_tokenizer()
+        return self._tokenizer

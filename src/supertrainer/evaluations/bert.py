@@ -23,17 +23,18 @@
 from typing import Any
 
 import evaluate
+from tqdm import tqdm
 
 from supertrainer import logger, types
 from supertrainer.evaluations.base import BaseEvaluation
-from supertrainer.inferences.sonnet import SonnetInstructorInference
+from supertrainer.inferences.bert import BERTInference
 from supertrainer.utils.helpers import get_model_name
 
 
 class BertEvaluation(BaseEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
         self.config = self.postprocess_config(config)
-        self.inference = SonnetInstructorInference(self.config)
+        self.inference = BERTInference(self.config)
         self.dataset = dataset
 
     def postprocess_config(self, config: types.Config) -> types.Config:
@@ -44,7 +45,7 @@ class BertEvaluation(BaseEvaluation):
     def evaluate(self):
         logger.info(f"Starting {get_model_name(self.inference.model)} evaluation")
         results = []
-        for data in self.dataset:
+        for data in tqdm(self.dataset, desc=f"Evaluating {get_model_name(self.inference.model)}"):
             text = data["text"]
             true_label = data["labels"]
             predicted_label = self.inference.predict(text)
@@ -52,9 +53,7 @@ class BertEvaluation(BaseEvaluation):
                 {
                     "text": text,
                     "true_label": true_label,
-                    "predicted_label": self.config.dataset.class2id.get(
-                        predicted_label, "Unknown"
-                    ),
+                    "predicted_label": self.config.dataset.class2id.get(predicted_label, "Unknown"),
                 }
             )
         metrics = self.compute_metrics(results)
