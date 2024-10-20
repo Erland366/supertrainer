@@ -32,15 +32,15 @@ from huggingface_hub import HfApi, create_repo
 from transformers import BitsAndBytesConfig
 
 import wandb
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.utils import memory_stats
 
 
 class ABCTrainer(ABC):
     _model: "AutoModelForCausalLM" | "FastLanguageModel" | None = None  # noqa # type:ignore
     _tokenizer: "AutoTokenizer" | None = None  # noqa # type: ignore
-    config: types.Config
-    dataset: types.Dataset  # noqa # type: ignore
+    config: type_hinting.Config
+    dataset: type_hinting.Dataset  # noqa # type: ignore
 
     @abstractmethod
     def __init__(self) -> None:
@@ -61,19 +61,19 @@ class ABCTrainer(ABC):
         pass
 
     @abstractmethod
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
 
 class BaseTrainer(ABCTrainer):
-    def __init__(self, config: types.Config, dataset: types.Dataset) -> None:
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset) -> None:
         self.dataset = dataset
         self.config = config
 
     def train(self):
         raise NotImplementedError
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         # TODO: Move it from here since it's not modular enough
         with config.allow_modification():
             config.trainer.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -142,7 +142,7 @@ class BaseTrainer(ABCTrainer):
         raise NotImplementedError
 
     @staticmethod
-    def push_config_to_hf(config: types.Config) -> None:
+    def push_config_to_hf(config: type_hinting.Config) -> None:
         api = HfApi()
 
         # TODO: This is still error since many object can't be serialized
@@ -157,7 +157,7 @@ class BaseTrainer(ABCTrainer):
         logger.info(f"Config pushed to HuggingFace: {config.trainer.training_kwargs.hub_model_id}")
 
     @staticmethod
-    def push_config_to_wandb(config: types.Config) -> None:
+    def push_config_to_wandb(config: type_hinting.Config) -> None:
         import json
         import tempfile
 

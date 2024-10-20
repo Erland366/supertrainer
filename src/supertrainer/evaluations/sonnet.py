@@ -24,19 +24,19 @@ from typing import Any
 
 import evaluate
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.evaluations.base import BaseEvaluation
 from supertrainer.inferences.sonnet import SonnetInstructorInference
 from supertrainer.utils.helpers import get_model_name
 
 
 class SonnetEvaluation(BaseEvaluation):
-    def __init__(self, config: types.Config, dataset: types.Dataset):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
         self.config = self.postprocess_config(config)
         self.inference = SonnetInstructorInference(self.config)
         self.dataset = dataset
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         with config.allow_modification():
             config.inference = config.evaluation
         return config

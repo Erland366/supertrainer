@@ -25,16 +25,16 @@ from __future__ import annotations
 from transformers import TrainingArguments
 from trl import SFTTrainer
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.trainers.base_trainer import BaseTrainer
 
 
 class LLMTrainer(BaseTrainer):
-    def __init__(self, config: types.Config, dataset: types.Dataset) -> None:
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset) -> None:
         config = self.postprocess_config(config)
         super().__init__(config, dataset)
 
-    def postprocess_config(self, config: types.DictConfig) -> types.DictConfig:
+    def postprocess_config(self, config: type_hinting.DictConfig) -> type_hinting.DictConfig:
         # Change design of this since it's weird to keep call super in here
         # even though it's guarantee that we will always call the super
 

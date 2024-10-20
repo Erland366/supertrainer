@@ -20,13 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-from supertrainer import type_hinting
+from supertrainer import types
 from supertrainer.evaluations.bert import BertEvaluation
-from supertrainer.inferences.qwen import QwenOutlinesInference
+from supertrainer.inferences.gpt import GPTInstructorInference
 
 
-class QwenEvaluation(BertEvaluation):
-    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
+class GPTEvaluation(BertEvaluation):
+    def __init__(self, config: types.Config, dataset: types.Dataset):
         super().__init__(config, dataset)
-        self.inference = QwenOutlinesInference(self.config)
+        self.inference = GPTInstructorInference(self.config)

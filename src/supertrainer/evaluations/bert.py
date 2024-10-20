@@ -22,22 +22,22 @@
 
 from typing import Any
 
-import evaluate
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from tqdm import tqdm
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.evaluations.base import BaseEvaluation
 from supertrainer.inferences.bert import BERTInference
 from supertrainer.utils.helpers import get_model_name
 
 
 class BertEvaluation(BaseEvaluation):
-    def __init__(self, config: types.Config, dataset: types.Dataset):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
         self.config = self.postprocess_config(config)
         self.inference = BERTInference(self.config)
         self.dataset = dataset
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         with config.allow_modification():
             config.inference = config.evaluation
         return config
@@ -56,6 +56,7 @@ class BertEvaluation(BaseEvaluation):
                     "predicted_label": self.config.dataset.class2id.get(predicted_label, "Unknown"),
                 }
             )
+
         metrics = self.compute_metrics(results)
         logger.info(f"Evaluation metrics: {metrics}")
         return metrics
@@ -70,25 +71,14 @@ class BertEvaluation(BaseEvaluation):
         else:
             average_method = "micro"
 
-        accuracy_metric = evaluate.load("accuracy")
-        precision_metric = evaluate.load("precision")
-        recall_metric = evaluate.load("recall")
-        f1_metric = evaluate.load("f1")
-
-        accuracy = accuracy_metric.compute(predictions=predicted_labels, references=true_labels)
-        precision = precision_metric.compute(
-            predictions=predicted_labels, references=true_labels, average=average_method
-        )
-        recall = recall_metric.compute(
-            predictions=predicted_labels, references=true_labels, average=average_method
-        )
-        f1 = f1_metric.compute(
-            predictions=predicted_labels, references=true_labels, average=average_method
-        )
+        accuracy = accuracy_score(true_labels, predicted_labels)
+        precision = precision_score(true_labels, predicted_labels, average=average_method)
+        recall = recall_score(true_labels, predicted_labels, average=average_method)
+        f1 = f1_score(true_labels, predicted_labels, average=average_method)
 
         return {
-            "accuracy": accuracy["accuracy"],
-            "precision": precision["precision"],
-            "recall": recall["recall"],
-            "f1_score": f1["f1"],
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1_score": f1,
         }

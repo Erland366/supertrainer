@@ -32,7 +32,7 @@ from huggingface_hub import login
 
 import wandb
 
-from .. import types
+from .. import type_hinting
 from .logger import logger
 
 
@@ -74,7 +74,7 @@ def memory_stats():
 
 
 def find_max_tokens(
-    dataset_name_or_path: str | os.PathLike | types.Dataset,  # noqa: F821 # type: ignore
+    dataset_name_or_path: str | os.PathLike | type_hinting.Dataset,  # noqa: F821 # type: ignore
     tokenizer_name_or_path: str | os.PathLike,
     set: str = "train",
     is_chat_formatted: bool = False,
@@ -84,7 +84,7 @@ def find_max_tokens(
     Finds the maximum number of tokens in a dataset.
 
     Args:
-        dataset_name_or_path (str | os.PathLike | types.Dataset):
+        dataset_name_or_path (str | os.PathLike | type_hinting.Dataset):
             The name or path of the dataset, or a DatasetDict or Dataset object.
         tokenizer_name_or_path (str | os.PathLike): The name or path of the tokenizer.
         set (str, optional): The dataset split to use. Defaults to "train".
@@ -207,18 +207,18 @@ def clean_gpu_cache(model: Any | None = None):
 
 
 def split_train_test_validation(
-    dataset: types.Dataset, select_subset: int | float = 0
-) -> types.Dataset:
+    dataset: type_hinting.Dataset, select_subset: int | float = 0
+) -> type_hinting.Dataset:
     """
     Splits the dataset into train, validation, and test subsets.
     Args:
-        dataset (types.Dataset): The dataset to be split.
+        dataset (type_hinting.Dataset): The dataset to be split.
         select_subset (int | float, optional): The size of the subset to select.
             If float, it represents the percentage of the dataset to select.
             If int, it represents the number of samples to select.
             Defaults to 0, which means no subset will be selected.
     Returns:
-        types.Dataset: A DatasetDict containing the train, validation, and test subsets.
+        type_hinting.Dataset: A DatasetDict containing the train, validation, and test subsets.
     """
     from datasets import DatasetDict
 

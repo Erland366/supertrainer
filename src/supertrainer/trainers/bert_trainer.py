@@ -28,13 +28,13 @@ from transformers import (
     TrainingArguments,
 )
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.evaluations.classification import compute_metrics
 from supertrainer.trainers.base_trainer import BaseTrainer
 
 
 class BERTTrainer(BaseTrainer):
-    def __init__(self, config: types.Config, dataset: types.Dataset) -> None:
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset) -> None:
         config = self.postprocess_config(config)
         super().__init__(config, dataset)
 

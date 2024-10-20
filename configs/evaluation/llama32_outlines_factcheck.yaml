@@ -35,5 +35,5 @@ evaluation:
   inference_kwargs:
     max_new_tokens: 128
     use_cache: True
-    temperature: 1.5
+    temperature: 0.2
     min_p: 0.1

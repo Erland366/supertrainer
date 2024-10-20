@@ -2,7 +2,7 @@
 
 ## Overview
 
-Supertrainer is a unified repository for various trainers, inspired by projects like [Axolotl](https://github.com/axolotl-ai-cloud/axolotl), [Torchtune](https://github.com/pytorch/torchtune), and [Unsloth](https://github.com/unslothai/unsloth). It aims to provide a flexible and extensible framework for training, inferencing, and benchmarking different types of models (e.g., BERT, LLM, MLLM) using a configuration-driven approach.
+Supertrainer is a unified repository for various trainers, inspired by projects like [Axolotl](https://github.com/axolotl-ai-cloud/axolotl), [Torchtune](https://github.com/pytorch/torchtune), and [Unsloth](https://github.com/unslothai/unsloth). It aims to provide a flexible and extensible framework for training, inferencing, and benchmarking different type_hinting of models (e.g., BERT, LLM, MLLM) using a configuration-driven approach.
 
 ## Resources
 - For moondream training, my main resource of this is [this youtube channel](https://www.youtube.com/watch?v=5rH_VjKXuzg)
@@ -178,7 +178,7 @@ supertrainer/
    - How: Separate directories for different components (data, models, trainers, etc.).
 
 3. **Task-Specific Implementations**
-   - Why: Different model types (BERT, LLM, MLLM) have unique requirements.
+   - Why: Different model type_hinting (BERT, LLM, MLLM) have unique requirements.
    - How: Task-specific classes (e.g., `BERTInferencer`, `LLMTrainer`) inherit from base classes.
 
 4. **Flexible Inference Engines**
@@ -186,7 +186,7 @@ supertrainer/
    - How: Engine-specific configurations and implementations in `src/inference/engines/`.
 
 5. **Unified Benchmarking**
-   - Why: Consistent evaluation across different model types and inference engines.
+   - Why: Consistent evaluation across different model type_hinting and inference engines.
    - How: Common benchmarking interface with task-specific implementations.
 
 6. **Extensible Metrics**
@@ -207,9 +207,9 @@ supertrainer/
 
 ## Key Features
 
-- **Unified Interface**: Train, infer, and benchmark different model types using a consistent interface.
+- **Unified Interface**: Train, infer, and benchmark different model type_hinting using a consistent interface.
 - **Configurability**: Easily switch between models, datasets, and training/inference settings using YAML configs.
-- **Extensibility**: Add new model types, inference engines, or metrics with minimal changes to existing code.
+- **Extensibility**: Add new model type_hinting, inference engines, or metrics with minimal changes to existing code.
 - **Reproducibility**: Experiments can be easily reproduced by sharing configuration files.
 - **Performance Optimization**: Support for various inference engines allows for optimized deployment.
 

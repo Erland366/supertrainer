@@ -26,12 +26,12 @@ import torch
 from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.inferences.base import BaseInference
 
 
 class LLMInference(BaseInference):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         super().__init__(config)
 
     def load_model(self) -> AutoModelForCausalLM:
