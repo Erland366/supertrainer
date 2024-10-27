@@ -22,7 +22,10 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 import torch
+from pydantic import BaseModel, Field
 
 from supertrainer import types
 from supertrainer.inferences.base import BaseInference, BaseOutlinesInference
@@ -41,7 +44,7 @@ class LlamaInference(BaseInference):
     def postprocess_config(self, config: types.Config) -> types.Config:
         return config
 
-    def load_model(self) -> "FastLanguageModel": # type: ignore # noqa: F821
+    def load_model(self) -> "FastLanguageModel":  # type: ignore # noqa: F821
         if self._buffer_model is None or self._buffer_tokenizer is None:
             from unsloth import FastLanguageModel, get_chat_template
 
@@ -55,7 +58,7 @@ class LlamaInference(BaseInference):
             self._buffer_tokenizer = tokenizer
         return self._buffer_model
 
-    def load_tokenizer(self) -> "FastLanguageModel": # type: ignore # noqa: F821
+    def load_tokenizer(self) -> "FastLanguageModel":  # type: ignore # noqa: F821
         if self._buffer_model is None or self._buffer_tokenizer is None:
             from unsloth import FastLanguageModel, get_chat_template
 
@@ -127,7 +130,7 @@ class LlamaOutlinesInference(BaseOutlinesInference):
         return self._buffer_model
 
     def load_tokenizer(self):
-        return True # so it's not None
+        return True  # so it's not None
 
     def preprocess(self, text: str) -> str:
         return text
@@ -140,10 +143,13 @@ class LlamaOutlinesInference(BaseOutlinesInference):
 
         prompt = self.preprocess(text)
 
+        class ClassificationResponse(BaseModel):
+            classes: Literal[tuple(self.config.inference.classes)]
+            reasoning: str = Field(
+                ..., description="The reasoning of why the model made the prediction of the class."
+            )
 
-        classes: list[str] = self.config.inference.classes
-
-        generator = outlines.generate.choice(self.model, classes)
+        generator = outlines.generate.json(self.model, ClassificationResponse)
 
         answer = generator(prompt)
 

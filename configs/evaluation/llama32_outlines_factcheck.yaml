@@ -7,8 +7,8 @@ defaults:
 dataset:
   class_name: supertrainer.data.fact_checking.FactCheckingLlamaEvaluationDataset
   dataset_kwargs:
-    path: ./assets_local/formatted_dataset
-  tokenizer_name_or_path: ${evaluation.model_name}
+    path: Erland/fake_news_detection_dataset_cross_lingual_formatted
+  tokenizer_name_or_path: ${evaluation.model_kwargs.model_name}
 
 evaluation:
   system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"

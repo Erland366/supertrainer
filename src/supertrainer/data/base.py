@@ -93,7 +93,7 @@ class BaseDataset(ABCDataset):
     @property
     def dataset(self) -> Dataset | DatasetDict:
         if self._dataset is None:
-            self._dataset = load_dataset_plus_plus(path=self.config.dataset.dataset_kwargs.path)
+            self._dataset = load_dataset_plus_plus(**self.config.dataset.dataset_kwargs)
         return self._dataset
 
     @staticmethod

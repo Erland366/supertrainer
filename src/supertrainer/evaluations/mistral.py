@@ -22,11 +22,11 @@
 
 
 from supertrainer import types
-from supertrainer.evaluations.bert import BertEvaluation
+from supertrainer.evaluations.llama import LlamaEvaluation
 from supertrainer.inferences.mistral import MistralOutlinesInference
 
 
-class MistralEvaluation(BertEvaluation):
+class MistralEvaluation(LlamaEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
         super().__init__(config, dataset)
         self.inference = MistralOutlinesInference(self.config)

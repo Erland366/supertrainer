@@ -99,17 +99,21 @@ class SonnetInstructorInference(BaseInferenceProprietary):
         return messages
 
     def postprocess(self, outputs: dict[str, str]) -> str:
-        return outputs.label
+        return outputs
 
     def predict(self, text: str) -> str:
         inputs = self.preprocess(text)
 
         from typing import Literal
 
-        from pydantic import BaseModel
+        from pydantic import BaseModel, Field
 
         class ClassificationResponse(BaseModel):
-            label: Literal[tuple(self.config.inference.classes)]
+            classes: Literal[tuple(self.config.inference.classes)]
+            reasoning: str = Field(
+                ...,
+                description="The reasoning of why the model made the prediction of the class.",
+            )
 
         outputs = self.model(messages=inputs, response_model=ClassificationResponse)
         return self.postprocess(outputs)
@@ -118,7 +122,7 @@ class SonnetInstructorInference(BaseInferenceProprietary):
         from typing import Literal
 
         from instructor.batch import BatchJob
-        from pydantic import BaseModel
+        from pydantic import BaseModel, Field
 
         batch_input_file_path = os.path.join(
             os.environ["SUPERTRAINER_ROOT"], "dataset", f"{self.config.inference.batch_name}.jsonl"
@@ -154,7 +158,11 @@ class SonnetInstructorInference(BaseInferenceProprietary):
                     ]
 
             class ClassificationResponse(BaseModel):
-                label: Literal[tuple(self.config.inference.classes)]
+                classes: Literal[tuple(self.config.inference.classes)]
+                reasoning: str = Field(
+                    ...,
+                    description="The reasoning of why the model made the prediction of the class.",
+                )
 
             BatchJob.create_from_messages(
                 messages_batch=get_messages(dataset),

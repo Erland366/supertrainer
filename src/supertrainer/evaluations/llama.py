@@ -20,13 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from tqdm import tqdm
 
-from supertrainer import types
+from supertrainer import logger, types
 from supertrainer.evaluations.bert import BertEvaluation
 from supertrainer.inferences.llama import LlamaOutlinesInference
+from supertrainer.utils.helpers import get_model_name
 
 
 class LlamaEvaluation(BertEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
         super().__init__(config, dataset)
         self.inference = LlamaOutlinesInference(self.config)
+
+    def evaluate(self):
+        logger.info(f"Starting {get_model_name(self.inference.model)} evaluation")
+        results = []
+        for data in tqdm(self.dataset, desc=f"Evaluating {get_model_name(self.inference.model)}"):
+            text = data["text"]
+            true_label = data["labels"]
+            predicted_label = self.inference.predict(text)
+            results.append(
+                {
+                    "text": text,
+                    "true_label": self.config.dataset.id2class.get(true_label, "Unknown"),
+                    "predicted_label": predicted_label.classes,
+                    "reasoning": predicted_label.reasoning,
+                }
+            )
+        metrics = self.compute_metrics(results)
+        logger.info(f"Evaluation metrics: {metrics}")
+
+        self.save_results(results, metrics)
+        return metrics

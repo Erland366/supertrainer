@@ -22,11 +22,11 @@
 
 
 from supertrainer import types
-from supertrainer.evaluations.bert import BertEvaluation
+from supertrainer.evaluations.llama import LlamaEvaluation
 from supertrainer.inferences.qwen import QwenOutlinesInference
 
 
-class QwenEvaluation(BertEvaluation):
+class QwenEvaluation(LlamaEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
         super().__init__(config, dataset)
         self.inference = QwenOutlinesInference(self.config)
