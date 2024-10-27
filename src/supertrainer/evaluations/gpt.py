@@ -27,5 +27,5 @@ from supertrainer.inferences.gpt import GPTInstructorInference
 
 class GPTEvaluation(LlamaEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
-        self.config = self.postprocess_config(config)
+        super.__init__(config, dataset)
         self.inference = GPTInstructorInference(self.config)

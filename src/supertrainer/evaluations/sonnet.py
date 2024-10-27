@@ -28,5 +28,5 @@ from supertrainer.inferences.sonnet import SonnetInstructorInference
 
 class SonnetEvaluation(LlamaEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
-        self.config = self.postprocess_config(config)
+        super().__init__(config, dataset)
         self.inference = SonnetInstructorInference(self.config)
