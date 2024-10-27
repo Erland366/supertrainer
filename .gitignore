@@ -177,3 +177,5 @@ hydra_outputs/
 assets_local/
 
 code_output.txt
+
+_unsloth_sentencepiece_temp/

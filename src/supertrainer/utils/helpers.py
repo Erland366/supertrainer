@@ -344,7 +344,7 @@ def get_model_name(model: Any) -> str:
         name = model.__class__.__name__
     return name
 
-def load_dataset_plus_plus(path: str) -> "Dataset": # noqa: F821 # type: ignore
+def load_dataset_plus_plus(*args, **kwargs) -> "Dataset": # noqa: F821 # type: ignore
     """
     Load a dataset from the specified path.
 
@@ -366,13 +366,17 @@ def load_dataset_plus_plus(path: str) -> "Dataset": # noqa: F821 # type: ignore
     from datasets import Dataset, load_dataset
 
     try:
-        dataset = load_dataset(path=path)
+        dataset = load_dataset(*args, **kwargs)
     except ValueError as e:
         if str(e) == (
             "You are trying to load a dataset that was saved using "
             "`save_to_disk`. Please use `load_from_disk` instead."
         ):
-            dataset = Dataset.load_from_disk(dataset_path=path)
+            # take path from args or kwargs
+            # if path is provided, put it as dataset_path instead
+            if kwargs.get("path"):
+                kwargs["dataset_path"] = kwargs.pop("path")
+            dataset = Dataset.load_from_disk(*args, **kwargs)
         else:
             raise e
     return dataset

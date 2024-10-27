@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from supertrainer.inferences.bert import BERTInference
+from supertrainer.inferences.bert import BertInference
 
 
-class XLMRInference(BERTInference):
+class XLMRInference(BertInference):
     # Generally, everything is able to be used on the parent class without modification here
     pass

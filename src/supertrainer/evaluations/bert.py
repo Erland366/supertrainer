@@ -19,22 +19,24 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import json
+import os
+from datetime import datetime
 from typing import Any
 
-import evaluate
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from tqdm import tqdm
 
-from supertrainer import logger, types
+from supertrainer import SUPERTRAINER_PUBLIC_ROOT, logger, types
 from supertrainer.evaluations.base import BaseEvaluation
-from supertrainer.inferences.bert import BERTInference
+from supertrainer.inferences.bert import BertInference
 from supertrainer.utils.helpers import get_model_name
 
 
 class BertEvaluation(BaseEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
         self.config = self.postprocess_config(config)
-        self.inference = BERTInference(self.config)
+        self.inference = BertInference(self.config)
         self.dataset = dataset
 
     def postprocess_config(self, config: types.Config) -> types.Config:
@@ -58,37 +60,72 @@ class BertEvaluation(BaseEvaluation):
             )
         metrics = self.compute_metrics(results)
         logger.info(f"Evaluation metrics: {metrics}")
+
+        self.save_results(results, metrics)
         return metrics
 
     def compute_metrics(self, results: dict[str, Any]) -> dict[str, Any]:
         true_labels = [result["true_label"] for result in results]
         predicted_labels = [result["predicted_label"] for result in results]
 
-        num_classes = len(self.config.evaluation.classes)
+        # Get the list of classes from the configuration
+        classes = self.config.evaluation.classes
+
+        num_classes = len(classes)
         if num_classes == 2:
-            average_method = None
+            average_method = "binary"
+            # Set the positive class label (assuming the second class is positive)
+            pos_label = classes[1]
         else:
             average_method = "micro"
+            pos_label = None  # Not needed for multiclass when using 'micro' average
 
-        accuracy_metric = evaluate.load("accuracy")
-        precision_metric = evaluate.load("precision")
-        recall_metric = evaluate.load("recall")
-        f1_metric = evaluate.load("f1")
-
-        accuracy = accuracy_metric.compute(predictions=predicted_labels, references=true_labels)
-        precision = precision_metric.compute(
-            predictions=predicted_labels, references=true_labels, average=average_method
-        )
-        recall = recall_metric.compute(
-            predictions=predicted_labels, references=true_labels, average=average_method
-        )
-        f1 = f1_metric.compute(
-            predictions=predicted_labels, references=true_labels, average=average_method
-        )
+        # Compute metrics using scikit-learn
+        accuracy = accuracy_score(true_labels, predicted_labels)
+        if average_method == "binary":
+            precision = precision_score(true_labels, predicted_labels, pos_label=pos_label)
+            recall = recall_score(true_labels, predicted_labels, pos_label=pos_label)
+            f1 = f1_score(true_labels, predicted_labels, pos_label=pos_label)
+        else:
+            precision = precision_score(
+                true_labels, predicted_labels, average=average_method, labels=classes
+            )
+            recall = recall_score(
+                true_labels, predicted_labels, average=average_method, labels=classes
+            )
+            f1 = f1_score(true_labels, predicted_labels, average=average_method, labels=classes)
 
         return {
-            "accuracy": accuracy["accuracy"],
-            "precision": precision["precision"],
-            "recall": recall["recall"],
-            "f1_score": f1["f1"],
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1_score": f1,
         }
+
+    def save_results(self, results: list[dict[str, Any]], metrics: dict[str, Any]):
+        dataset_path = self.config.dataset.dataset_kwargs.path
+        dataset_name = dataset_path.split("/")[-1]
+
+        subset_name = self.config.dataset.dataset_kwargs.get("split", "")
+        if subset_name:
+            dataset_name += f"_{subset_name}"
+
+        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        folder_name = f"{dataset_name}_{current_time}"
+
+        public_root = os.environ[SUPERTRAINER_PUBLIC_ROOT]
+
+        output_folder = os.path.join(public_root, folder_name)
+
+        os.makedirs(output_folder, exist_ok=True)
+
+        results_file = os.path.join(output_folder, "results.json")
+        with open(results_file, "w") as f:
+            json.dump(results, f, indent=4)
+
+        metrics_file = os.path.join(output_folder, "metrics.json")
+        with open(metrics_file, "w") as f:
+            json.dump(metrics, f, indent=4)
+
+        logger.info(f"Results saved to {results_file}")
+        logger.info(f"Metrics saved to {metrics_file}")

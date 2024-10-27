@@ -7,7 +7,8 @@ defaults:
 dataset:
   class_name: supertrainer.data.fact_checking.FactCheckingMistralEvaluationDataset
   dataset_kwargs:
-    path: "assets_local/subset_dataset"
+    path: ./assets_local/formatted_dataset
+  tokenizer_name_or_path: ${evaluation.model_name}
 
 evaluation:
   system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"

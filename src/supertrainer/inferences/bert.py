@@ -28,7 +28,7 @@ from supertrainer.inferences.base import BaseInference
 from supertrainer.utils.helpers import get_model_name
 
 
-class BERTInference(BaseInference):
+class BertInference(BaseInference):
     def __init__(self, config: types.Config) -> None:
         super().__init__(config)
 

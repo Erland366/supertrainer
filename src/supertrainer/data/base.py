@@ -109,7 +109,7 @@ class BaseDataset(ABCDataset):
     def tokenizer(self) -> AutoTokenizer:
         if self._tokenizer is None:
             self._tokenizer = AutoTokenizer.from_pretrained(
-                self.config.dataset.dataset_kwargs.tokenizer_name_or_path
+                self.config.dataset.tokenizer_name_or_path
             )
         return self._tokenizer
 
