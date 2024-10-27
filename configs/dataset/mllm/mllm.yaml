@@ -1,0 +1,6 @@
+class_name: supertrainer.data.mllm.MLLMDataset
+image_col: "image"
+assistant_col: "caption"
+
+dataset_kwargs:
+  path: "Trelis/chess_pieces"

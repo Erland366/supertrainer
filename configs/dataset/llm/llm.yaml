@@ -1,0 +1,5 @@
+class_name: supertrainer.data.llm.ConversationLLMDataset
+
+dataset_kwargs:
+  path: Erland/llm_sample_dataset
+  tokenizer_name_or_path: unsloth/Meta-Llama-3.1-8B-Instruct

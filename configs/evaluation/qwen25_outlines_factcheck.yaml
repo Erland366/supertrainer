@@ -1,0 +1,39 @@
+# @package _global_
+
+defaults:
+  - /trainer/common/model_kwargs@evaluation.model_kwargs: sdpa
+  - /dataset: llm/fact_checking
+
+dataset:
+  class_name: supertrainer.data.fact_checking.FactCheckingQwenEvaluationDataset
+    path: ./assets_local/formatted_dataset
+  tokenizer_name_or_path: ${evaluation.model_name}
+
+evaluation:
+  system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"
+
+  class_name: supertrainer.evaluations.qwen.QwenEvaluation
+  classes:
+    - REFUTES
+    - SUPPORTS
+    - NOT_ENOUGH_INFO
+
+  batch_name: "qwen_factcheck"
+  batch_dataset: "assets_local/subset_dataset"
+  # batch_kwargs:
+  #   endpoint: "/v1/chat/completions"
+  #   completion_window: 24h
+  #   metadata:
+  #     description: "Sonnet fact-checking"
+
+  model_kwargs:
+    model_name: unsloth/Qwen2.5-7B-bnb-4bit
+    max_seq_length: 2048
+    dtype:
+    load_in_4bit: True
+
+  inference_kwargs:
+    max_new_tokens: 128
+    use_cache: True
+    temperature: 1.5
+    min_p: 0.1

@@ -1,0 +1,45 @@
+# @package _global_
+
+defaults:
+  - /trainer: bert/bert_kwargs
+  - /dataset: bert/bert
+  - override /trainer/common/model_kwargs@trainer.model_kwargs: eager
+
+trainer:
+  model_name: markussagen/xlm-roberta-longformer-base-4096
+  training_kwargs:
+    hub_model_id: "masa-research/longformer-preskripsi"
+    per_device_train_batch_size: 8
+    gradient_accumulation_steps: 8
+    auto_find_batch_size: False
+    logging_steps: 1
+    eval_steps: 0.1
+    save_steps: 0.2
+    num_train_epochs: 10
+    warmup_steps: 10 # dari kecil
+    learning_rate: 0.0003
+    output_dir: "./assets_local/longformer/outputs"
+  peft_kwargs:
+    r: 128 # minimum 64
+    lora_alpha: 256 # ganti 2x r
+  bitsandbytes_kwargs:
+    llm_int8_skip_modules:
+      - classifier
+
+dataset:
+  dataset_kwargs:
+    tokenizer_name_or_path: ${trainer.model_name}
+    path: masa-research/news_absa_v2_annotated_with_token_usage
+    is_prepared: false
+
+    # path: masa-research/news_absa_v2_annotated_with_token_usage__prepared__longformer_202410041600
+    # is_prepared: true
+
+    # path: masa-research/absa_news__1.5k__20240923_154258
+    # is_prepared: false
+
+# TODO: Find better place to put this
+postprocess_config:
+  class_name: supertrainer.postprocess_config.bert.BERTPostprocessConfig
+
+wandb_project: "preskripsi"

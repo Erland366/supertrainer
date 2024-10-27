@@ -1,0 +1,9 @@
+# @package _global_
+
+defaults:
+  - /trainer: bert/bert_kwargs
+  - /dataset: bert/bert
+
+# TODO: Find better place to put this
+postprocess_config:
+  class_name: supertrainer.postprocess_config.bert.BERTPostprocessConfig
