@@ -29,7 +29,7 @@ evaluations=(
     "qwen25_outlines_factcheck"
     "mistral03_outlines_factcheck"
     "llama32_outlines_factcheck"
-    # "gemma2_outlines_factcheck"
+    "gemma2_outlines_factcheck"
     "arabicbert_factcheck"
     "mbertuncased_factcheck"
     "indobertuncased_factcheck"
