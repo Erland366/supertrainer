@@ -49,6 +49,9 @@ def login_wandb(environ_name: str = "WANDB_API_KEY", token: str | None = None):
         logger.debug(f"Use token from environment variable {environ_name}")
     wandb.login(key=token)
 
+def set_global_seed(seed: int=42):
+    from transformers import set_seed
+    set_seed(seed)
 
 def is_flash_attention_available() -> bool:
     import importlib
