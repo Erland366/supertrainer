@@ -7,11 +7,12 @@ defaults:
 dataset:
   class_name: supertrainer.data.fact_checking.FactCheckingSonnetEvaluationDataset
   dataset_kwargs:
-    path: ./assets_local/formatted_dataset
-  tokenizer_name_or_path: ${evaluation.model_name}
+    path: Erland/fake_news_detection_dataset_cross_lingual_formatted
+  # tokenizer_name_or_path: ${evaluation.model_name}
 
 evaluation:
   system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"
+  model_name: "${evaluation.client_kwargs.model}"
 
   class_name: supertrainer.evaluations.sonnet.SonnetEvaluation
   classes:
@@ -19,16 +20,16 @@ evaluation:
     - SUPPORTS
     - NOT_ENOUGH_INFO
 
-  batch_name: "sonnet_factcheck"
-  batch_dataset: "assets_local/subset_dataset"
-  batch_kwargs:
-    endpoint: "/v1/chat/completions"
-    completion_window: 24h
-    metadata:
-      description: "Sonnet fact-checking"
+  # batch_name: "sonnet_factcheck"
+  # batch_dataset: "assets_local/subset_dataset"
+  # batch_kwargs:
+  #   endpoint: "/v1/chat/completions"
+  #   completion_window: 24h
+  #   metadata:
+  #     description: "Sonnet fact-checking"
 
   client_kwargs:
     model: "claude-3-5-sonnet-20240620"
-    max_tokens: 64
+    max_tokens: 1024
     temperature: 0.8
     top_p: 1

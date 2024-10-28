@@ -20,13 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 from supertrainer import types
 from supertrainer.evaluations.llama import LlamaEvaluation
-from supertrainer.inferences.gemma import GemmaOutlinesInference
+from supertrainer.inferences.gpt import GPTInstructorInference
 
 
-class GemmaEvaluation(LlamaEvaluation):
+class GPTEvaluation(LlamaEvaluation):
     def __init__(self, config: types.Config, dataset: types.Dataset):
-        super().__init__(config, dataset)
-        self.inference = GemmaOutlinesInference(self.config)
+        super.__init__(config, dataset)
+        self.inference = GPTInstructorInference(self.config)

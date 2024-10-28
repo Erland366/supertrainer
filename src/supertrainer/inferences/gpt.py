@@ -26,7 +26,7 @@ import json
 import os
 import subprocess
 from functools import partial
-from typing import Any
+from typing import Any, Literal
 
 from openai import OpenAI
 
@@ -145,7 +145,7 @@ class GPTInference(BaseInferenceProprietary):
     def create_batch_request(self, file_path: str):
         # TODO: We still need to use self.client, whereas I want to use self.model instead
         # Thinking of splitting the class here .-.
-        self.load_model() # For loading the self.client
+        self.load_model()  # For loading the self.client
         batch_input_file = self.client.files.create(file=open(file_path, "rb"), purpose="batch")
         batch_input_file_id = batch_input_file.id
 
@@ -158,13 +158,13 @@ class GPTInference(BaseInferenceProprietary):
     def check_batch_status(self, batch_id: str):
         # TODO: We still need to use self.client, whereas I want to use self.model instead
         # Thinking of splitting the class here .-.
-        self.load_model() # For loading the self.client
+        self.load_model()  # For loading the self.client
         return self.client.batches.retrieve(batch_id)
 
     def download_batch_output(self, output_file_id: str, output_path: str):
         # TODO: We still need to use self.client, whereas I want to use self.model instead
         # Thinking of splitting the class here .-.
-        self.load_model() # For loading the self.client
+        self.load_model()  # For loading the self.client
         file_response = self.client.files.content(output_file_id)
         with open(output_path, "w") as output_file:
             output_file.write(file_response.text)
@@ -172,8 +172,9 @@ class GPTInference(BaseInferenceProprietary):
     def cancel_batch(self, batch_id: str):
         # TODO: We still need to use self.client, whereas I want to use self.model instead
         # Thinking of splitting the class here .-.
-        self.load_model() # For loading the self.client
+        self.load_model()  # For loading the self.client
         self.client.batches.cancel(batch_id)
+
 
 class GPTInstructorInference(BaseInferenceProprietary):
     def __init__(self, config: types.Config) -> None:
@@ -207,26 +208,26 @@ class GPTInstructorInference(BaseInferenceProprietary):
         return messages
 
     def postprocess(self, outputs: dict[str, str]) -> str:
-        return outputs.label
+        return outputs
 
     def predict(self, text: str) -> str:
         inputs = self.preprocess(text)
 
-        from typing import Literal
-
-        from pydantic import BaseModel
+        from pydantic import BaseModel, Field
 
         class ClassificationResponse(BaseModel):
-            label: Literal[tuple(self.config.inference.classes)]
+            classes: Literal[tuple(self.config.inference.classes)]
+            reasoning: str = Field(
+                ...,
+                description="The reasoning of why the model made the prediction of the class.",
+            )
 
         outputs = self.model(messages=inputs, response_model=ClassificationResponse)
         return self.postprocess(outputs)
 
-    def batch_predict(self, dataset: "Dataset") -> str: # type: ignore # noqa: F821
-        from typing import Literal
-
+    def batch_predict(self, dataset: "Dataset") -> str:  # type: ignore # noqa: F821
         from instructor.batch import BatchJob
-        from pydantic import BaseModel
+        from pydantic import BaseModel, Field
 
         batch_input_file_path = os.path.join(
             os.environ["SUPERTRAINER_ROOT"], "dataset", f"{self.config.inference.batch_name}.jsonl"
@@ -253,6 +254,7 @@ class GPTInstructorInference(BaseInferenceProprietary):
                 return f"Batch status: {batch_status.status}"
 
         if not os.path.exists(batch_input_file_path):
+
             def get_messages(dataset):
                 for row in dataset:
                     yield [
@@ -261,7 +263,11 @@ class GPTInstructorInference(BaseInferenceProprietary):
                     ]
 
             class ClassificationResponse(BaseModel):
-                label: Literal[tuple(self.config.inference.classes)]
+                classes: Literal[tuple(self.config.inference.classes)]
+                reasoning: str = Field(
+                    ...,
+                    description="The reasoning of why the model made the prediction of the class.",
+                )
 
             BatchJob.create_from_messages(
                 messages_batch=get_messages(dataset),
@@ -273,13 +279,12 @@ class GPTInstructorInference(BaseInferenceProprietary):
             logger.info(f"Batch input file saved to {batch_input_file_path}")
 
         # Create batch request using subprocess
-        subprocess.run([
-            "instructor", "batch", "create-from-file",
-            "--file-path", batch_input_file_path
-        ], check=True)
+        subprocess.run(
+            ["instructor", "batch", "create-from-file", "--file-path", batch_input_file_path],
+            check=True,
+        )
 
         return f"Batch request created with file path: {batch_input_file_path}"
-
 
     def generate_chat_requests(
         self, messages: list[str], system_prompt: str, client_kwargs: dict
@@ -312,19 +317,22 @@ class GPTInstructorInference(BaseInferenceProprietary):
         return "\n".join(output_lines)
 
     def create_batch_request(self, file_path: str):
-        subprocess.run([
-            "instructor", "batch", "create-from-file",
-            "--file-path", file_path
-        ], check=True)
+        subprocess.run(
+            ["instructor", "batch", "create-from-file", "--file-path", file_path], check=True
+        )
 
         logger.info(f"Batch request created with file path: {file_path}")
         return f"Batch request created with file path: {file_path}"
 
     def check_batch_status(self, batch_id: str) -> str:
         import re
-        result = subprocess.run([
-            "instructor", "batch", "list", "--limit", "9"
-        ], check=True, capture_output=True, text=True)
+
+        result = subprocess.run(
+            ["instructor", "batch", "list", "--limit", "9"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
         batch_info_pattern = re.compile(rf"{batch_id}\s+\|\s+\S+\s+\|\s+(\w+)\s+\|")
         match = batch_info_pattern.search(result.stdout)
@@ -334,16 +342,20 @@ class GPTInstructorInference(BaseInferenceProprietary):
             return "Batch ID not found"
 
     def cancel_batch(self, batch_id: str):
-        subprocess.run([
-            "instructor", "batch", "cancel",
-            "--batch-id", batch_id
-        ], check=True)
+        subprocess.run(["instructor", "batch", "cancel", "--batch-id", batch_id], check=True)
         logger.info(f"Batch {batch_id} is cancelled")
 
     def download_batch_output(self, batch_id: str, output_path: str):
-        subprocess.run([
-            "instructor", "batch", "download-file",
-            "--download-file-path", output_path,
-            "--batch-id", batch_id
-        ], check=True)
+        subprocess.run(
+            [
+                "instructor",
+                "batch",
+                "download-file",
+                "--download-file-path",
+                output_path,
+                "--batch-id",
+                batch_id,
+            ],
+            check=True,
+        )
         logger.info(f"Batch output saved to {output_path}")

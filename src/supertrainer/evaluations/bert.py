@@ -54,8 +54,8 @@ class BertEvaluation(BaseEvaluation):
             results.append(
                 {
                     "text": text,
-                    "true_label": true_label,
-                    "predicted_label": self.config.dataset.class2id.get(predicted_label, "Unknown"),
+                    "true_label": self.config.dataset.id2class.get(true_label, "Unknown"),
+                    "predicted_label": predicted_label,
                 }
             )
         metrics = self.compute_metrics(results)
@@ -68,32 +68,47 @@ class BertEvaluation(BaseEvaluation):
         true_labels = [result["true_label"] for result in results]
         predicted_labels = [result["predicted_label"] for result in results]
 
-        # Get the list of classes from the configuration
         classes = self.config.evaluation.classes
 
         num_classes = len(classes)
         if num_classes == 2:
             average_method = "binary"
-            # Set the positive class label (assuming the second class is positive)
             pos_label = classes[1]
         else:
-            average_method = "micro"
-            pos_label = None  # Not needed for multiclass when using 'micro' average
+            average_method = "macro"
+            pos_label = None
 
-        # Compute metrics using scikit-learn
         accuracy = accuracy_score(true_labels, predicted_labels)
         if average_method == "binary":
-            precision = precision_score(true_labels, predicted_labels, pos_label=pos_label)
-            recall = recall_score(true_labels, predicted_labels, pos_label=pos_label)
-            f1 = f1_score(true_labels, predicted_labels, pos_label=pos_label)
-        else:
             precision = precision_score(
-                true_labels, predicted_labels, average=average_method, labels=classes
+                true_labels, predicted_labels, pos_label=pos_label, zero_division=0
             )
             recall = recall_score(
-                true_labels, predicted_labels, average=average_method, labels=classes
+                true_labels, predicted_labels, pos_label=pos_label, zero_division=0
             )
-            f1 = f1_score(true_labels, predicted_labels, average=average_method, labels=classes)
+            f1 = f1_score(true_labels, predicted_labels, pos_label=pos_label, zero_division=0)
+        else:
+            precision = precision_score(
+                true_labels,
+                predicted_labels,
+                average=average_method,
+                labels=classes,
+                zero_division=0,
+            )
+            recall = recall_score(
+                true_labels,
+                predicted_labels,
+                average=average_method,
+                labels=classes,
+                zero_division=0,
+            )
+            f1 = f1_score(
+                true_labels,
+                predicted_labels,
+                average=average_method,
+                labels=classes,
+                zero_division=0,
+            )
 
         return {
             "accuracy": accuracy,
@@ -108,10 +123,13 @@ class BertEvaluation(BaseEvaluation):
 
         subset_name = self.config.dataset.dataset_kwargs.get("split", "")
         if subset_name:
-            dataset_name += f"_{subset_name}"
+            dataset_name += f"-{subset_name}"
 
         current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-        folder_name = f"{dataset_name}_{current_time}"
+        folder_name = f"{dataset_name}-{current_time}"
+
+        model_name = (self.config.evaluation.model_name).split("/")[-1]
+        folder_name += f"-{model_name}"
 
         public_root = os.environ[SUPERTRAINER_PUBLIC_ROOT]
 

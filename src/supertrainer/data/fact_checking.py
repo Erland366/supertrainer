@@ -105,6 +105,11 @@ class FactCheckingSonnetEvaluationDataset(FactCheckingBERTEvaluationDataset):
     # Should be the same here
     pass
 
+class FactCheckingGPTEvaluationDataset(FactCheckingBERTEvaluationDataset):
+    # This dataset is used for the Sonnet model
+    # Should be the same here
+    pass
+
 
 class FactCheckingGemmaEvaluationDataset(FactCheckingBERTEvaluationDataset):
     # This dataset is used for the Gemma model

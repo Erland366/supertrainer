@@ -11,7 +11,7 @@ evaluation:
     - SUPPORTS
     - NOT_ENOUGH_INFO
 
-  model_name: asafaya/bert-base-arabic
+  model_name: indolem/indobert-base-uncased
 
 dataset:
   class_name: supertrainer.data.fact_checking.FactCheckingBERTEvaluationDataset
