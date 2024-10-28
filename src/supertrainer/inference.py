@@ -29,7 +29,7 @@ from dotenv import load_dotenv
 from omegaconf import DictConfig, OmegaConf
 
 from supertrainer import StrictDict, logger
-from supertrainer.utils import import_class, login_hf, memory_stats
+from supertrainer.utils import import_class, login_hf, memory_stats, set_global_seed
 from supertrainer.utils.helpers import load_dataset_plus_plus
 
 load_dotenv()
@@ -47,6 +47,7 @@ def main(cfg: DictConfig):
     cfg = StrictDict(OmegaConf.to_container(cfg, resolve=True))
     login_hf()
     memory_stats()
+    set_global_seed()
 
     inference = import_class(cfg.inference.class_name)(cfg)
     if cfg.get("batch", False):

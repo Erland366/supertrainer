@@ -29,7 +29,7 @@ from omegaconf import DictConfig, OmegaConf
 
 import wandb
 from supertrainer import StrictDict, logger
-from supertrainer.utils import import_class, login_hf, login_wandb, memory_stats
+from supertrainer.utils import import_class, login_hf, login_wandb, memory_stats, set_global_seed
 
 load_dotenv()
 
@@ -47,6 +47,7 @@ def main(cfg: DictConfig):
     login_hf()
     login_wandb()
     memory_stats()
+    set_global_seed()
 
     os.environ["WANDB_PROJECT"] = cfg.wandb_project
 
