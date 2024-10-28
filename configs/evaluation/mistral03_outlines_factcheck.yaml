@@ -12,6 +12,7 @@ dataset:
 
 evaluation:
   system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"
+  model_name: "${evaluation.model_kwargs.model_name}"
 
   class_name: supertrainer.evaluations.mistral.MistralEvaluation
   classes:

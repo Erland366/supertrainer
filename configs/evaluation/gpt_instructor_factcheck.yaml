@@ -12,6 +12,7 @@ dataset:
 
 evaluation:
   system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"
+  model_name: "${evaluation.client_kwargs.model}"
 
   class_name: supertrainer.evaluations.gpt.GPTEvaluation
   classes:

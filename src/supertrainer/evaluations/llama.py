@@ -45,7 +45,7 @@ class LlamaEvaluation(BertEvaluation):
                     "text": text,
                     "true_label": self.config.dataset.id2class.get(true_label, "Unknown"),
                     "predicted_label": predicted_label.classes,
-                    "reasoning": predicted_label.reasoning,
+                    # "reasoning": predicted_label.reasoning,
                 }
             )
         metrics = self.compute_metrics(results)

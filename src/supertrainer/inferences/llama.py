@@ -25,7 +25,7 @@ from __future__ import annotations
 from typing import Literal
 
 import torch
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from supertrainer import types
 from supertrainer.inferences.base import BaseInference, BaseOutlinesInference
@@ -145,9 +145,9 @@ class LlamaOutlinesInference(BaseOutlinesInference):
 
         class ClassificationResponse(BaseModel):
             classes: Literal[tuple(self.config.inference.classes)]
-            reasoning: str = Field(
-                ..., description="The reasoning of why the model made the prediction of the class."
-            )
+            # reasoning: str = Field(
+            #    ..., description="The reasoning of why the model made the prediction of the class."
+            # )
 
         generator = outlines.generate.json(self.model, ClassificationResponse)
 

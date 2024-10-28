@@ -128,8 +128,8 @@ class BertEvaluation(BaseEvaluation):
         current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
         folder_name = f"{dataset_name}-{current_time}"
 
-        class_name = (self.config.evaluation.class_name).split(".")[-1]
-        folder_name += f"-{class_name}"
+        model_name = (self.config.evaluation.model_name).split("/")[-1]
+        folder_name += f"-{model_name}"
 
         public_root = os.environ[SUPERTRAINER_PUBLIC_ROOT]
 
