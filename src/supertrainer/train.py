@@ -49,7 +49,8 @@ def main(cfg: DictConfig):
     memory_stats()
     set_global_seed()
 
-    os.environ["WANDB_PROJECT"] = cfg.wandb_project
+    os.environ["WANDB_PROJECT"] = cfg.wandb.project
+    os.environ["WANDB_ENTITY"] = cfg.wandb.entity
 
     ## Will use this instead of below code
     # cfg = import_class(cfg.postprocess_config.class_name)().postprocess(cfg)

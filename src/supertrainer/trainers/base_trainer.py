@@ -104,7 +104,8 @@ class BaseTrainer(ABCTrainer):
 
             # TODO: Move this
             wandb.init(
-                project=config.wandb_project,  # Replace with your actual project name
+                project=config.wandb.project,  # Replace with your actual project name
+                entity=config.wandb.entity,  # Replace with your actual entity
                 name=config.trainer.training_kwargs.run_name,
                 # config=config.trainer.to_serializable_dict(),
             )

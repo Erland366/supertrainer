@@ -41,8 +41,8 @@ class SupertrainerBERTDataset(EncoderDataset):
         self._is_prepared = None
 
     # consideration:
-    # make this method an abstractmethod in BaseDataset if you want to implement `is_prepared` 
-    # each specific dataset will need its own validator as they have specific characteristics 
+    # make this method an abstractmethod in BaseDataset if you want to implement `is_prepared`
+    # each specific dataset will need its own validator as they have specific characteristics
     def validate_if_prepared(self) -> None:
         """
         This method aims to validate if the dataset is prepared by checking the required columns.
@@ -66,22 +66,22 @@ class SupertrainerBERTDataset(EncoderDataset):
     def is_prepared(self) -> bool:
         """
         Checks if the dataset is prepared by validating the presence of required columns.
-        
-        This property will trigger the validation process if the dataset has not been 
-        prepared yet and the configuration indicates that it should be prepared. 
-        It raises a ValueError if any of the required columns ('input_ids', 
+
+        This property will trigger the validation process if the dataset has not been
+        prepared yet and the configuration indicates that it should be prepared.
+        It raises a ValueError if any of the required columns ('input_ids',
         'attention_mask', and 'labels') are missing in any split of the dataset.
 
         Returns:
             bool: True if the dataset is prepared, False otherwise.
         """
-        is_prepared_config = self.config.dataset.dataset_kwargs.get("is_prepared", False)
+        is_prepared_config = self.config.dataset.get("is_prepared", False)
         if self._is_prepared is None and is_prepared_config:
             self.validate_if_prepared()
         else:
             self._is_prepared = False
         return self._is_prepared
-    
+
     def format_for_aspect_sentiment_analysis(self, dataset: DatasetDict) -> DatasetDict:
         logger.debug("Formatting dataset for aspect sentiment analysis")
 
@@ -140,7 +140,7 @@ class SupertrainerBERTDataset(EncoderDataset):
             dataset = self.format_dataset(formatted_dataset)
             self.test_tokenization(dataset)
             dataset = self.tokenized_dataset(dataset)
-        
+
             # Print some examples from the dataset to inspect the tokenizer's output
 
             print("*** Example from the dataset ***")

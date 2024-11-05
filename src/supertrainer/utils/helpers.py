@@ -43,11 +43,11 @@ def login_hf(environ_name: str = "HUGGINGFACE_API_KEY", token: str | None = None
     login(token=token)
 
 
-def login_wandb(environ_name: str = "WANDB_API_KEY", token: str | None = None):
+def login_wandb(environ_name: str = "WANDB_API_KEY", token: str | None = None, **kwargs):
     if token is None:
         token = os.getenv(environ_name)
         logger.debug(f"Use token from environment variable {environ_name}")
-    wandb.login(key=token)
+    wandb.login(key=token, **kwargs)
 
 def set_global_seed(seed: int=42):
     from transformers import set_seed

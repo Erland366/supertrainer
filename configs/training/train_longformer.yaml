@@ -10,6 +10,7 @@ trainer:
   training_kwargs:
     hub_model_id: "masa-research/longformer-preskripsi"
     per_device_train_batch_size: 8
+    per_device_eval_batch_size: 1
     gradient_accumulation_steps: 8
     auto_find_batch_size: False
     logging_steps: 1
@@ -17,20 +18,21 @@ trainer:
     save_steps: 0.2
     num_train_epochs: 10
     warmup_steps: 10 # dari kecil
-    learning_rate: 0.0003
+    learning_rate: 0.0001
+    weight_decay: 0.01
     output_dir: "./assets_local/longformer/outputs"
   peft_kwargs:
     r: 128 # minimum 64
-    lora_alpha: 256 # ganti 2x r
+    lora_alpha: 64 # ganti 2x r
   bitsandbytes_kwargs:
     llm_int8_skip_modules:
       - classifier
 
 dataset:
   dataset_kwargs:
-    tokenizer_name_or_path: ${trainer.model_name}
     path: masa-research/news_absa_v2_annotated_with_token_usage
-    is_prepared: false
+  is_prepared: false
+  tokenizer_name_or_path: ${trainer.model_name}
 
     # path: masa-research/news_absa_v2_annotated_with_token_usage__prepared__longformer_202410041600
     # is_prepared: true
@@ -42,4 +44,6 @@ dataset:
 postprocess_config:
   class_name: supertrainer.postprocess_config.bert.BERTPostprocessConfig
 
-wandb_project: "preskripsi"
+wandb:
+  entity: "masa-dev-team"
+  project: "preskripsi"
