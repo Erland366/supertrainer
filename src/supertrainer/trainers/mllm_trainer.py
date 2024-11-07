@@ -30,12 +30,12 @@ from transformers import (
 )
 
 import wandb
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.trainers.base_trainer import BaseTrainer
 
 
 class MLLMTrainer(BaseTrainer):
-    def __init__(self, config: types.Config, dataset: types.Dataset) -> None:
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset) -> None:
         config = self.postprocess_config(config)
         super().__init__(config, dataset)
 
@@ -89,23 +89,6 @@ class MLLMTrainer(BaseTrainer):
             )
         return self._tokenizer
 
-    def set_trainable(
-        self, trainable_params_names: list[str, str], set_other_trainable: bool | None = None
-    ):
-        for n, p in self.model.named_parameters():
-            if any([name in n for name in trainable_params_names]):
-                p.requires_grad_(True)
-            else:
-                if set_other_trainable is not None:
-                    p.requires_grad_(set_other_trainable)
-
-        trainable_params = {n: p for n, p in self.model.named_parameters() if p.requires_grad}
-
-        logger.debug(f"Trainable parameters: {trainable_params}")
-
-        trainable_params_state_dict = {n: p.data for n, p in trainable_params.items()}
-
-        return trainable_params_state_dict
 
     def train(self):
         if not self.config.testing:

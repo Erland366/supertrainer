@@ -22,14 +22,14 @@
 
 from tqdm import tqdm
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.evaluations.bert import BertEvaluation
 from supertrainer.inferences.llama import LlamaOutlinesInference
 from supertrainer.utils.helpers import get_model_name
 
 
 class LlamaEvaluation(BertEvaluation):
-    def __init__(self, config: types.Config, dataset: types.Dataset):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
         super().__init__(config, dataset)
         self.inference = LlamaOutlinesInference(self.config)
 

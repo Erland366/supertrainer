@@ -28,12 +28,20 @@ from importlib import import_module
 from typing import Any
 
 import psutil
-from huggingface_hub import login
+import torch
+from huggingface_hub import login, whoami
+from packaging import version
 
 import wandb
 
-from .. import types
+from .. import type_hinting
 from .logger import logger
+
+torch_dtype = (
+    torch.bfloat16
+    if torch.cuda.is_available() and torch.cuda.is_bf16_supported()
+    else torch.float32
+)
 
 
 def login_hf(environ_name: str = "HUGGINGFACE_API_KEY", token: str | None = None):
@@ -41,6 +49,7 @@ def login_hf(environ_name: str = "HUGGINGFACE_API_KEY", token: str | None = None
         token = os.getenv(environ_name)
         logger.debug(f"Use token from environment variable {environ_name}")
     login(token=token)
+    print(f"Hugging Face user: {whoami()['name']}, full name: {whoami()['fullname']}")
 
 
 def login_wandb(environ_name: str = "WANDB_API_KEY", token: str | None = None, **kwargs):
@@ -49,9 +58,12 @@ def login_wandb(environ_name: str = "WANDB_API_KEY", token: str | None = None, *
         logger.debug(f"Use token from environment variable {environ_name}")
     wandb.login(key=token, **kwargs)
 
-def set_global_seed(seed: int=42):
+
+def set_global_seed(seed: int = 42):
     from transformers import set_seed
+
     set_seed(seed)
+
 
 def is_flash_attention_available() -> bool:
     import importlib
@@ -59,6 +71,60 @@ def is_flash_attention_available() -> bool:
     HAS_FLASH_ATTENTION = importlib.util.find_spec("flash_attn")
     return HAS_FLASH_ATTENTION is not None
 
+
+def check_flash_attention_2_support() -> bool:
+    """
+    Check if the current system supports Flash Attention 2.
+
+    Returns:
+        Tuple[bool, str]: (is_supported, reason)
+        - is_supported: Boolean indicating if Flash Attention 2 is supported
+        - reason: String explaining why it's not supported (if applicable)
+    """
+    if not torch.cuda.is_available():
+        return False
+
+    # Check CUDA version (needs 11.6 or higher)
+    cuda_version = torch.version.cuda
+    if cuda_version is None:
+        return False
+
+    if version.parse(cuda_version) < version.parse("11.6"):
+        return False
+
+    # Check GPU architecture (needs Ampere or newer: compute capability >= 8.0)
+    cc_major = torch.cuda.get_device_capability()[0]
+
+    if cc_major < 8:
+        return False
+
+    return True
+
+
+def load_model_with_adaptive_attention(model_loader_func, *args, **kwargs):
+    if kwargs.get("_attn_implementation") is not None:
+        attn_implementation = kwargs.pop("_attn_implementation")
+    else:
+        attn_implementation = "flash_attention_2" if check_flash_attention_2_support() else 'sdpa'
+    try:
+        model = model_loader_func(
+            *args,
+            _attn_implementation=attn_implementation,
+            **kwargs
+        )
+    except ValueError as e:
+        error_message = str(e)
+        if 'does not support an attention implementation through torch.nn.\
+            functional.scaled_dot_product_attention yet.' in error_message:
+            attn_implementation = 'eager'
+            model = model_loader_func(
+                *args,
+                _attn_implementation=attn_implementation,
+                **kwargs
+            )
+        else:
+            raise
+    return model
 
 def memory_stats():
     """
@@ -77,7 +143,7 @@ def memory_stats():
 
 
 def find_max_tokens(
-    dataset_name_or_path: str | os.PathLike | types.Dataset,  # noqa: F821 # type: ignore
+    dataset_name_or_path: str | os.PathLike | type_hinting.Dataset,  # noqa: F821 # type: ignore
     tokenizer_name_or_path: str | os.PathLike,
     set: str = "train",
     is_chat_formatted: bool = False,
@@ -87,7 +153,7 @@ def find_max_tokens(
     Finds the maximum number of tokens in a dataset.
 
     Args:
-        dataset_name_or_path (str | os.PathLike | types.Dataset):
+        dataset_name_or_path (str | os.PathLike | type_hinting.Dataset):
             The name or path of the dataset, or a DatasetDict or Dataset object.
         tokenizer_name_or_path (str | os.PathLike): The name or path of the tokenizer.
         set (str, optional): The dataset split to use. Defaults to "train".
@@ -210,18 +276,18 @@ def clean_gpu_cache(model: Any | None = None):
 
 
 def split_train_test_validation(
-    dataset: types.Dataset, select_subset: int | float = 0
-) -> types.Dataset:
+    dataset: type_hinting.Dataset, select_subset: int | float = 0
+) -> type_hinting.Dataset:
     """
     Splits the dataset into train, validation, and test subsets.
     Args:
-        dataset (types.Dataset): The dataset to be split.
+        dataset (type_hinting.Dataset): The dataset to be split.
         select_subset (int | float, optional): The size of the subset to select.
             If float, it represents the percentage of the dataset to select.
             If int, it represents the number of samples to select.
             Defaults to 0, which means no subset will be selected.
     Returns:
-        types.Dataset: A DatasetDict containing the train, validation, and test subsets.
+        type_hinting.Dataset: A DatasetDict containing the train, validation, and test subsets.
     """
     from datasets import DatasetDict
 
@@ -331,6 +397,7 @@ class MemoryTracker:
         if self.torch_available:
             print_and_log(f"Maximum VRAM Usage: {self.max_vram_usage:.2f} MB", depth=1)
 
+
 def get_model_name(model: Any) -> str:
     """
     Get the name of the model.
@@ -347,7 +414,8 @@ def get_model_name(model: Any) -> str:
         name = model.__class__.__name__
     return name
 
-def load_dataset_plus_plus(*args, **kwargs) -> "Dataset": # noqa: F821 # type: ignore
+
+def load_dataset_plus_plus(*args, **kwargs) -> "Dataset":  # noqa: F821 # type: ignore
     """
     Load a dataset from the specified path.
 

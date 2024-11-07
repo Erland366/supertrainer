@@ -29,7 +29,7 @@ from datasets import Dataset, DatasetDict
 from huggingface_hub import whoami
 from transformers import AutoTokenizer
 
-from supertrainer import SUPERTRAINER_ROOT, logger, types
+from supertrainer import SUPERTRAINER_ROOT, logger, type_hinting
 from supertrainer.utils.helpers import load_dataset_plus_plus
 
 
@@ -60,7 +60,7 @@ class ABCDataset(ABC):
 
 
 class BaseDataset(ABCDataset):
-    def __init__(self, config: types.Config, is_testing: bool = False) -> None:
+    def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
         self.config = config
         self.is_testing = is_testing
 

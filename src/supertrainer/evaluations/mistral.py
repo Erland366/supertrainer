@@ -21,12 +21,12 @@
 # SOFTWARE.
 
 
-from supertrainer import types
+from supertrainer import type_hinting
 from supertrainer.evaluations.llama import LlamaEvaluation
 from supertrainer.inferences.mistral import MistralOutlinesInference
 
 
 class MistralEvaluation(LlamaEvaluation):
-    def __init__(self, config: types.Config, dataset: types.Dataset):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
         super().__init__(config, dataset)
         self.inference = MistralOutlinesInference(self.config)

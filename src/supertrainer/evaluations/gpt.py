@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from supertrainer import types
+from supertrainer import type_hinting
 from supertrainer.evaluations.llama import LlamaEvaluation
 from supertrainer.inferences.gpt import GPTInstructorInference
 
 
 class GPTEvaluation(LlamaEvaluation):
-    def __init__(self, config: types.Config, dataset: types.Dataset):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
         super().__init__(config, dataset)
         self.inference = GPTInstructorInference(self.config)

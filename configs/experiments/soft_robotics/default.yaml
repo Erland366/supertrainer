@@ -1,0 +1,12 @@
+# @package _global_
+
+defaults:
+- /trainer/common/training_kwargs@trainer.training_kwargs: default
+- /trainer/common/bitsandbytes_kwargs@trainer.bitsandbytes_kwargs: nf4
+- /trainer/common/model_kwargs@trainer.model_kwargs: default
+- /dataset/mllm@dataset: soft_robotics
+- /wandb
+- _self_
+
+trainer:
+  compile: False

@@ -50,7 +50,8 @@ def main(cfg: DictConfig):
     set_global_seed()
 
     os.environ["WANDB_PROJECT"] = cfg.wandb.project
-    os.environ["WANDB_ENTITY"] = cfg.wandb.entity
+    if "entity" in cfg.wandb and cfg.wandb.entity:
+        os.environ["WANDB_ENTITY"] = cfg.wandb.entity
 
     ## Will use this instead of below code
     # cfg = import_class(cfg.postprocess_config.class_name)().postprocess(cfg)

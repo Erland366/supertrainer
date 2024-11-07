@@ -32,15 +32,15 @@ from huggingface_hub import HfApi, create_repo
 from transformers import BitsAndBytesConfig
 
 import wandb
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.utils import memory_stats
 
 
 class ABCTrainer(ABC):
     _model: "AutoModelForCausalLM" | "FastLanguageModel" | None = None  # noqa # type:ignore
     _tokenizer: "AutoTokenizer" | None = None  # noqa # type: ignore
-    config: types.Config
-    dataset: types.Dataset  # noqa # type: ignore
+    config: type_hinting.Config
+    dataset: type_hinting.Dataset  # noqa # type: ignore
 
     @abstractmethod
     def __init__(self) -> None:
@@ -61,19 +61,19 @@ class ABCTrainer(ABC):
         pass
 
     @abstractmethod
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
 
 class BaseTrainer(ABCTrainer):
-    def __init__(self, config: types.Config, dataset: types.Dataset) -> None:
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset) -> None:
         self.dataset = dataset
         self.config = config
 
     def train(self):
         raise NotImplementedError
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         # TODO: Move it from here since it's not modular enough
         with config.allow_modification():
             config.trainer.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -107,7 +107,6 @@ class BaseTrainer(ABCTrainer):
                 project=config.wandb.project,  # Replace with your actual project name
                 entity=config.wandb.entity,  # Replace with your actual entity
                 name=config.trainer.training_kwargs.run_name,
-                # config=config.trainer.to_serializable_dict(),
             )
 
             # output_dir add run_name
@@ -123,12 +122,15 @@ class BaseTrainer(ABCTrainer):
             )
             quantization_config = BitsAndBytesConfig(**config.trainer.bitsandbytes_kwargs)
 
-            config.trainer.model_kwargs.device_map = config.trainer.model_kwargs.device_map or {
-                "": torch.cuda.current_device() if torch.cuda.is_available() else None
-            }
-            config.trainer.model_kwargs.attn_implementation = (
-                config.trainer.model_kwargs.attn_implementation or "sdpa"
-            )
+            # FIX BUG WHERE MODEL_KWARGS IS NOT SET
+            config.trainer.model_kwargs.device_map = config.trainer.model_kwargs.get(
+                "device_map", None
+            ) or {"": torch.cuda.current_device() if torch.cuda.is_available() else None}
+
+            ## Changd to adaptive attn implementatio
+            # config.trainer.model_kwargs.attn_implementation = (
+            #     config.trainer.model_kwargs.attn_implementation or "sdpa"
+            # )
             config.trainer.model_kwargs.quantization_config = quantization_config
 
         logger.debug(f"Configuration loaded: {config}")
@@ -143,7 +145,7 @@ class BaseTrainer(ABCTrainer):
         raise NotImplementedError
 
     @staticmethod
-    def push_config_to_hf(config: types.Config) -> None:
+    def push_config_to_hf(config: type_hinting.Config) -> None:
         api = HfApi()
 
         # TODO: This is still error since many object can't be serialized
@@ -158,7 +160,7 @@ class BaseTrainer(ABCTrainer):
         logger.info(f"Config pushed to HuggingFace: {config.trainer.training_kwargs.hub_model_id}")
 
     @staticmethod
-    def push_config_to_wandb(config: types.Config) -> None:
+    def push_config_to_wandb(config: type_hinting.Config) -> None:
         import json
         import tempfile
 
@@ -195,3 +197,32 @@ class BaseTrainer(ABCTrainer):
     def memory_stats(self):
         memory_stats()
         logger.debug("Memory stats completed")
+
+    def set_trainable(
+        self, trainable_params_names: list[str, str], set_other_trainable: bool | None = None
+    ):
+        for n, p in self.model.named_parameters():
+            if any([name in n for name in trainable_params_names]):
+                p.requires_grad_(True)
+            else:
+                if set_other_trainable is not None:
+                    p.requires_grad_(set_other_trainable)
+
+        trainable_params = {n: p for n, p in self.model.named_parameters() if p.requires_grad}
+
+        logger.debug(f"Trainable parameters: {trainable_params}")
+
+        trainable_params_state_dict = {n: p.data for n, p in trainable_params.items()}
+
+        return trainable_params_state_dict
+
+
+class BaseMLLMTrainer(BaseTrainer):
+    _processor: "AutoProcessor" | None = None  # noqa # type: ignore
+
+    @property
+    def processor(self):
+        raise NotImplementedError
+
+    def get_data_collator(self):
+        raise NotImplementedError
