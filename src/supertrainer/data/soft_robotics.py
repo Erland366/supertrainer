@@ -80,6 +80,43 @@ class Phi35VisionDataCollator:
         return batch
 
 
+class Idefics3DataCollator:
+    def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
+        self.processor = processor
+        self.config = config
+
+    def __call__(self, examples: list[dict[str, Any]]) -> dict[str, Any]:
+        texts = []
+        images = []
+        image_token_id = self.processor.tokenizer.additional_special_tokens_ids[
+            self.processor.tokenizer.additional_special_tokens.index("<image>")
+        ]
+        for example in examples:
+            image = example["resized_image_64"]
+            answer = example["label"]
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Answer briefly."},
+                        {"type": "image"},
+                    ],
+                },
+                {"role": "assistant", "content": [{"type": "text", "text": answer}]},
+            ]
+            text = self.processor.apply_chat_template(messages, add_generation_prompt=False)
+            texts.append(text.strip())
+            images.append([image])
+
+        batch = self.processor(text=texts, images=images, return_tensors="pt", padding=True)
+        labels = batch["input_ids"].clone()
+        labels[labels == self.processor.tokenizer.pad_token_id] = -100
+        labels[labels == image_token_id] = -100
+        batch["labels"] = labels
+
+        return batch
+
+
 class SoftRoboticsTrainingDataset(BaseDataset):
     def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
         super().__init__(self.postprocess_config(config), is_testing)
