@@ -79,6 +79,46 @@ class Phi35VisionDataCollator:
 
         return batch
 
+class Florence2DataCollator:
+    def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
+        self.processor = processor
+        self.config = config
+
+    def __call__(self, examples: list[dict[str, Any]]) -> dict[str, Any]:
+        texts = []
+        images = []
+        answers = []
+        for example in examples:
+            image = example[self.config.dataset.image_col]
+            answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
+            text = "<DocVQA>Answer briefly."
+            texts.append(text)
+            images.append([image])
+            answers.append(answer)
+
+        inputs = self.processor(
+            text=list(texts),
+            images=list(images),
+            return_tensors="pt",
+            padding=True
+        )
+
+        # Process labels
+        labels = self.processor.tokenizer(
+            text=answers,
+            return_tensors="pt",
+            padding=True,
+            return_token_type_ids=False
+        ).input_ids
+
+        # Prepare the final batch
+        batch_dict = {
+            "input_ids": inputs["input_ids"],
+            "pixel_values": inputs["pixel_values"],
+            "labels": labels
+        }
+
+        return batch_dict
 
 class Idefics3DataCollator:
     def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
@@ -92,8 +132,8 @@ class Idefics3DataCollator:
             self.processor.tokenizer.additional_special_tokens.index("<image>")
         ]
         for example in examples:
-            image = example["resized_image_64"]
-            answer = example["label"]
+            image = example[self.config.dataset.image_col]
+            answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
             messages = [
                 {
                     "role": "user",

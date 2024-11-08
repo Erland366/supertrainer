@@ -9,6 +9,7 @@ trainer:
     r: 8
     lora_alpha: 8
     lora_dropout: 0.1
+    # Investigate
     target_modules:
       - "qkv_proj"
       - "o_proj"
@@ -18,13 +19,15 @@ trainer:
     init_lora_weights: "gaussian"
   training_kwargs:
     num_train_epochs: 1
-    per_device_train_batch_size: 1 # must be one for phi35
-    hub_model_id: "Erland/Phi-3.5V-soft-robotics"
+    per_device_train_batch_size: 4
+    hub_model_id: "Erland/florence2-soft-robotics"
+  model_kwargs:
+    revision: "refs/pr/6"
 
   processor_kwargs:
-    num_crops: 16
-  class_name: supertrainer.trainers.phi35_vision.Phi35VisionTrainer
-  model_name: microsoft/Phi-3.5-vision-instruct
+    revision: 'refs/pr/6'
+  class_name: supertrainer.trainers.florence2.Florence2Trainer
+  model_name: microsoft/Florence-2-base-ft
 
 dataset:
-  data_collator_class_name: supertrainer.data.soft_robotics.Phi35VisionDataCollator
+  data_collator_class_name: supertrainer.data.soft_robotics.Florence2DataCollator
