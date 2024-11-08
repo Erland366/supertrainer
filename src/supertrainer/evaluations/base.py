@@ -25,15 +25,15 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 
 
 class BaseEvaluation(ABC):
-    def __init__(self, config: types.Config, dataset: types.Dataset) -> None:
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset) -> None:
         self.config = self.postprocess_config(config)
         self.dataset = dataset
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         # Implement any common post-processing of config here
         return config
 

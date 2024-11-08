@@ -1,0 +1,18 @@
+# @package _global_
+
+defaults:
+- /trainer/common/training_kwargs@trainer.training_kwargs: default
+- /trainer/common/bitsandbytes_kwargs@trainer.bitsandbytes_kwargs: nf4
+- /trainer/common/model_kwargs@trainer.model_kwargs: default
+- /dataset/mllm@dataset: soft_robotics
+- /wandb
+- _self_
+
+trainer:
+  compile: False
+  training_kwargs:
+    eval_strategy: null # disable first
+    load_best_model_at_end: False
+    eval_on_start: False
+    remove_unused_columns: False
+    auto_find_batch_size: False

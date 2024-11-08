@@ -30,16 +30,16 @@ from typing import Any, Literal
 
 from openai import OpenAI
 
-from supertrainer import SUPERTRAINER_PUBLIC_ROOT, SUPERTRAINER_ROOT, logger, types
+from supertrainer import SUPERTRAINER_PUBLIC_ROOT, SUPERTRAINER_ROOT, logger, type_hinting
 from supertrainer.inferences.base import BaseInferenceProprietary
 
 
 class GPTInference(BaseInferenceProprietary):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     def load_model(self):
@@ -50,7 +50,7 @@ class GPTInference(BaseInferenceProprietary):
     def load_tokenizer(self):
         return True  # Just to make it not None
 
-    def preprocess(self, text: str) -> types.Tensor:
+    def preprocess(self, text: str) -> type_hinting.Tensor:
         messages = [{"role": "user", "content": [{"type": "text", "text": text}]}]
         if self.config.inference.system_prompt:
             messages.insert(
@@ -177,11 +177,11 @@ class GPTInference(BaseInferenceProprietary):
 
 
 class GPTInstructorInference(BaseInferenceProprietary):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     def load_model(self):
@@ -194,7 +194,7 @@ class GPTInstructorInference(BaseInferenceProprietary):
     def load_tokenizer(self):
         return True  # Just to make it not None
 
-    def preprocess(self, text: str) -> types.Tensor:
+    def preprocess(self, text: str) -> type_hinting.Tensor:
         messages = [{"role": "user", "content": [{"type": "text", "text": text}]}]
         if self.config.inference.system_prompt:
             messages.insert(

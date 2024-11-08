@@ -1,0 +1,32 @@
+# @package _global_
+
+defaults:
+- /experiments/soft_robotics/default
+- _self_
+
+trainer:
+  peft_kwargs:
+    r: 8
+    lora_alpha: 8
+    lora_dropout: 0.1
+    target_modules:
+      - 'down_proj'
+      - 'o_proj'
+      - 'k_proj'
+      - 'q_proj'
+      - 'gate_proj'
+      - 'up_proj'
+      - 'v_proj'
+    use_dora: False
+    init_lora_weights: "gaussian"
+  training_kwargs:
+    num_train_epochs: 1
+    per_device_train_batch_size: 4
+    hub_model_id: "Erland/idefics3-soft-robotics"
+
+  processor_kwargs:
+  class_name: supertrainer.trainers.idefics3.Idefics3Trainer
+  model_name: HuggingFaceM4/Idefics3-8B-Llama3
+
+dataset:
+  data_collator_class_name: supertrainer.data.soft_robotics.Idefics3DataCollator

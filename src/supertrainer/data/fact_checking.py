@@ -22,16 +22,16 @@
 
 from datasets import DatasetDict
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.data.base import BaseDataset, BaseDatasetFormatter
 
 
 class FactCheckingBERTEvaluationDataset(BaseDataset):
-    def __init__(self, config: types.Config, is_testing: bool = False) -> None:
+    def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
         super().__init__(self.postprocess_config(config), is_testing)
         self._is_prepared = None
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         classes = config.evaluation.classes
         num_classes = len(classes)
         class2id = {class_: i for i, class_ in enumerate(classes)}

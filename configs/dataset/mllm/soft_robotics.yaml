@@ -1,0 +1,17 @@
+dataset_kwargs:
+  path: Erland/AI701_project
+
+image_col: resized_image_64
+label_col: label
+class_name: supertrainer.data.soft_robotics.SoftRoboticsTrainingDataset
+classes:
+  - 'ceramic'
+  - 'fabric'
+  - 'food'
+  - 'glass'
+  - 'metal'
+  - 'other'
+  - 'paper'
+  - 'plastic'
+  - 'unknown'
+  - 'wood'

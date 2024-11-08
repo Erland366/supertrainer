@@ -22,7 +22,7 @@
 
 from datasets import DatasetDict
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.data.base import BaseDataset
 
 
@@ -35,12 +35,12 @@ class LLMDataset(BaseDataset):
         - Output
     """
 
-    def __init__(self, config: types.Config, is_testing: bool = True) -> None:
+    def __init__(self, config: type_hinting.Config, is_testing: bool = True) -> None:
         super().__init__(config, is_testing)
 
     def formatting_prompt_func(
         self,
-        examples: list[types.Conversation],
+        examples: list[type_hinting.Conversation],
         use_default_system_prompt: bool = True,
         is_test_dataset: bool = True,
     ) -> dict[str, str]:
@@ -93,7 +93,7 @@ class LLMDataset(BaseDataset):
             "text": texts,
         }
 
-    def format_dataset(self, dataset: types.Conversation) -> types.Conversation:
+    def format_dataset(self, dataset: type_hinting.Conversation) -> type_hinting.Conversation:
         processed_dataset = DatasetDict()
 
         for split_name, split_dataset in dataset.items():
@@ -114,7 +114,7 @@ class LLMDataset(BaseDataset):
 class ConversationLLMDataset(BaseDataset):
     """This class is made to support Conversation type of Dataset like ShareGPT!"""
 
-    def __init__(self, config: types.Config, is_testing: bool = True) -> None:
+    def __init__(self, config: type_hinting.Config, is_testing: bool = True) -> None:
         super().__init__(config, is_testing)
 
     @staticmethod
@@ -146,7 +146,7 @@ class ConversationLLMDataset(BaseDataset):
 
     def formatting_prompt_func(
         self,
-        examples: list[types.Conversation],
+        examples: list[type_hinting.Conversation],
         use_default_system_prompt: bool = True,
         is_test_dataset: bool = True,
     ) -> dict[str, str]:
@@ -197,7 +197,7 @@ class ConversationLLMDataset(BaseDataset):
             "text": texts,
         }
 
-    def format_dataset(self, dataset: types.Conversation) -> types.Conversation:
+    def format_dataset(self, dataset: type_hinting.Conversation) -> type_hinting.Conversation:
         processed_dataset = DatasetDict()
 
         for split_name, split_dataset in dataset.items():
@@ -214,7 +214,7 @@ class ConversationLLMDataset(BaseDataset):
 
         return processed_dataset
 
-    def prepare_dataset(self) -> types.Any:
+    def prepare_dataset(self) -> type_hinting.Any:
         logger.debug("Preparing dataset")
         dataset = self.dataset
 

@@ -25,7 +25,7 @@ from __future__ import annotations
 from datasets import DatasetDict
 from transformers import AutoTokenizer
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 from supertrainer.data.encoder import EncoderDataset
 from supertrainer.data.llm import LLMDataset
 from supertrainer.data.templates.supertrainer_template import (
@@ -36,7 +36,7 @@ from supertrainer.data.templates.supertrainer_template import (
 
 # TODO: Will make this cleaner
 class SupertrainerBERTDataset(EncoderDataset):
-    def __init__(self, config: types.Config, is_testing: bool = False) -> None:
+    def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
         super().__init__(config, is_testing)
         self._is_prepared = None
 
@@ -85,7 +85,7 @@ class SupertrainerBERTDataset(EncoderDataset):
     def format_for_aspect_sentiment_analysis(self, dataset: DatasetDict) -> DatasetDict:
         logger.debug("Formatting dataset for aspect sentiment analysis")
 
-        def format_example(example: list[types.Conversation]):
+        def format_example(example: list[type_hinting.Conversation]):
             entity = example["Entity"]
             input_text = DEFAULT_INPUT_TEMPLATE.format(
                 title=example["Title"], content=example["Content"]
@@ -112,7 +112,7 @@ class SupertrainerBERTDataset(EncoderDataset):
         return formatted_dataset
 
     def tokenized_dataset(self, dataset: DatasetDict) -> DatasetDict:
-        def tokenize_map(examples: types.Conversation, tokenizer: "AutoTokenizer"):  # noqa # type: ignore
+        def tokenize_map(examples: type_hinting.Conversation, tokenizer: "AutoTokenizer"):  # noqa # type: ignore
             # TODO: FIx this!
             tokenizer.truncation_side = "left"
             return tokenizer(examples["text"], truncation=True)
@@ -158,14 +158,14 @@ class SupertrainerBERTDataset(EncoderDataset):
 
 
 class SupertrainerDataset(LLMDataset):
-    def __init__(self, config: types.DictConfig, is_testing: bool = True) -> None:
+    def __init__(self, config: type_hinting.DictConfig, is_testing: bool = True) -> None:
         super().__init__(config, is_testing)
 
     @staticmethod
     def format_for_aspect_sentiment_analysis(dataset: DatasetDict) -> DatasetDict:
         logger.debug("Formatting dataset for aspect sentiment analysis")
 
-        def format_example(example: list[types.Conversation]) -> dict[str, str]:
+        def format_example(example: list[type_hinting.Conversation]) -> dict[str, str]:
             instruction = DEFAULT_INSTRUCTION_TEMPLATE.format(entity=example["Entity"])
             input_text = DEFAULT_INPUT_TEMPLATE.format(
                 title=example["Title"], content=example["Content"]

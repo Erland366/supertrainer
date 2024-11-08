@@ -27,11 +27,11 @@ from datasets import Dataset, DatasetDict, load_dataset
 from PIL import Image
 from torch.utils.data import Dataset as TorchDataset
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 
 
 class MLLMDatasetLoader(TorchDataset):
-    def __init__(self, dataset: Dataset, config: types.Config):
+    def __init__(self, dataset: Dataset, config: type_hinting.Config):
         self.config = config
         self.dataset = dataset
         self.transform: None = None

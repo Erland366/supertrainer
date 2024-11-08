@@ -27,19 +27,19 @@ from typing import Any
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from tqdm import tqdm
 
-from supertrainer import SUPERTRAINER_PUBLIC_ROOT, logger, types
+from supertrainer import SUPERTRAINER_PUBLIC_ROOT, logger, type_hinting
 from supertrainer.evaluations.base import BaseEvaluation
 from supertrainer.inferences.bert import BertInference
 from supertrainer.utils.helpers import get_model_name
 
 
 class BertEvaluation(BaseEvaluation):
-    def __init__(self, config: types.Config, dataset: types.Dataset):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
         self.config = self.postprocess_config(config)
         self.inference = BertInference(self.config)
         self.dataset = dataset
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         with config.allow_modification():
             config.inference = config.evaluation
         return config

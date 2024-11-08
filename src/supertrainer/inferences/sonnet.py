@@ -27,16 +27,16 @@ from functools import partial
 
 from anthropic import Anthropic
 
-from supertrainer import SUPERTRAINER_PUBLIC_ROOT, logger, types
+from supertrainer import SUPERTRAINER_PUBLIC_ROOT, logger, type_hinting
 from supertrainer.inferences.base import BaseInferenceProprietary
 
 
 class SonnetInference(BaseInferenceProprietary):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     def load_model(self):
@@ -54,7 +54,7 @@ class SonnetInference(BaseInferenceProprietary):
     def load_tokenizer(self):
         return True  # Just to make it not None
 
-    def preprocess(self, text: str) -> types.Tensor:
+    def preprocess(self, text: str) -> type_hinting.Tensor:
         messages = [{"role": "user", "content": [{"type": "text", "text": text}]}]
 
         return messages
@@ -69,11 +69,11 @@ class SonnetInference(BaseInferenceProprietary):
 
 
 class SonnetInstructorInference(BaseInferenceProprietary):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     def load_model(self):
@@ -93,7 +93,7 @@ class SonnetInstructorInference(BaseInferenceProprietary):
     def load_tokenizer(self):
         return True  # Just to make it not None
 
-    def preprocess(self, text: str) -> types.Tensor:
+    def preprocess(self, text: str) -> type_hinting.Tensor:
         messages = [{"role": "user", "content": [{"type": "text", "text": text}]}]
 
         return messages

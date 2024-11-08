@@ -1,0 +1,33 @@
+# @package _global_
+
+defaults:
+- /experiments/soft_robotics/default
+- _self_
+
+trainer:
+  peft_kwargs:
+    r: 8
+    lora_alpha: 8
+    lora_dropout: 0.1
+    # Investigate
+    target_modules:
+      - "qkv_proj"
+      - "o_proj"
+      - "down_proj"
+      - "gate_up_proj"
+    use_dora: False
+    init_lora_weights: "gaussian"
+  training_kwargs:
+    num_train_epochs: 1
+    per_device_train_batch_size: 4
+    hub_model_id: "Erland/florence2-soft-robotics"
+  model_kwargs:
+    revision: "refs/pr/6"
+
+  processor_kwargs:
+    revision: 'refs/pr/6'
+  class_name: supertrainer.trainers.florence2.Florence2Trainer
+  model_name: microsoft/Florence-2-base-ft
+
+dataset:
+  data_collator_class_name: supertrainer.data.soft_robotics.Florence2DataCollator

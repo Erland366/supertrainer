@@ -13,7 +13,7 @@ weight_decay: 0.01
 lr_scheduler_type: "linear"
 seed: 3407
 report_to: "wandb"
-output_dir: "./assets_local/smollm/outputs"
+output_dir: "./assets_local/run_outputs"
 # Experiment on eval params
 load_best_model_at_end: 1
 metric_for_best_model: "eval_loss"
@@ -23,7 +23,7 @@ eval_steps: 200
 save_steps: 400
 eval_on_start: True
 # hub stuff
-hub_model_id: "masa-research/bert-preskripsi"
+hub_model_id: "Erland/training_run"
 hub_private_repo: True
 hub_strategy: "every_save"
 push_to_hub: True

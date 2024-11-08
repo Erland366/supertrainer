@@ -25,16 +25,16 @@ from abc import ABC, abstractmethod
 import torch
 from transformers import PreTrainedModel, PreTrainedTokenizer
 
-from supertrainer import logger, types
+from supertrainer import logger, type_hinting
 
 
 class BaseInference(ABC):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         self._model = None
         self._tokenizer = None
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     @abstractmethod
@@ -73,17 +73,17 @@ class BaseInference(ABC):
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     @abstractmethod
-    def preprocess(self, text: str) -> types.Tensor:
+    def preprocess(self, text: str) -> type_hinting.Tensor:
         """Preprocess the text."""
         pass
 
     @abstractmethod
-    def postprocess(self, outputs: types.Tensor) -> types.Tensor:
+    def postprocess(self, outputs: type_hinting.Tensor) -> type_hinting.Tensor:
         """Postprocess the outputs."""
         pass
 
     @abstractmethod
-    def predict(self, text: str) -> types.Tensor:
+    def predict(self, text: str) -> type_hinting.Tensor:
         """Predict the output for the given text."""
         pass
 
@@ -105,12 +105,12 @@ class BaseInference(ABC):
             logger.info("Iterative inference interrupted by user.")
 
 class BaseInferenceProprietary(ABC):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         self._model = None
         self._tokenizer = None
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     @abstractmethod
@@ -135,17 +135,17 @@ class BaseInferenceProprietary(ABC):
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     @abstractmethod
-    def preprocess(self, text: str) -> types.Tensor:
+    def preprocess(self, text: str) -> type_hinting.Tensor:
         """Preprocess the text."""
         pass
 
     @abstractmethod
-    def postprocess(self, outputs: types.Tensor) -> types.Tensor:
+    def postprocess(self, outputs: type_hinting.Tensor) -> type_hinting.Tensor:
         """Postprocess the outputs."""
         pass
 
     @abstractmethod
-    def predict(self, text: str) -> types.Tensor:
+    def predict(self, text: str) -> type_hinting.Tensor:
         """Predict the output for the given text."""
         pass
 

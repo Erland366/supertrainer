@@ -27,12 +27,12 @@ from typing import Literal
 import torch
 from pydantic import BaseModel
 
-from supertrainer import types
+from supertrainer import type_hinting
 from supertrainer.inferences.base import BaseInference, BaseOutlinesInference
 
 
 class LlamaInference(BaseInference):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
 
@@ -41,7 +41,7 @@ class LlamaInference(BaseInference):
         self._buffer_tokenizer = None
         self.chat_template = "llama-3.1"
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     def load_model(self) -> "FastLanguageModel":  # type: ignore # noqa: F821
@@ -72,7 +72,7 @@ class LlamaInference(BaseInference):
             self._buffer_tokenizer = tokenizer
         return self._buffer_tokenizer
 
-    def preprocess(self, text: str) -> types.Tensor:
+    def preprocess(self, text: str) -> type_hinting.Tensor:
         messages = [
             {
                 "role": "user",
@@ -94,7 +94,7 @@ class LlamaInference(BaseInference):
 
         return inputs
 
-    def postprocess(self, outputs: types.Tensor) -> str:
+    def postprocess(self, outputs: type_hinting.Tensor) -> str:
         return self.tokenizer.decode(outputs, skip_special_tokens=True)
 
     def predict(self, text: str) -> str:
@@ -108,13 +108,13 @@ class LlamaInference(BaseInference):
 
 
 class LlamaOutlinesInference(BaseOutlinesInference):
-    def __init__(self, config: types.Config) -> None:
+    def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
 
         self._buffer_model = None
 
-    def postprocess_config(self, config: types.Config) -> types.Config:
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         return config
 
     def load_model(self):

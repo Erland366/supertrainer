@@ -19,83 +19,81 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+# ruff: noqa: E402
 
-from peft import LoraConfig, get_peft_model
-from transformers import (
-    AutoTokenizer,
-    DataCollatorWithPadding,
-    Trainer,
-    TrainingArguments,
-)
+import os
+
+import torch
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from transformers import AutoProcessor, Idefics3ForConditionalGeneration, Trainer, TrainingArguments
+
+os.environ["UNSLOTH_IS_PRESENT"] = "1"
+from unsloth_zoo.patching_utils import patch_torch_compile
 
 from supertrainer import logger, type_hinting
-from supertrainer.evaluations.classification import compute_metrics
-from supertrainer.trainers.base_trainer import BaseTrainer
+from supertrainer.trainers.base_trainer import BaseMLLMTrainer
+from supertrainer.utils.helpers import import_class, load_model_with_adaptive_attention
 
 
-class BERTTrainer(BaseTrainer):
+class Idefics3Trainer(BaseMLLMTrainer):
     def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset) -> None:
         config = self.postprocess_config(config)
         super().__init__(config, dataset)
 
-    def postprocess_config(self, config):
-        # Change design of this since it's weird to keep call super in here
-        # even though it's guarantee that we will always call the super
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         config = super().postprocess_config(config)
 
-        classes = config.trainer.classes
-
-        # create mapping and num of class first
-        num_classes = len(classes)
-        class2id = {class_: i for i, class_ in enumerate(classes)}
-        id2class = {i: class_ for i, class_ in enumerate(classes)}
-
         with config.allow_modification():
-            config.trainer.num_classes = num_classes
-            config.trainer.class2id = class2id
-            config.trainer.id2class = id2class
+            config.trainer.peft_config = LoraConfig(**config.trainer.peft_kwargs)
+            config.trainer.training_kwargs.run_name += "-mllm"
 
-            # amount of label
-            config.trainer.model_kwargs.num_labels = num_classes
+        if config.dataset.get("image_col", None) is None:
+            raise ValueError("Please provide the image column name in the dataset")
 
-            # Set up lora config since we didn't use Unsloth
-            config.trainer.peft_config = LoraConfig(
-                **config.trainer.peft_kwargs,
-            )
-
-            # Add HF to config
-            config.trainer.training_kwargs.run_name += "-bert"
+        if config.dataset.get("label_col", None) is None:
+            raise ValueError("Please provide the label column name in the dataset")
 
         return config
 
     @property
     def model(self):
         if self._model is None:
-            from transformers import AutoModelForSequenceClassification
-
             logger.debug("Lazy loading model")
-            lora_config = LoraConfig(
-                **self.config.trainer.peft_kwargs,
+            lora_config = self.config.trainer.peft_config
+            model = load_model_with_adaptive_attention(
+                Idefics3ForConditionalGeneration.from_pretrained,
+                self.config.trainer.model_name,
+                trust_remote_code=True,
+                **self.config.trainer.model_kwargs,
             )
-            model = AutoModelForSequenceClassification.from_pretrained(
-                self.config.trainer.model_name, **self.config.trainer.model_kwargs
+
+            # checkpointing here!
+            model.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False}
             )
+
+            # semes like where do you make sure things? PEFT is a weird library!
+            model = prepare_model_for_kbit_training(model)
+
             model = get_peft_model(model, lora_config)
             model.print_trainable_parameters()
+
+            if self.config.trainer.compile:
+                patch_torch_compile()
+                model = torch.compile(model)
             self._model = model
         return self._model
 
     @property
-    def tokenizer(self):
-        if self._tokenizer is None:
-            logger.info("Lazy loading tokenizer")
-            self._tokenizer = AutoTokenizer.from_pretrained(self.config.trainer.model_name)
-
-            if self._tokenizer.pad_token is None:
-                self._tokenizer.add_special_tokens({"pad_token": self._tokenizer.eos_token})
-            if self._tokenizer.model_max_length > 100_000:
-                self._tokenizer.model_max_length = 2048
-        return self._tokenizer
+    def processor(self):
+        if self._processor is None:
+            logger.debug("Lazy loading processor")
+            self._processor = AutoProcessor.from_pretrained(
+                self.config.trainer.model_name,
+                trust_remote_code=True,
+                **self.config.trainer.processor_kwargs,
+            )
+        return self._processor
 
     def train(self):
         if not self.config.testing:
@@ -106,25 +104,29 @@ class BERTTrainer(BaseTrainer):
         dataset = self.dataset
         logger.debug("Initializing Trainer")
 
-        eval_dataset = dataset["validation"] if not self.config.testing else None
+        # eval_dataset = dataset["validation"] if not self.config.testing else None
+        # REMOVE THIS LATER
+        eval_dataset = None
+        del self.config.trainer.training_kwargs.eval_strategy
 
         with self.config.allow_modification():
             self.config.trainer.training_kwargs.do_eval = not self.config.testing
 
-        data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
+        data_collator = import_class(self.config.dataset.data_collator_class_name)(
+            processor=self.processor,
+            config=self.config,
+        )
 
         trainer = Trainer(
             model=self.model,
-            # model_init_kwargs=self.config.model_kwargs,
-            tokenizer=self.tokenizer,
-            train_dataset=dataset["train"],
-            eval_dataset=eval_dataset,
-            compute_metrics=compute_metrics,
             args=TrainingArguments(
                 **self.config.trainer.training_kwargs,
             ),
             data_collator=data_collator,
+            eval_dataset=eval_dataset,
+            train_dataset=dataset["train"],
         )
+
         self.memory_stats()
         logger.debug("Starting training")
 
