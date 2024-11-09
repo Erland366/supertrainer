@@ -21,18 +21,19 @@
 # SOFTWARE.
 # ruff: noqa: E402
 
-import os
 
 import torch
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoProcessor, Trainer, TrainingArguments
-
-os.environ["UNSLOTH_IS_PRESENT"] = "1"
 from unsloth_zoo.patching_utils import patch_torch_compile
 
 from supertrainer import logger, type_hinting
 from supertrainer.trainers.base_trainer import BaseMLLMTrainer
-from supertrainer.utils.helpers import import_class, load_model_with_adaptive_attention
+from supertrainer.utils.helpers import (
+    import_class,
+    load_model_with_adaptive_attention,
+    remove_config_eval,
+)
 
 
 class Florence2Trainer(BaseMLLMTrainer):
@@ -88,6 +89,9 @@ class Florence2Trainer(BaseMLLMTrainer):
     def processor(self):
         if self._processor is None:
             logger.debug("Lazy loading processor")
+            if self.config.trainer.processor_kwargs is None:
+                with self.config.allow_modification():
+                    self.config.trainer.processor_kwargs = {}
             self._processor = AutoProcessor.from_pretrained(
                 self.config.trainer.model_name,
                 trust_remote_code=True,
@@ -96,7 +100,7 @@ class Florence2Trainer(BaseMLLMTrainer):
         return self._processor
 
     def train(self):
-        if not self.config.testing:
+        if not self.config.is_testing:
             self.create_repo()
         logger.debug("Starting training process")
 
@@ -104,13 +108,11 @@ class Florence2Trainer(BaseMLLMTrainer):
         dataset = self.dataset
         logger.debug("Initializing Trainer")
 
-        # eval_dataset = dataset["validation"] if not self.config.testing else None
+        # eval_dataset = dataset["validation"] if not self.config.is_testing else None
         # REMOVE THIS LATER
-        eval_dataset = None
-        del self.config.trainer.training_kwargs.eval_strategy
-
-        with self.config.allow_modification():
-            self.config.trainer.training_kwargs.do_eval = not self.config.testing
+        if dataset.get("validation", None) is None or self.config.is_testing:
+            eval_dataset = None
+            remove_config_eval(self.config)
 
         data_collator = import_class(self.config.dataset.data_collator_class_name)(
             processor=self.processor,
@@ -133,15 +135,15 @@ class Florence2Trainer(BaseMLLMTrainer):
         trainer_stats = trainer.train()
         logger.debug(f"Training completed. Stats: {trainer_stats}")
 
-        if not self.config.testing:
+        if not self.config.is_testing:
             # push configs
             self.push_config_to_hf(self.config)
             self.push_config_to_wandb(self.config)
             self.model.save_pretrained(self.config.trainer.training_kwargs.output_dir)
             self.model.push_to_hub(self.config.trainer.training_kwargs.hub_model_id, private=True)
             # Save and push the updated tokenizer
-            self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
-            self.tokenizer.push_to_hub(
+            self.processor.save_pretrained(self.config.trainer.training_kwargs.output_dir)
+            self.processor.push_to_hub(
                 self.config.trainer.training_kwargs.hub_model_id,
                 private=True,
             )

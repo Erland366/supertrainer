@@ -79,6 +79,7 @@ class Phi35VisionDataCollator:
 
         return batch
 
+
 class Florence2DataCollator:
     def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
         self.processor = processor
@@ -97,28 +98,49 @@ class Florence2DataCollator:
             answers.append(answer)
 
         inputs = self.processor(
-            text=list(texts),
-            images=list(images),
-            return_tensors="pt",
-            padding=True
+            text=list(texts), images=list(images), return_tensors="pt", padding=True
         )
 
         # Process labels
         labels = self.processor.tokenizer(
-            text=answers,
-            return_tensors="pt",
-            padding=True,
-            return_token_type_ids=False
+            text=answers, return_tensors="pt", padding=True, return_token_type_ids=False
         ).input_ids
 
         # Prepare the final batch
         batch_dict = {
             "input_ids": inputs["input_ids"],
             "pixel_values": inputs["pixel_values"],
-            "labels": labels
+            "labels": labels,
         }
 
         return batch_dict
+
+
+class ChameleonDataCollator:
+    def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
+        self.processor = processor
+        self.config = config
+
+    def __call__(self, examples: list[dict[str, Any]]) -> dict[str, Any]:
+        texts = []
+        images = []
+        image_token_id = self.processor.tokenizer.added_tokens_encoder.get("<image>", None)
+        eos_token = self.processor.tokenizer.eos_token
+        for example in examples:
+            image = example[self.config.dataset.image_col]
+            answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
+            text = "<image>Answer briefly.\n" + answer + eos_token
+            texts.append(text.strip())
+            images.append([image])
+
+        batch = self.processor(text=texts, images=images, return_tensors="pt", padding=True)
+        labels = batch["input_ids"].clone()
+        labels[labels == self.processor.tokenizer.pad_token_id] = -100
+        labels[labels == image_token_id] = -100
+        batch["labels"] = labels
+
+        return batch
+
 
 class Idefics3DataCollator:
     def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
