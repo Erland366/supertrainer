@@ -91,7 +91,7 @@ class MLLMTrainer(BaseTrainer):
 
 
     def train(self):
-        if not self.config.testing:
+        if not self.config.is_testing:
             self.create_repo()
 
         logger.debug("Starting training process")
@@ -111,7 +111,7 @@ class MLLMTrainer(BaseTrainer):
         # TODO: HAVEN'T SUPPORT EVAL DATASET YET
 
         with self.config.allow_modification():
-            # self.config.training_kwargs.do_eval = not self.config.testing
+            # self.config.training_kwargs.do_eval = not self.config.is_testing
             self.config.trainer.training_kwargs.do_eval = False
 
         # TODO: Move somewhere, need a lot of refactoring tho then .-.
@@ -161,7 +161,7 @@ class MLLMTrainer(BaseTrainer):
         #     eps=self.config.trainer.training_kwargs.adam_epsilon,
         # )
 
-        if self.config.trainer.training_kwargs.report_to == "wandb":
+        if self.config.trainer.training_kwargs.report_to == "wandb" and not self.config.is_testing:
             # TODO: Fix this
             wandb.init(
                 name=self.config.trainer.training_kwargs.run_name,

@@ -1,3 +1,25 @@
+# MIT License
+#
+# Copyright (c) 2024 Edd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
 
@@ -258,8 +280,10 @@ def compute_metrics(eval_pred: tuple[np.ndarray, np.ndarray]) -> dict[str, float
 #         logger.debug("Formatting dataset for aspect sentiment analysis")
 
 #         def format_example(example):
-#             instruction = f"Tentukan sentimen (positif, netral, atau negatif) pada teks berikut dari sudut pandang {example['Entity']}"
-#             input_text = f"\n[Judul]: {example['Title']}\n[/Judul]\n[Konten]: {example['Content']}\n[/Konten]"
+#             instruction = f"Tentukan sentimen (positif, netral, atau negatif) pada teks berikut\
+#  dari sudut pandang {example['Entity']}"
+#             input_text = f"\n[Judul]: {example['Title']}\n[/Judul]\n[Konten]: \
+# {example['Content']}\n[/Konten]"
 #             # TODO: THIS IS HORRIBLE. I NEED TO SEPARATE DATASET INTO ONE CLASS AAAA
 #             output_text = example["Entity Sentiment"]
 #             return {
@@ -300,7 +324,7 @@ def compute_metrics(eval_pred: tuple[np.ndarray, np.ndarray]) -> dict[str, float
 #         train_test_split = dataset_dict["train"].train_test_split(test_size=0.2)
 #         test_valid_split = train_test_split["test"].train_test_split(test_size=0.5)
 
-#         if self.config.testing:
+#         if self.config.is_testing:
 #             split_dataset = DatasetDict(
 #                 {
 #                     "train": train_test_split["train"]

@@ -106,6 +106,7 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "src/supertrainer/utils/patching.py",
 ]
 line-length = 100
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"

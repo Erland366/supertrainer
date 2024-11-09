@@ -49,6 +49,9 @@ def main(cfg: DictConfig):
     memory_stats()
     set_global_seed()
 
+    if cfg.is_testing:
+        logger.info("TESTING MODE ENABLED")
+
     os.environ["WANDB_PROJECT"] = cfg.wandb.project
     if "entity" in cfg.wandb and cfg.wandb.entity:
         os.environ["WANDB_ENTITY"] = cfg.wandb.entity

@@ -34,6 +34,7 @@ from transformers import BitsAndBytesConfig
 import wandb
 from supertrainer import logger, type_hinting
 from supertrainer.utils import memory_stats
+from supertrainer.utils.helpers import remove_config_eval
 
 
 class ABCTrainer(ABC):
@@ -100,13 +101,18 @@ class BaseTrainer(ABCTrainer):
                 f"{model_name}_{dataset_name}_r{lora_rank}_lr{learning_rate}_e{num_epochs}_"
                 f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
             )
+
+            if config.is_testing:
+                run_name = "TESTING_" + run_name
             config.trainer.training_kwargs.run_name = run_name
 
             # TODO: Move this
+            wandb_kwargs = dict(tags=["testing"]) if config.is_testing else {}
             wandb.init(
-                project=config.wandb.project,  # Replace with your actual project name
-                entity=config.wandb.entity,  # Replace with your actual entity
+                project=config.wandb.project,
+                entity=config.wandb.entity,
                 name=config.trainer.training_kwargs.run_name,
+                **wandb_kwargs,
             )
 
             # output_dir add run_name
@@ -127,11 +133,11 @@ class BaseTrainer(ABCTrainer):
                 "device_map", None
             ) or {"": torch.cuda.current_device() if torch.cuda.is_available() else None}
 
-            ## Changd to adaptive attn implementatio
-            # config.trainer.model_kwargs.attn_implementation = (
-            #     config.trainer.model_kwargs.attn_implementation or "sdpa"
-            # )
             config.trainer.model_kwargs.quantization_config = quantization_config
+
+            # if is testing
+            if config.is_testing:
+                remove_config_eval(config)
 
         logger.debug(f"Configuration loaded: {config}")
         return config

@@ -43,6 +43,21 @@ torch_dtype = (
     else torch.float32
 )
 
+def remove_config_eval(config: type_hinting.Config) -> type_hinting.Config:
+    if config.trainer.training_kwargs.get("eval_strategy", None) is not None:
+        with config.allow_modification():
+            config.trainer.training_kwargs.eval_strategy = "no"
+
+    # This is must with eval, so delete
+    if config.trainer.training_kwargs.get("load_best_model_at_end", None) is not None:
+        del config.trainer.training_kwargs.load_best_model_at_end
+
+    if config.trainer.training_kwargs.get("eval_on_start", None) is not None:
+        del config.trainer.training_kwargs.eval_on_start
+
+    if config.trainer.training_kwargs.get("do_eval", None) is not None:
+        config.trainer.training_kwargs.do_eval = False
+
 
 def login_hf(environ_name: str = "HUGGINGFACE_API_KEY", token: str | None = None):
     if token is None:

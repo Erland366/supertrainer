@@ -219,7 +219,7 @@ supertrainer/
 - [ ] Implement LLM Training with HuggingFace Trainer?
 
 ## Known Bugs
-- [ ] I implemented `self.config.testing` but I don't really use it for the testing. Maybe I shoud really think better of this!
+- [ ] I implemented `self.config.is_testing` but I don't really use it for the testing. Maybe I shoud really think better of this!
 - [x] In `mllm` we actually need to pass the column name `image_col` for `DataCollatorWithPadding`, sadly we only pass the config name to `dataset/` and not in `trainers/`. This means I have to explicitly pass the `image_col` in the `postprocess_config` of `mllm`. One solution that I can think of is to not separately the config between `trainer` and `dataset` (Even though currently it's not splitted in `.yaml`, it'll get splitted in `src/supertrainer/train.py`)
 - [ ] Every single `push_to_hub` is still buggy :(. What I want is to be kinda like the [unsloth](https://github.com/unslothai/unsloth/blob/62c989ef0ae0e9fbac714a4cb21eda76c1fe84b6/unsloth/save.py#L183-L210) codebase where you can push the model to the hub while solving every single problem (basically just ready to inference).
    - One single "simple" example (only simple if you know the thing, if not you are screwed!) is to do padding to the left like [this](https://github.com/unslothai/unsloth/blob/62c989ef0ae0e9fbac714a4cb21eda76c1fe84b6/unsloth/save.py#L328-L329C37). Their repo is so gooodddd!!!!

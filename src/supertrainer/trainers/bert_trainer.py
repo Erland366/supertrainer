@@ -98,7 +98,7 @@ class BERTTrainer(BaseTrainer):
         return self._tokenizer
 
     def train(self):
-        if not self.config.testing:
+        if not self.config.is_testing:
             self.create_repo()
         logger.debug("Starting training process")
 
@@ -106,10 +106,10 @@ class BERTTrainer(BaseTrainer):
         dataset = self.dataset
         logger.debug("Initializing Trainer")
 
-        eval_dataset = dataset["validation"] if not self.config.testing else None
+        eval_dataset = dataset["validation"] if not self.config.is_testing else None
 
         with self.config.allow_modification():
-            self.config.trainer.training_kwargs.do_eval = not self.config.testing
+            self.config.trainer.training_kwargs.do_eval = not self.config.is_testing
 
         data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
 
@@ -131,7 +131,7 @@ class BERTTrainer(BaseTrainer):
         trainer_stats = trainer.train()
         logger.debug(f"Training completed. Stats: {trainer_stats}")
 
-        if not self.config.testing:
+        if not self.config.is_testing:
             # push configs
             self.push_config_to_hf(self.config)
             self.push_config_to_wandb(self.config)
