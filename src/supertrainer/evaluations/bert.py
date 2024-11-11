@@ -19,15 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import json
-import os
-from datetime import datetime
 from typing import Any
 
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from tqdm import tqdm
 
-from supertrainer import SUPERTRAINER_PUBLIC_ROOT, logger, type_hinting
+from supertrainer import logger, type_hinting
 from supertrainer.evaluations.base import BaseEvaluation
 from supertrainer.inferences.bert import BertInference
 from supertrainer.utils.helpers import get_model_name
@@ -38,11 +35,6 @@ class BertEvaluation(BaseEvaluation):
         self.config = self.postprocess_config(config)
         self.inference = BertInference(self.config)
         self.dataset = dataset
-
-    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
-        with config.allow_modification():
-            config.inference = config.evaluation
-        return config
 
     def evaluate(self):
         logger.info(f"Starting {get_model_name(self.inference.model)} evaluation")
@@ -116,34 +108,3 @@ class BertEvaluation(BaseEvaluation):
             "recall": recall,
             "f1_score": f1,
         }
-
-    def save_results(self, results: list[dict[str, Any]], metrics: dict[str, Any]):
-        dataset_path = self.config.dataset.dataset_kwargs.path
-        dataset_name = dataset_path.split("/")[-1]
-
-        subset_name = self.config.dataset.dataset_kwargs.get("split", "")
-        if subset_name:
-            dataset_name += f"-{subset_name}"
-
-        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-        folder_name = f"{dataset_name}-{current_time}"
-
-        model_name = (self.config.evaluation.model_name).split("/")[-1]
-        folder_name += f"-{model_name}"
-
-        public_root = os.environ[SUPERTRAINER_PUBLIC_ROOT]
-
-        output_folder = os.path.join(public_root, folder_name)
-
-        os.makedirs(output_folder, exist_ok=True)
-
-        results_file = os.path.join(output_folder, "results.json")
-        with open(results_file, "w") as f:
-            json.dump(results, f, indent=4)
-
-        metrics_file = os.path.join(output_folder, "metrics.json")
-        with open(metrics_file, "w") as f:
-            json.dump(metrics, f, indent=4)
-
-        logger.info(f"Results saved to {results_file}")
-        logger.info(f"Metrics saved to {metrics_file}")

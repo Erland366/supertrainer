@@ -22,10 +22,13 @@
 
 # src/supertrainer/evaluations/base_evaluation.py
 
+import json
+import os
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Any, Dict, List
 
-from supertrainer import logger, type_hinting
+from supertrainer import SUPERTRAINER_PUBLIC_ROOT, logger, type_hinting
 
 
 class BaseEvaluation(ABC):
@@ -34,7 +37,8 @@ class BaseEvaluation(ABC):
         self.dataset = dataset
 
     def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
-        # Implement any common post-processing of config here
+        with config.allow_modification():
+            config.inference = config.evaluation
         return config
 
     @abstractmethod
@@ -53,3 +57,34 @@ class BaseEvaluation(ABC):
         metrics = self.evaluate()
         logger.info(f"Evaluation completed. Metrics: {metrics}")
         return metrics
+
+    def save_results(self, results: list[dict[str, Any]], metrics: dict[str, Any]):
+        dataset_path = self.config.dataset.dataset_kwargs.path
+        dataset_name = dataset_path.split("/")[-1]
+
+        subset_name = self.config.dataset.dataset_kwargs.get("split", "")
+        if subset_name:
+            dataset_name += f"-{subset_name}"
+
+        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        folder_name = f"{dataset_name}-{current_time}"
+
+        model_name = (self.config.evaluation.model_name).split("/")[-1]
+        folder_name += f"-{model_name}"
+
+        public_root = os.environ[SUPERTRAINER_PUBLIC_ROOT]
+
+        output_folder = os.path.join(public_root, folder_name)
+
+        os.makedirs(output_folder, exist_ok=True)
+
+        results_file = os.path.join(output_folder, "results.json")
+        with open(results_file, "w") as f:
+            json.dump(results, f, indent=4)
+
+        metrics_file = os.path.join(output_folder, "metrics.json")
+        with open(metrics_file, "w") as f:
+            json.dump(metrics, f, indent=4)
+
+        logger.info(f"Results saved to {results_file}")
+        logger.info(f"Metrics saved to {metrics_file}")

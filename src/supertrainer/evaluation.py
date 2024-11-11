@@ -24,6 +24,7 @@ import os
 import sys
 
 import hydra
+from datasets import DatasetDict
 from dotenv import load_dotenv
 from omegaconf import DictConfig, OmegaConf
 
@@ -49,6 +50,10 @@ def main(cfg: DictConfig):
 
     dataset = import_class(cfg.dataset.class_name)(cfg)
     dataset = dataset.prepare_dataset()
+
+    if isinstance(dataset, DatasetDict):
+        logger.warning("Multiple datasets detected. Using the test dataset by default!.")
+        dataset = dataset["test"]
 
     evaluation = import_class(cfg.evaluation.class_name)(cfg, dataset)
     metrics = evaluation.evaluate()
