@@ -30,6 +30,24 @@ from supertrainer import logger, type_hinting
 from supertrainer.data.base import BaseDataset
 
 
+class InstructBlipDataCollator:
+    def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
+        self.processor = processor
+        self.config = config
+
+    def __call__(self, examples: list[dict[str, Any]]) -> dict[str, Any]:
+        texts = [
+            self.config.dataset.id2class[example[self.config.dataset.label_col]]
+            for example in examples
+        ]
+        images = [example[self.config.dataset.image_col] for example in examples]
+
+        batch = self.processor(text=texts, images=images, return_tensors="pt", padding=True)
+
+        batch["labels"] = batch["input_ids"].clone()
+        return batch
+
+
 class Phi35VisionDataCollator:
     def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
         self.processor = processor
@@ -78,19 +96,15 @@ class Phi35VisionDataCollator:
             all_input_ids.append(input_ids.squeeze(0).unsqueeze(1))
             all_label_ids.append(labels.squeeze(0).unsqueeze(1))
             all_pixel_values.append(batch["pixel_values"])
-            all_image_sizes.append(batch['image_sizes'])
+            all_image_sizes.append(batch["image_sizes"])
 
         # Pad and combine all sequences
         input_ids = torch._C._nn.pad_sequence(
-            all_input_ids,
-            batch_first=True,
-            padding_value=self.processor.tokenizer.pad_token_id
+            all_input_ids, batch_first=True, padding_value=self.processor.tokenizer.pad_token_id
         ).squeeze(2)
 
         labels = torch._C._nn.pad_sequence(
-            all_label_ids,
-            batch_first=True,
-            padding_value=IGNORE_INDEX
+            all_label_ids, batch_first=True, padding_value=IGNORE_INDEX
         ).squeeze(2)
 
         attention_mask = input_ids.ne(self.processor.tokenizer.pad_token_id)
@@ -102,9 +116,8 @@ class Phi35VisionDataCollator:
             "attention_mask": attention_mask,
             "labels": labels,
             "pixel_values": pixel_values,
-            'image_sizes': image_sizes,
+            "image_sizes": image_sizes,
         }
-
 
 
 class Florence2DataCollator:
