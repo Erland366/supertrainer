@@ -6,8 +6,8 @@ defaults:
 
 trainer:
   peft_kwargs:
-    r: 8
-    lora_alpha: 8
+    r: 64
+    lora_alpha: 128
     lora_dropout: 0.1
     target_modules:
       - "qkv_proj"
@@ -18,8 +18,10 @@ trainer:
     init_lora_weights: "gaussian"
   training_kwargs:
     num_train_epochs: 1
-    per_device_train_batch_size: 1 # must be one for phi35
+    per_device_train_batch_size: 3 # must be one for phi35
     hub_model_id: "Erland/Phi-3.5V-soft-robotics"
+  model_kwargs:
+    _attn_implementation: eager
 
   processor_kwargs:
     num_crops: 16

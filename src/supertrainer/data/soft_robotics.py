@@ -22,7 +22,6 @@
 
 from __future__ import annotations
 
-import random
 from typing import Any
 
 import torch
@@ -37,47 +36,75 @@ class Phi35VisionDataCollator:
         self.config = config
 
     def __call__(self, examples: list[dict[str, Any]]) -> dict[str, Any]:
-        assert len(examples) == 1, "Phi3.5V only supports batch size of 1"
+        IGNORE_INDEX = -100
+        all_input_ids = []
+        all_label_ids = []
+        all_pixel_values = []
+        all_image_sizes = []
 
-        example = examples[0]
+        for example in examples:
+            image = example[self.config.dataset.image_col]
+            answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
 
-        image = example[self.config.dataset.image_col]
+            prompt_message = {
+                "role": "user",
+                "content": "<|image_1|>\nAnswer briefly.",
+            }
 
-        answer = random.choice(self.config.dataset.id2class[example[self.config.dataset.label_col]])
-        prompt_message = {
-            "role": "user",
-            "content": "<|image_1|>\nAnswer briefly.",
+            prompt = self.processor.tokenizer.apply_chat_template(
+                [prompt_message], tokenize=False, add_generation_prompt=True
+            )
+            answer = f"{answer}<|end|>\n<|endoftext|>"
+
+            # Process each example
+            batch = self.processor(prompt, [image], return_tensors="pt")
+            prompt_input_ids = batch["input_ids"]
+
+            # Do not add bos token to answer
+            answer_input_ids = self.processor.tokenizer(
+                answer, add_special_tokens=False, return_tensors="pt"
+            )["input_ids"]
+
+            input_ids = torch.cat([prompt_input_ids, answer_input_ids], dim=1)
+            labels = torch.cat(
+                [
+                    torch.tensor([IGNORE_INDEX] * len(prompt_input_ids[0])).unsqueeze(0),
+                    answer_input_ids,
+                ],
+                dim=1,
+            )
+
+            # Prepare for pad_sequence
+            all_input_ids.append(input_ids.squeeze(0).unsqueeze(1))
+            all_label_ids.append(labels.squeeze(0).unsqueeze(1))
+            all_pixel_values.append(batch["pixel_values"])
+            all_image_sizes.append(batch['image_sizes'])
+
+        # Pad and combine all sequences
+        input_ids = torch._C._nn.pad_sequence(
+            all_input_ids,
+            batch_first=True,
+            padding_value=self.processor.tokenizer.pad_token_id
+        ).squeeze(2)
+
+        labels = torch._C._nn.pad_sequence(
+            all_label_ids,
+            batch_first=True,
+            padding_value=IGNORE_INDEX
+        ).squeeze(2)
+
+        attention_mask = input_ids.ne(self.processor.tokenizer.pad_token_id)
+        pixel_values = torch.cat(all_pixel_values, dim=0)
+        image_sizes = torch.cat(all_image_sizes, dim=0)
+
+        return {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "labels": labels,
+            "pixel_values": pixel_values,
+            'image_sizes': image_sizes,
         }
 
-        prompt = self.processor.tokenizer.apply_chat_template(
-            [prompt_message], tokenize=False, add_generation_prompt=True
-        )
-        answer = f"{answer}<|end|>\n<|endoftext|>"
-
-        # mask questions for labels
-        batch = self.processor(prompt, [image], return_tensors="pt")
-        prompt_input_ids = batch["input_ids"]
-
-        # Do not add bos token to answer
-        answer_input_ids = self.processor.tokenizer(
-            answer, add_special_tokens=False, return_tensors="pt"
-        )["input_ids"]
-
-        input_ids = torch.cat([prompt_input_ids, answer_input_ids], dim=1)
-        ignore_index = -100
-        labels = torch.cat(
-            [
-                torch.tensor([ignore_index] * len(prompt_input_ids[0])).unsqueeze(0),
-                answer_input_ids,
-            ],
-            dim=1,
-        )
-
-        batch["input_ids"] = input_ids
-        del batch["attention_mask"]
-        batch["labels"] = labels
-
-        return batch
 
 
 class Florence2DataCollator:
