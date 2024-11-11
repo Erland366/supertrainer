@@ -28,6 +28,77 @@ from transformers import PreTrainedModel, PreTrainedTokenizer
 from supertrainer import logger, type_hinting
 
 
+class BaseInferenceMLLM(ABC):
+    def __init__(self, config: type_hinting.Config) -> None:
+        self.config = self.postprocess_config(config)
+        self._model = None
+        self._processor = None
+
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
+        return config
+
+    @abstractmethod
+    def load_model(self) -> PreTrainedModel:
+        """Load and return the model."""
+        pass
+
+    @abstractmethod
+    def load_processor(self) -> PreTrainedTokenizer:
+        """Load and return the tokenizer."""
+        pass
+
+    @property
+    def model(self) -> PreTrainedModel:
+        if self._model is None:
+            logger.debug("Loading model")
+            self._model = self.load_model()
+            self._model.eval()  # Set model to evaluation mode
+            self._model.to(self.device)
+        return self._model
+
+    @property
+    def processor(self) -> PreTrainedTokenizer:
+        if self._processor is None:
+            logger.info("Lazy Loading tokenizer")
+            self._processor = self.load_processor()
+        return self._processor
+
+    @property
+    def device(self) -> torch.device:
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    @abstractmethod
+    def preprocess(self, text: str) -> type_hinting.Tensor:
+        """Preprocess the text."""
+        pass
+
+    @abstractmethod
+    def postprocess(self, outputs: type_hinting.Tensor) -> type_hinting.Tensor:
+        """Postprocess the outputs."""
+        pass
+
+    @abstractmethod
+    def predict(self, text: str) -> type_hinting.Tensor:
+        """Predict the output for the given text."""
+        pass
+
+    def iterative_predict(self):
+        """Run iterative inference in a loop."""
+        logger.info("Starting iterative inference. Type 'exit' or 'quit' to stop.")
+        try:
+            while True:
+                text = input("Enter input for prediction: ").strip()
+                if text.lower() in {"exit", "quit"}:
+                    logger.info("Stopping iterative inference.")
+                    break
+                if not text:
+                    print("Empty input. Please enter valid text.")
+                    continue
+                prediction = self.predict(text)
+                print(f"Prediction: {prediction}")
+        except KeyboardInterrupt:
+            logger.info("Iterative inference interrupted by user.")
+
 class BaseInference(ABC):
     def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)

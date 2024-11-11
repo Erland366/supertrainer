@@ -1,0 +1,20 @@
+# @package _global_
+
+defaults:
+- /trainer/common/training_kwargs@evaluation.training_kwargs: default
+- /trainer/common/bitsandbytes_kwargs@evaluation.bitsandbytes_kwargs: nf4
+- /trainer/common/model_kwargs@evaluation.model_kwargs: default
+- /dataset/mllm@dataset: soft_robotics
+- /wandb
+- _self_
+
+evaluation:
+  compile: False
+  training_kwargs:
+    remove_unused_columns: False
+    auto_find_batch_size: False
+
+  inference_kwargs:
+    max_new_tokens: 128
+    use_cache: True
+    temperature: 0.0001
