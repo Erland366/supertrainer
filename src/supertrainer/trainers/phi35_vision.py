@@ -65,7 +65,6 @@ class Phi35VisionTrainer(BaseMLLMTrainer):
                 AutoModelForCausalLM.from_pretrained,
                 self.config.trainer.model_name,
                 trust_remote_code=True,
-                _attn_implementation="eager",  # Need to be eager somehow!
                 **self.config.trainer.model_kwargs,
             )
 

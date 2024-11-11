@@ -1,3 +1,4 @@
 torch_dtype: auto
 use_cache: False
 device_map: auto
+low_cpu_mem_usage: True
