@@ -161,6 +161,8 @@ class Phi35VisionTrainer(BaseMLLMTrainer):
         logger.debug(f"Training completed. Stats: {trainer_stats}")
 
         if not self.config.is_testing:
+            # freaking weird bug of phiprocessor didn't have chattemplate!'
+            setattr(self.processor, "chat_template", None)
             # push configs
             self.push_config_to_hf(self.config)
             self.push_config_to_wandb(self.config)

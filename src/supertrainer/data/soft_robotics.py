@@ -48,6 +48,33 @@ class InstructBlipDataCollator:
         return batch
 
 
+class InstructBlipDataCollator2:
+    def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
+        self.processor = processor
+        self.config = config
+
+    def __call__(self, examples: list[dict[str, Any]]) -> dict[str, Any]:
+        prompt = (
+            "Question: What material is this object made of? "
+            "Respond unknown if you are not sure. Short answer:"
+        )
+
+        texts = [prompt] * len(examples)
+        images = [example[self.config.dataset.image_col] for example in examples]
+
+        batch = self.processor(text=texts, images=images, return_tensors="pt", padding=True)
+
+        # Process labels
+        labels = [
+            self.config.dataset.id2class[example[self.config.dataset.label_col]]
+            for example in examples
+        ]
+        tokenized_labels = self.processor(text=labels, return_tensors="pt", padding=True)
+
+        batch["labels"] = tokenized_labels["input_ids"]
+        return batch
+
+
 class Phi35VisionDataCollator:
     def __init__(self, config: type_hinting.Config, processor: "AutoProcessor") -> None:  # noqa # type: ignore
         self.processor = processor

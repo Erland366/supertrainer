@@ -1,0 +1,37 @@
+# @package _global_
+
+defaults:
+- /experiments/soft_robotics/default_evaluation
+- _self_
+
+evaluation:
+  peft_kwargs:
+    r: 64
+    lora_alpha: 128
+    lora_dropout: 0.1
+    target_modules:
+      - "qkv_proj"
+      - "o_proj"
+      - "down_proj"
+      - "gate_up_proj"
+    use_dora: False
+    init_lora_weights: "gaussian"
+  training_kwargs:
+    num_train_epochs: 1
+    per_device_train_batch_size: 4
+    hub_model_id: "Erland/phi35vision-soft-robotics"
+  model_kwargs:
+    _attn_implementation: eager
+
+
+  processor_kwargs:
+    num_crops: 16
+
+  class_name: supertrainer.evaluations.phi35_vision.Phi35VisionEvaluation
+  model_name: Erland/Phi-3.5V-soft-robotics_20241111_202354
+
+dataset:
+  data_collator_class_name: supertrainer.data.soft_robotics.ChameleonDataCollator
+  dataset_kwargs:
+    path: Erland/AI701_project
+  tokenizer_name_or_path: ${evaluation.model_name}

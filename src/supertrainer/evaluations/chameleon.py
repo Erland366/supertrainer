@@ -104,8 +104,8 @@ class ChameleonEvaluation(BaseEvaluation):
         for i, data in enumerate(
             tqdm(self.dataset, desc=f"Evaluating {get_model_name(self.inference.model)}")
         ):
-            image = data["resized_image_64"]
-            true_label = data["label"]
+            image = data[self.config.dataset.image_col]
+            true_label = data[self.config.dataset.label_col]
             raw_prediction = self.inference.predict(image)
 
             cleaned_prediction, is_unknown = self.clean_prediction(raw_prediction)
