@@ -77,6 +77,15 @@ class InstructBlipTrainer(BaseMLLMTrainer):
                 **self.config.trainer.model_kwargs,
             )
 
+            # self.processor.num_query_tokens = model.config.num_query_tokens
+            # image_token = AddedToken("<image>", normalized=False, special=True)
+            # self.processor.tokenizer.add_tokens([image_token], special_tokens=True)
+
+            # model.resize_token_embeddings(
+            #     len(self.processor.tokenizer), pad_to_multiple_of=64
+            # )  # pad for efficient computation
+            # model.config.image_token_index = len(self.processor.tokenizer) - 1
+
             # checkpointing here!
             model.gradient_checkpointing_enable(
                 gradient_checkpointing_kwargs={"use_reentrant": False}

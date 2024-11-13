@@ -1,10 +1,10 @@
 # @package _global_
 
 defaults:
-- /experiments/soft_robotics/default
+- /experiments/soft_robotics/default_evaluation
 - _self_
 
-trainer:
+evaluation:
   peft_kwargs:
     r: 64
     lora_alpha: 128
@@ -17,20 +17,22 @@ trainer:
     use_dora: False
     init_lora_weights: "gaussian"
   training_kwargs:
-    learning_rate: 1e-5
-    gradient_accumulation_steps: 16
-    weight_decay: 0.05
-    num_train_epochs: 10
-    per_device_train_batch_size: 8 # must be one for phi35
-    hub_model_id: "Erland/Instruct-BLIP-soft-robotics"
+    num_train_epochs: 1
+    per_device_train_batch_size: 4
+    hub_model_id: "Erland/instruct-blip-soft-robotics"
   model_kwargs:
     _attn_implementation: eager
 
+
   processor_kwargs:
-  class_name: supertrainer.trainers.instruct_blip.InstructBlipTrainer
-  model_name: Salesforce/instructblip-flan-t5-xl
+    num_crops: 16
+
+  class_name: supertrainer.evaluations.instruct_blip.InstructBlipEvaluation
+  model_name: Erland/Instruct-BLIP-soft-robotics_20241113_224301
 
 dataset:
   data_collator_class_name: supertrainer.data.soft_robotics.InstructBlipDataCollator2
+  dataset_kwargs:
+    path: Erland/AI701_project
+  tokenizer_name_or_path: ${evaluation.model_name}
   image_col: resized_image
-  label_col: label

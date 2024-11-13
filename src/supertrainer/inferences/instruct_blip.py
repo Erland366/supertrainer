@@ -23,33 +23,34 @@
 from __future__ import annotations
 
 import torch
+from peft import PeftConfig, PeftModel
 from PIL import Image
+from transformers import InstructBlipForConditionalGeneration
 
-from supertrainer import logger, type_hinting
-from supertrainer.inferences.base import BaseInferenceMLLM
+from supertrainer import type_hinting
+from supertrainer.inferences.chameleon import ChameleonInference
 from supertrainer.utils.helpers import load_model_with_adaptive_attention, torch_dtype
 
 
-class ChameleonInference(BaseInferenceMLLM):
+class InstructBlipInference(ChameleonInference):
     def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)
         super().__init__(config)
 
-        # Unsloth load model and tokenizer at the same time! Need buffer for them
+        # Instruct Blip can be used without chat template!
         self.chat_template = "<image>Answer briefly.\n"
 
-    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
-        return config
-
-    def load_model(self) -> "ChameleonForConditionalGeneration":  # type: ignore # noqa: F821
+    def load_model(self) -> "InstructBlipForConditionalGeneration":
         if self._model is None:
-            from peft import PeftConfig, PeftModel
-            from transformers import ChameleonForConditionalGeneration
-
             peft_config = PeftConfig.from_pretrained(self.config.inference.model_name)
 
+            # Error for Blip!
+            with self.config.allow_modification():
+                if self.config.inference.model_kwargs.get("use_cache", None) is not None:
+                    del self.config.inference.model_kwargs.use_cache
+
             model = load_model_with_adaptive_attention(
-                ChameleonForConditionalGeneration.from_pretrained,
+                InstructBlipForConditionalGeneration.from_pretrained,
                 peft_config.base_model_name_or_path,
                 trust_remote_code=True,
                 **self.config.inference.model_kwargs,
@@ -66,72 +67,44 @@ class ChameleonInference(BaseInferenceMLLM):
             self._model = model
         return self._model
 
-    def load_processor(self) -> "AutoProcessor":  # type: ignore # noqa: F821
+    def load_processor(self) -> "InstructionBlipProcessor":  # type: ignore # noqa: F821
         if self._processor is None:
-            from transformers import ChameleonProcessor
+            from transformers import InstructBlipProcessor
 
             if self.config.inference.processor_kwargs is None:
                 with self.config.allow_modification():
                     self.config.inference.processor_kwargs = {}
-            self._processor = ChameleonProcessor.from_pretrained(
+            self._processor = InstructBlipProcessor.from_pretrained(
                 self.config.inference.model_name,
                 trust_remote_code=True,
                 **self.config.inference.processor_kwargs,
             )
-
         return self._processor
 
+    def postprocess(self, outputs: torch.Tensor) -> str:
+        return self.processor.decode(outputs, skip_special_tokens=True)
+
     def preprocess(self, image: Image) -> type_hinting.Tensor:
-        prompt = "<image>Answer briefly.\n"
-        inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(
+        prompt = (
+            "Question: What material is this object made of? "
+            "Respond unknown if you are not sure. Short answer:"
+        )
+
+        inputs = self.processor(text=prompt, images=image, return_tensors="pt").to(
             self.model.device, dtype=torch_dtype
         )
         return inputs
-
-    def postprocess(self, outputs: type_hinting.Tensor) -> str:
-        # print("Generated tokens:")
-        # for token_id in outputs:
-        #     token = self.processor.decode([token_id])
-        #     print(f"Token ID {token_id}: '{token}'")
-        return self.processor.decode(outputs, skip_special_tokens=True)
 
     def predict(self, image: Image) -> str:
         inputs = self.preprocess(image=image)
 
         with torch.no_grad():
             outputs = self.model.generate(
+                # for instruct blip, we only pass the pixel values!
                 **inputs,
                 **self.config.inference.inference_kwargs,
                 forced_eos_token_id=self.processor.tokenizer.eos_token_id,
             )
 
-        prediction = self.postprocess(outputs[0][inputs["input_ids"].shape[1] :])
+        prediction = self.postprocess(outputs[0])
         return prediction
-
-    def iterative_predict(self):
-        """Run iterative inference in a loop."""
-        logger.info("Starting iterative inference. Type 'exit' or 'quit' to stop.")
-        from supertrainer.utils.helpers import load_dataset_plus_plus
-
-        dataset = load_dataset_plus_plus(self.config.dataset.dataset_kwargs.path)
-        dataset = dataset["test"]
-        len_dataset = len(dataset)
-        logger.info(f"Loaded dataset: {dataset}")
-
-        try:
-            while True:
-                text = input("Enter idx for prediction: ").strip()
-                if text.lower() in {"exit", "quit"}:
-                    logger.info("Stopping iterative inference.")
-                    break
-                if not text:
-                    print("Empty input. Please enter valid text.")
-                    continue
-                text = int(text)
-                if text >= len_dataset and text < 0:
-                    logger.info("Index out of range. Try input between 0 and {len_dataset}")
-                    continue
-                prediction = self.predict(dataset[text]["resized_image_64"])
-                print(f"Prediction: {prediction}")
-        except KeyboardInterrupt:
-            logger.info("Iterative inference interrupted by user.")
