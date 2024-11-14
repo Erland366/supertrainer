@@ -26,3 +26,7 @@ evaluation:
     top_p: 0.9
     repetition_penalty: 1.5
     length_penalty: 1.0
+
+  prompt_template: >-
+    Question: What material is this object made of?
+    Respond unknown if you are not sure. Short answer:

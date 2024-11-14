@@ -85,7 +85,7 @@ class Phi35VisionInference(ChameleonInference):
         prompt_message = [
             {
                 "role": "user",
-                "content": "<|image_1|>\nAnswer briefly.",
+                "content": f"<|image_1|>\n{self.config.evaluation.prompt_template}",
             },
         ]
         prompt = self.processor.tokenizer.apply_chat_template(

@@ -30,7 +30,7 @@ evaluation:
   processor_kwargs:
 
   class_name: supertrainer.evaluations.chameleon.ChameleonEvaluation
-  model_name: Erland/chameleon-soft-robotics_20241110_201034
+  model_name: Erland/chameleon-soft-robotics_20241114_051447
 
 dataset:
   data_collator_class_name: supertrainer.data.soft_robotics.ChameleonDataCollator
