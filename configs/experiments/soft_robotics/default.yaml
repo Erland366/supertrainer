@@ -11,5 +11,12 @@ defaults:
 trainer:
   compile: False
   training_kwargs:
+    learning_rate: 1e-5
+    gradient_accumulation_steps: 16
+    weight_decay: 0.05
+    num_train_epochs: 10
     remove_unused_columns: False
     auto_find_batch_size: False
+  prompt_template: >-
+    Question: What material is this object made of?
+    Respond unknown if you are not sure. Short answer:

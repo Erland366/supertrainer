@@ -28,7 +28,7 @@ evaluation:
     num_crops: 16
 
   class_name: supertrainer.evaluations.instruct_blip.InstructBlipEvaluation
-  model_name: Erland/Instruct-BLIP-soft-robotics_20241113_224301
+  model_name: Erland/Instruct-BLIP-soft-robotics_20241113_232854
 
 dataset:
   data_collator_class_name: supertrainer.data.soft_robotics.InstructBlipDataCollator2
