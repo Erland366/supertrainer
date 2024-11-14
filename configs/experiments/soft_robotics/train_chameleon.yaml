@@ -20,7 +20,6 @@ trainer:
     use_dora: False
     init_lora_weights: "gaussian"
   training_kwargs:
-    num_train_epochs: 3
     per_device_train_batch_size: 4
     hub_model_id: "Erland/chameleon-soft-robotics"
   model_kwargs:

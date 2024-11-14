@@ -54,10 +54,11 @@ class InstructBlipDataCollator2:
         self.config = config
 
     def __call__(self, examples: list[dict[str, Any]]) -> dict[str, Any]:
-        prompt = (
-            "Question: What material is this object made of? "
-            "Respond unknown if you are not sure. Short answer:"
-        )
+        # Might need to change this place!
+        if self.config.trainer.get("prompt_template", None) is None:
+            with self.config.allow_modification():
+                self.config.trainer.prompt_template = "Answer briefly."
+        prompt = self.config.trainer.get("prompt_template", "Answer briefly.")
 
         texts = [prompt] * len(examples)
         images = [example[self.config.dataset.image_col] for example in examples]
@@ -90,10 +91,15 @@ class Phi35VisionDataCollator:
         for example in examples:
             image = example[self.config.dataset.image_col]
             answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
+            # Might need to change this place!
+            if self.config.trainer.get("prompt_template", None) is None:
+                with self.config.allow_modification():
+                    self.config.trainer.prompt_template = "Answer briefly."
+            prompt = self.config.trainer.get("prompt_template", "Answer briefly.")
 
             prompt_message = {
                 "role": "user",
-                "content": "<|image_1|>\nAnswer briefly.",
+                "content": f"<|image_1|>\n{prompt}"
             }
 
             prompt = self.processor.tokenizer.apply_chat_template(
@@ -156,10 +162,15 @@ class Florence2DataCollator:
         texts = []
         images = []
         answers = []
+
+        if self.config.trainer.get("prompt_template", None) is None:
+            with self.config.allow_modification():
+                self.config.trainer.prompt_template = "Answer briefly."
+        prompt = self.config.trainer.get("prompt_template", "Answer briefly.")
         for example in examples:
             image = example[self.config.dataset.image_col]
             answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
-            text = "<DocVQA>Answer briefly."
+            text = f"<DocVQA>{prompt}"
             texts.append(text)
             images.append([image])
             answers.append(answer)
@@ -193,10 +204,16 @@ class ChameleonDataCollator:
         images = []
         image_token_id = self.processor.tokenizer.added_tokens_encoder.get("<image>", None)
         eos_token = self.processor.tokenizer.eos_token
+
+        if self.config.trainer.get("prompt_template", None) is None:
+            with self.config.allow_modification():
+                self.config.trainer.prompt_template = "Answer briefly."
+        prompt = self.config.trainer.get("prompt_template", "Answer briefly.")
+
         for example in examples:
             image = example[self.config.dataset.image_col]
             answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
-            text = "<image>Answer briefly.\n" + answer + eos_token
+            text = f"<image>{prompt}\n" + answer + eos_token
             texts.append(text.strip())
             images.append([image])
 
@@ -220,6 +237,12 @@ class Idefics3DataCollator:
         image_token_id = self.processor.tokenizer.additional_special_tokens_ids[
             self.processor.tokenizer.additional_special_tokens.index("<image>")
         ]
+
+        if self.config.trainer.get("prompt_template", None) is None:
+            with self.config.allow_modification():
+                self.config.trainer.prompt_template = "Answer briefly."
+        prompt = self.config.trainer.get("prompt_template", "Answer briefly.")
+
         for example in examples:
             image = example[self.config.dataset.image_col]
             answer = self.config.dataset.id2class[example[self.config.dataset.label_col]]
@@ -227,7 +250,7 @@ class Idefics3DataCollator:
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "Answer briefly."},
+                        {"type": "text", "text": f"{prompt}"},
                         {"type": "image"},
                     ],
                 },
