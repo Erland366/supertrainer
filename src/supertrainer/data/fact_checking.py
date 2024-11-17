@@ -26,6 +26,34 @@ from supertrainer import logger, type_hinting
 from supertrainer.data.base import BaseDataset, BaseDatasetFormatter
 
 
+class FactCheckingTrainingDataset(BaseDataset):
+    def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
+        super().__init__(self.postprocess_config(config), is_testing)
+        self._is_prepared = None
+
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
+        classes = config.dataset.classes
+        num_classes = len(classes)
+        class2id = {class_: i for i, class_ in enumerate(classes)}
+        id2class = {i: class_ for i, class_ in enumerate(classes)}
+        with config.allow_modification():
+            config.dataset.class2id = class2id
+            config.dataset.id2class = id2class
+            config.dataset.num_classes = num_classes
+
+        return config
+
+    def prepare_dataset(self) -> "DatasetDict":  # noqa # type: ignore
+        logger.debug("Preparing dataset")
+        dataset = self.dataset
+
+        logger.debug(f"Dataset loaded: {dataset}")
+
+        logger.debug("Bert Model preprocessing is in data collator, return the dataset as is")
+
+        return dataset
+
+
 class FactCheckingBERTEvaluationDataset(BaseDataset):
     def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
         super().__init__(self.postprocess_config(config), is_testing)
@@ -105,6 +133,7 @@ class FactCheckingSonnetEvaluationDataset(FactCheckingBERTEvaluationDataset):
     # Should be the same here
     pass
 
+
 class FactCheckingGPTEvaluationDataset(FactCheckingBERTEvaluationDataset):
     # This dataset is used for the Sonnet model
     # Should be the same here
@@ -121,6 +150,7 @@ class FactCheckingMistralEvaluationDataset(FactCheckingBERTEvaluationDataset):
     # This dataset is used for the Mistral model
     # Should be the same here
     pass
+
 
 class FactCheckingLlamaEvaluationDataset(FactCheckingBERTEvaluationDataset):
     # This dataset is used for the Mistral model

@@ -28,7 +28,7 @@ inference:
     num_crops: 16
 
   class_name: supertrainer.inferences.phi35_vision.Phi35VisionInference
-  model_name: Erland/Phi-3.5V-soft-robotics_20241111_202354
+  model_name: Erland/Phi-3.5V-soft-robotics_20241114_180415
 
 dataset:
-  data_collator_class_name: supertrainer.data.soft_robotics.ChameleonDataCollator
+  data_collator_class_name: supertrainer.data.soft_robotics.Phi35Vision

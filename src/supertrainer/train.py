@@ -56,20 +56,6 @@ def main(cfg: DictConfig):
     if "entity" in cfg.wandb and cfg.wandb.entity:
         os.environ["WANDB_ENTITY"] = cfg.wandb.entity
 
-    ## Will use this instead of below code
-    # cfg = import_class(cfg.postprocess_config.class_name)().postprocess(cfg)
-
-    ## temporary, will move this!
-    if "bert" in cfg.trainer.class_name:
-        classes = cfg.trainer.classes
-        num_classes = len(classes)
-        class2id = {class_: i for i, class_ in enumerate(classes)}
-        id2class = {i: class_ for i, class_ in enumerate(classes)}
-        with cfg.allow_modification():
-            cfg.dataset.class2id = class2id
-            cfg.dataset.id2class = id2class
-            cfg.dataset.num_classes = num_classes
-
     dataset = import_class(cfg.dataset.class_name)(cfg)
     dataset = dataset.prepare_dataset()
 

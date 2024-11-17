@@ -1,5 +1,0 @@
-# @package _global_
-
-defaults:
-- /experiments/fact_checking/default
-- _self_

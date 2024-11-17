@@ -1,10 +1,10 @@
 # @package _global_
 
 defaults:
-- /experiments/soft_robotics/default
+- /experiments/soft_robotics/default_inference
 - _self_
 
-trainer:
+inference:
   peft_kwargs:
     r: 64
     lora_alpha: 128
@@ -20,12 +20,18 @@ trainer:
     use_dora: False
     init_lora_weights: "gaussian"
   training_kwargs:
-    per_device_train_batch_size: 2
-    hub_model_id: "Erland/idefics3-soft-robotics"
+    num_train_epochs: 1
+    per_device_train_batch_size: 4
+    hub_model_id: "Erland/Phi-3.5V-soft-robotics"
+  model_kwargs:
+    _attn_implementation: eager
+
 
   processor_kwargs:
-  class_name: supertrainer.trainers.idefics3.Idefics3Trainer
-  model_name: HuggingFaceM4/Idefics3-8B-Llama3
+    num_crops: 16
+
+  class_name: supertrainer.inferences.idefics3.Idefics3Inference
+  model_name: Erland/Phi-3.5V-soft-robotics_20241114_180415
 
 dataset:
   data_collator_class_name: supertrainer.data.soft_robotics.Idefics3DataCollator
