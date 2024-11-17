@@ -160,7 +160,7 @@ To change the dataset, you can specify your dataset in `configs/dataset/mllm/sof
 
 To change the model adapter, you can specify your adapter in `configs/experiments/soft_robotics/evaluation_instruct_blip.yaml` under `evaluation/model_name` key.
 
-### DeepseekVL, InternVL, Deepseek Janus
+#### DeepseekVL, InternVL, Deepseek Janus
 You can follow an example notebook in `notebooks/swift_inference.ipynb` and change the model accordingly.
 
 <!-- ## Contributing
