@@ -112,6 +112,16 @@ To train `InstructBLIP` model, you can do it by :
 python src/supertrainer/train.py +experiments/soft_robotics=train_instruct_blip
 ```
 
+#### DeepseekVL, InternVL, Deepseek Janus
+
+To Train these models, first you need to adjust the training script in `scripts/ai701/train_swift.sh` and prepare the dataset first by following the guideline in [ms-swift documentation](https://swift.readthedocs.io/en/latest/). After that, you can run the training script by running this command :
+
+```
+./scripts/ai701/train_swift.sh <model_name>
+```
+
+``
+
 ### Evaluation
 
 #### Chameleon
@@ -149,6 +159,10 @@ python src/supertrainer/evaluation.py +experiments/soft_robotics=evaluation_inst
 To change the dataset, you can specify your dataset in `configs/dataset/mllm/soft_robotics.yaml` under `dataset_kwargs/path` key
 
 To change the model adapter, you can specify your adapter in `configs/experiments/soft_robotics/evaluation_instruct_blip.yaml` under `evaluation/model_name` key.
+
+### DeepseekVL, InternVL, Deepseek Janus
+You can follow an example notebook in `notebooks/swift_inference.ipynb` and change the model accordingly.
+
 <!-- ## Contributing
 
 We welcome contributions! Please feel free to submit a Pull Request.
