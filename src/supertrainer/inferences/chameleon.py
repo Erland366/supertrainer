@@ -82,7 +82,7 @@ class ChameleonInference(BaseInferenceMLLM):
         return self._processor
 
     def preprocess(self, image: Image) -> type_hinting.Tensor:
-        prompt = "<image>Answer briefly.\n"
+        prompt = f"<image>{self.config.evaluation.prompt_template}\n"
         inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(
             self.model.device, dtype=torch_dtype
         )

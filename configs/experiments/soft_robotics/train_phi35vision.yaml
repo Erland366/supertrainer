@@ -19,6 +19,7 @@ trainer:
   training_kwargs:
     per_device_train_batch_size: 2 # must be one for phi35
     hub_model_id: "Erland/Phi-3.5V-soft-robotics"
+    num_train_epochs: 4
   model_kwargs:
     _attn_implementation: eager
 

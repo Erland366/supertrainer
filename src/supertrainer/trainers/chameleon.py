@@ -116,6 +116,8 @@ class ChameleonTrainer(BaseMLLMTrainer):
         if dataset.get("validation", None) is None or self.config.is_testing:
             eval_dataset = None
             remove_config_eval(self.config)
+        else:
+            eval_dataset = dataset["validation"]
 
         data_collator = import_class(self.config.dataset.data_collator_class_name)(
             processor=self.processor,

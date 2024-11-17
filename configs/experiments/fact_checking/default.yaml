@@ -1,5 +1,19 @@
 # @package _global_
 
 defaults:
-- /trainer: bert/bert_kwargs
-- /dataset: bert/fact_checking
+- /trainer/common/training_kwargs@trainer.training_kwargs: default
+- /trainer/common/bitsandbytes_kwargs@trainer.bitsandbytes_kwargs: nf4
+- /trainer/common/model_kwargs@trainer.model_kwargs: default
+- /dataset/bert@dataset: fact_checking
+- /wandb
+- _self_
+
+trainer:
+  compile: False
+  training_kwargs:
+    learning_rate: 1e-5
+    gradient_accumulation_steps: 16
+    weight_decay: 0.05
+    num_train_epochs: 10
+    remove_unused_columns: False
+    auto_find_batch_size: False

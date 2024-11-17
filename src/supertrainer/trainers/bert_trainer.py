@@ -20,17 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from peft import LoraConfig, get_peft_model
+import torch
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding,
     Trainer,
     TrainingArguments,
 )
+from unsloth_zoo.patching_utils import patch_torch_compile
 
 from supertrainer import logger, type_hinting
 from supertrainer.evaluations.classification import compute_metrics
 from supertrainer.trainers.base_trainer import BaseTrainer
+from supertrainer.utils.helpers import load_model_with_adaptive_attention, remove_config_eval
 
 
 class BERTTrainer(BaseTrainer):
@@ -43,7 +46,7 @@ class BERTTrainer(BaseTrainer):
         # even though it's guarantee that we will always call the super
         config = super().postprocess_config(config)
 
-        classes = config.trainer.classes
+        classes = config.dataset.classes
 
         # create mapping and num of class first
         num_classes = len(classes)
@@ -77,11 +80,24 @@ class BERTTrainer(BaseTrainer):
             lora_config = LoraConfig(
                 **self.config.trainer.peft_kwargs,
             )
-            model = AutoModelForSequenceClassification.from_pretrained(
-                self.config.trainer.model_name, **self.config.trainer.model_kwargs
+            model = load_model_with_adaptive_attention(
+                AutoModelForSequenceClassification,
+                self.config.trainer.model_name,
+                **self.config.trainer.model_kwargs,
             )
+
+            model.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False}
+            )
+
+            model = prepare_model_for_kbit_training(model)
+
             model = get_peft_model(model, lora_config)
             model.print_trainable_parameters()
+
+            if self.config.trainer.compile:
+                patch_torch_compile()
+                model = torch.compile(model)
             self._model = model
         return self._model
 
@@ -106,7 +122,11 @@ class BERTTrainer(BaseTrainer):
         dataset = self.dataset
         logger.debug("Initializing Trainer")
 
-        eval_dataset = dataset["validation"] if not self.config.is_testing else None
+        if dataset.get("validation", None) is None or self.config.is_testing:
+            eval_dataset = None
+            remove_config_eval(self.config)
+        else:
+            eval_dataset = dataset["validation"]
 
         with self.config.allow_modification():
             self.config.trainer.training_kwargs.do_eval = not self.config.is_testing
@@ -131,16 +151,14 @@ class BERTTrainer(BaseTrainer):
         trainer_stats = trainer.train()
         logger.debug(f"Training completed. Stats: {trainer_stats}")
 
-        if not self.config.is_testing:
-            # push configs
-            self.push_config_to_hf(self.config)
-            self.push_config_to_wandb(self.config)
-            self.model.save_pretrained(self.config.trainer.training_kwargs.output_dir)
-            self.model.push_to_hub(self.config.trainer.training_kwargs.hub_model_id, private=True)
-            # Save and push the updated tokenizer
-            self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
-            self.tokenizer.push_to_hub(
-                self.config.trainer.training_kwargs.hub_model_id,
-                private=True,
-            )
+        self.push_config_to_hf(self.config)
+        self.push_config_to_wandb(self.config)
+        self.model.save_pretrained(self.config.trainer.training_kwargs.output_dir)
+        self.model.push_to_hub(self.config.trainer.training_kwargs.hub_model_id, private=True)
+        # Save and push the updated tokenizer
+        self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
+        self.tokenizer.push_to_hub(
+            self.config.trainer.training_kwargs.hub_model_id,
+            private=True,
+        )
         print(trainer_stats)
