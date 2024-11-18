@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-from supertrainer.trainers.bert_trainer import BERTTrainer
+from supertrainer.trainers.bert import BERTTrainer
 
 
 class AraBERTTrainer(BERTTrainer):

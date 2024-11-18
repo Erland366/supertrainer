@@ -41,28 +41,34 @@ logger.add(sys.stderr, level="DEBUG")
 
 
 @hydra.main(config_path="../../configs/", config_name="train", version_base=None)
-def main(cfg: DictConfig):
+def main(config: DictConfig):
     # Enable editing on the omegaconf
-    cfg = StrictDict(OmegaConf.to_container(cfg, resolve=True))
+    config = StrictDict(OmegaConf.to_container(config, resolve=True))
     login_hf()
     login_wandb()
     memory_stats()
     set_global_seed()
 
-    if cfg.is_testing:
+    if config.is_testing:
         logger.info("TESTING MODE ENABLED")
 
-    os.environ["WANDB_PROJECT"] = cfg.wandb.project
-    if "entity" in cfg.wandb and cfg.wandb.entity:
-        os.environ["WANDB_ENTITY"] = cfg.wandb.entity
+    os.environ["WANDB_PROJECT"] = config.wandb.project
+    if "entity" in config.wandb and config.wandb.entity:
+        os.environ["WANDB_ENTITY"] = config.wandb.entity
 
-    dataset = import_class(cfg.dataset.class_name)(cfg)
+    dataset = import_class(config.dataset.class_name)(config)
     dataset = dataset.prepare_dataset()
 
-    trainer = import_class(cfg.trainer.class_name)(cfg, dataset)
-    trainer.train()
+    subsets = config.dataset.dataset_kwargs.get("subsets", [None])
 
-    wandb.finish()
+    for subset in subsets:
+        with config.allow_modification():
+            config.trainer.subset = subset
+
+        trainer = import_class(config.trainer.class_name)(config, dataset[subset])
+        trainer.train()
+
+        wandb.finish()
 
 
 if __name__ == "__main__":

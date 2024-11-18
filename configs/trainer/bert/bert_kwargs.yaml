@@ -6,7 +6,7 @@ defaults:
   - _self_
 
 # INSERT ADDITIONAL PARAMS HERE
-class_name: supertrainer.trainers.bert_trainer.BERTTrainer
+class_name: supertrainer.trainers.bert.BERTTrainer
 classes:
   - positif
   - negatif

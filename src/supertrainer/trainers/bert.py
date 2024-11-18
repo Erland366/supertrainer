@@ -32,7 +32,7 @@ from unsloth_zoo.patching_utils import patch_torch_compile
 
 from supertrainer import logger, type_hinting
 from supertrainer.evaluations.classification import compute_metrics
-from supertrainer.trainers.base_trainer import BaseTrainer
+from supertrainer.trainers.base import BaseTrainer
 from supertrainer.utils.helpers import load_model_with_adaptive_attention, remove_config_eval
 
 
@@ -68,6 +68,9 @@ class BERTTrainer(BaseTrainer):
 
             # Add HF to config
             config.trainer.training_kwargs.run_name += "-bert"
+
+            if config.trainer.subset is not None:
+                config.trainer.training_kwargs.run_name += f"-{config.trainer.subset}"
 
         return config
 
@@ -122,57 +125,44 @@ class BERTTrainer(BaseTrainer):
         dataset = self.dataset
         logger.debug("Initializing Trainer")
 
-        subsets = self.config.dataset.dataset_kwargs.get("subsets", [None])
+        train_dataset = dataset["train"]
+        eval_dataset = None
+        if not self.config.is_testing and dataset.get("validation", None) is not None:
+            eval_dataset = dataset["validation"]
 
-        original_run_name = self.config.trainer.training_kwargs.run_name
+        with self.config.allow_modification():
+            self.config.trainer.training_kwargs.do_eval = not self.config.is_testing
+        if eval_dataset is None:
+            logger.debug("No validation dataset found, skipping evaluation")
+            remove_config_eval(self.config)
 
-        for subset in subsets:
-            if subset:
-                self.reset()
-                with self.config.allow_modification():
-                    self.config.trainer.training_kwargs.run_name = original_run_name
-                    self.config.trainer.subset = subset
-                    self.config.trainer.training_kwargs.run_name += f"_{subset}"
+        data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
 
+        trainer = Trainer(
+            model=self.model,
+            # model_init_kwargs=self.config.model_kwargs,
+            tokenizer=self.tokenizer,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            compute_metrics=compute_metrics,
+            args=TrainingArguments(
+                **self.config.trainer.training_kwargs,
+            ),
+            data_collator=data_collator,
+        )
+        self.memory_stats()
+        logger.debug("Starting training")
 
-            train_dataset = dataset[subset]["train"] if subset else dataset["train"]
-            eval_dataset = None
-            if not self.config.is_testing and dataset.get("validation", None) is not None:
-                eval_dataset = dataset[subset]["validation"] if subset else dataset["validation"]
+        trainer_stats = trainer.train()
+        logger.debug(f"Training completed. Stats: {trainer_stats}")
 
-            with self.config.allow_modification():
-                self.config.trainer.training_kwargs.do_eval = not self.config.is_testing
-            if eval_dataset is None:
-                logger.debug("No validation dataset found, skipping evaluation")
-                remove_config_eval(self.config)
+        self.push_config_to_hf(self.config)
+        self.push_config_to_wandb(self.config)
 
-            data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
+        output_dir = self.config.trainer.training_kwargs.output_dir
+        hub_model_id = self.config.trainer.training_kwargs.hub_model_id
 
-            trainer = Trainer(
-                model=self.model,
-                # model_init_kwargs=self.config.model_kwargs,
-                tokenizer=self.tokenizer,
-                train_dataset=train_dataset,
-                eval_dataset=eval_dataset,
-                compute_metrics=compute_metrics,
-                args=TrainingArguments(
-                    **self.config.trainer.training_kwargs,
-                ),
-                data_collator=data_collator,
-            )
-            self.memory_stats()
-            logger.debug("Starting training")
-
-            trainer_stats = trainer.train()
-            logger.debug(f"Training completed. Stats: {trainer_stats}")
-
-            self.push_config_to_hf(self.config)
-            self.push_config_to_wandb(self.config)
-
-            output_dir = self.config.trainer.training_kwargs.output_dir
-            hub_model_id = self.config.trainer.training_kwargs.hub_model_id
-
-            for artifact in [self.model, self.tokenizer]:
-                artifact.save_pretrained(output_dir)
-                artifact.push_to_hub(hub_model_id, private=True)
-            print(trainer_stats)
+        for artifact in [self.model, self.tokenizer]:
+            artifact.save_pretrained(output_dir)
+            artifact.push_to_hub(hub_model_id, private=True)
+        print(trainer_stats)

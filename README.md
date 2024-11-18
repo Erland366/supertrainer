@@ -134,9 +134,9 @@ supertrainer/
 │   │   ├── llm.py
 │   │   └── __init__.py
 │   ├── trainers/
-│   │   ├── base_trainer.py
+│   │   ├── base.py
 │   │   ├── mllm_trainer.py
-│   │   ├── bert_trainer.py
+│   │   ├── bert.py
 │   │   ├── llm_trainer.py
 │   │   └── __init__.py
 │   ├── inference/
