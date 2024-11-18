@@ -42,10 +42,7 @@ class BERTTrainer(BaseTrainer):
         super().__init__(config, dataset)
 
     def postprocess_config(self, config):
-        # Change design of this since it's weird to keep call super in here
-        # even though it's guarantee that we will always call the super
         config = super().postprocess_config(config)
-
         classes = config.dataset.classes
 
         # create mapping and num of class first
@@ -61,7 +58,6 @@ class BERTTrainer(BaseTrainer):
             # amount of label
             config.trainer.model_kwargs.num_labels = num_classes
 
-            # Set up lora config since we didn't use Unsloth
             config.trainer.peft_config = LoraConfig(
                 **config.trainer.peft_kwargs,
             )
@@ -71,6 +67,8 @@ class BERTTrainer(BaseTrainer):
 
             if config.trainer.subset is not None:
                 config.trainer.training_kwargs.run_name += f"-{config.trainer.subset}"
+                config.trainer.training_kwargs.output_dir += f"-{config.trainer.subset}"
+                config.trainer.training_kwargs.hub_model_id += f"-{config.trainer.subset}"
 
         return config
 
@@ -119,6 +117,7 @@ class BERTTrainer(BaseTrainer):
     def train(self):
         if not self.config.is_testing:
             self.create_repo()
+            self.instantiate_wandb()
         logger.debug("Starting training process")
 
         logger.debug("Preparing dataset")

@@ -22,6 +22,7 @@
 
 import os
 import sys
+from copy import deepcopy
 
 import hydra
 from dotenv import load_dotenv
@@ -61,7 +62,12 @@ def main(config: DictConfig):
 
     subsets = config.dataset.dataset_kwargs.get("subsets", [None])
 
+    with config.allow_modification():
+        old_config = deepcopy(config)
+
     for subset in subsets:
+        with old_config.allow_modification():
+            config = deepcopy(old_config)
         with config.allow_modification():
             config.trainer.subset = subset
 

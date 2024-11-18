@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import copy
 import json
 from contextlib import contextmanager
 from typing import Any
@@ -34,6 +35,20 @@ class StrictDict(Dict):
         super().__init__()
         self.update(self._convert_dict(*args, **kwargs))
         object.__setattr__(self, "_allow_modifications", False)
+
+    def __deepcopy__(self, memo):
+        # Create a new instance with modifications allowed
+        result = StrictDict()
+        # Ensure we can modify the new instance during deep copy
+        object.__setattr__(result, "_allow_modifications", True)
+
+        # Deep copy all items
+        for key, value in self.items():
+            result[copy.deepcopy(key, memo)] = copy.deepcopy(value, memo)
+
+        # Lock the new instance after copying
+        object.__setattr__(result, "_allow_modifications", False)
+        return result
 
     def _convert_dict(self, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], dict):
@@ -67,7 +82,7 @@ class StrictDict(Dict):
         return super().__getitem__(str_key)
 
     def __setattr__(self, key, value):
-        if key.startswith('_'):
+        if key.startswith("_"):
             object.__setattr__(self, key, value)
         elif not object.__getattribute__(self, "_allow_modifications"):
             raise AttributeError(
@@ -76,7 +91,6 @@ class StrictDict(Dict):
             )
         else:
             self[key] = value
-
 
     def __setitem__(self, key, value):
         if not object.__getattribute__(self, "_allow_modifications"):

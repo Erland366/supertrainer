@@ -106,14 +106,6 @@ class BaseTrainer(ABCTrainer):
                 run_name = "TESTING_" + run_name
             config.trainer.training_kwargs.run_name = run_name
 
-            # TODO: Move this
-            wandb_kwargs = dict(tags=["testing"]) if config.is_testing else {}
-            wandb.init(
-                project=config.wandb.project,
-                entity=config.wandb.entity,
-                name=config.trainer.training_kwargs.run_name,
-                **wandb_kwargs,
-            )
 
             # output_dir add run_name
             config.trainer.training_kwargs.output_dir = os.path.join(
@@ -141,6 +133,15 @@ class BaseTrainer(ABCTrainer):
 
         logger.debug(f"Configuration loaded: {config}")
         return config
+
+    def instantiate_wandb(self):
+        wandb_kwargs = dict(tags=["testing"]) if self.config.is_testing else {}
+        wandb.init(
+            project=self.config.wandb.project,
+            entity=self.config.wandb.entity,
+            name=self.config.trainer.training_kwargs.run_name,
+            **wandb_kwargs,
+        )
 
     @property
     def tokenizer(self):

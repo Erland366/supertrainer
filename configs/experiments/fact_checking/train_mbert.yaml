@@ -1,0 +1,29 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default
+- _self_
+
+trainer:
+  peft_kwargs:
+    r: 64
+    lora_alpha: 128
+    lora_dropout: 0.1
+    target_modules:
+      - 'query'
+      - 'key'
+      - 'value'
+      - 'dense'
+    use_dora: False
+    init_lora_weights: "gaussian"
+  training_kwargs:
+    per_device_train_batch_size: 16
+    hub_model_id: "Erland/mbert-fact-checking"
+  model_kwargs:
+    _attn_implementation: eager
+
+
+  processor_kwargs:
+
+  class_name: supertrainer.trainers.mbert.mBERTTrainer
+  model_name: google-bert/bert-base-multilingual-uncased
