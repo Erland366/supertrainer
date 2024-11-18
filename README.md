@@ -120,8 +120,6 @@ To Train these models, first you need to adjust the training script in `scripts/
 ./scripts/ai701/train_swift.sh <model_name>
 ```
 
-``
-
 ### Evaluation
 
 #### Chameleon
