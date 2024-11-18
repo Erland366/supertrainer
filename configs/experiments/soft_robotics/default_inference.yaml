@@ -18,3 +18,5 @@ inference:
     max_new_tokens: 128
     use_cache: True
     temperature: 0.2
+
+  base_only: False

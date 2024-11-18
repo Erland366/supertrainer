@@ -222,6 +222,37 @@ class BaseTrainer(ABCTrainer):
 
         return trainable_params_state_dict
 
+    def reset(self):
+        import gc
+
+        import torch
+
+        # Clear model
+        if hasattr(self, "_model") and self._model is not None:
+            logger.debug(f"Resetting model: {self._model.__class__.__name__}")
+            self._model.cpu()
+            del self._model
+            self._model = None
+
+        # Clear tokenizer
+        if hasattr(self, "_tokenizer") and self._tokenizer is not None:
+            logger.debug(f"Resetting tokenizer: {self._tokenizer.__class__.__name__}")
+            del self._tokenizer
+            self._tokenizer = None
+
+        if hasattr(self, "_processor") and self._processor is not None:
+            logger.debug(f"Resetting processor: {self._processor.__class__.__name__}")
+            del self._processor
+            self._processor = None
+
+        # Clear CUDA cache
+        for _ in range(10):
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+            # Run garbage collector
+            gc.collect()
+
 
 class BaseMLLMTrainer(BaseTrainer):
     _processor: "AutoProcessor" | None = None  # noqa # type: ignore

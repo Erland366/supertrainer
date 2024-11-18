@@ -43,6 +43,7 @@ torch_dtype = (
     else torch.float32
 )
 
+
 def remove_config_eval(config: type_hinting.Config) -> type_hinting.Config:
     if config.trainer.training_kwargs.get("eval_strategy", None) is not None:
         with config.allow_modification():
@@ -50,13 +51,16 @@ def remove_config_eval(config: type_hinting.Config) -> type_hinting.Config:
 
     # This is must with eval, so delete
     if config.trainer.training_kwargs.get("load_best_model_at_end", None) is not None:
-        del config.trainer.training_kwargs.load_best_model_at_end
+        with config.allow_modification():
+            del config.trainer.training_kwargs.load_best_model_at_end
 
     if config.trainer.training_kwargs.get("eval_on_start", None) is not None:
-        del config.trainer.training_kwargs.eval_on_start
+        with config.allow_modification():
+            del config.trainer.training_kwargs.eval_on_start
 
     if config.trainer.training_kwargs.get("do_eval", None) is not None:
-        config.trainer.training_kwargs.do_eval = False
+        with config.allow_modification():
+            config.trainer.training_kwargs.do_eval = False
 
 
 def login_hf(environ_name: str = "HUGGINGFACE_API_KEY", token: str | None = None):
@@ -120,26 +124,22 @@ def load_model_with_adaptive_attention(model_loader_func, *args, **kwargs):
     if kwargs.get("_attn_implementation") is not None:
         attn_implementation = kwargs.pop("_attn_implementation")
     else:
-        attn_implementation = "flash_attention_2" if check_flash_attention_2_support() else 'sdpa'
+        attn_implementation = "flash_attention_2" if check_flash_attention_2_support() else "sdpa"
     try:
-        model = model_loader_func(
-            *args,
-            _attn_implementation=attn_implementation,
-            **kwargs
-        )
+        model = model_loader_func(*args, _attn_implementation=attn_implementation, **kwargs)
     except ValueError as e:
         error_message = str(e)
-        if 'does not support an attention implementation through torch.nn.\
-            functional.scaled_dot_product_attention yet.' in error_message:
-            attn_implementation = 'eager'
-            model = model_loader_func(
-                *args,
-                _attn_implementation=attn_implementation,
-                **kwargs
-            )
+        if (
+            "does not support an attention implementation through torch.nn.\
+            functional.scaled_dot_product_attention yet."
+            in error_message
+        ):
+            attn_implementation = "eager"
+            model = model_loader_func(*args, _attn_implementation=attn_implementation, **kwargs)
         else:
             raise
     return model
+
 
 def memory_stats():
     """
@@ -449,10 +449,21 @@ def load_dataset_plus_plus(*args, **kwargs) -> "Dataset":  # noqa: F821 # type: 
     Raises:
         ValueError: If the dataset cannot be loaded using either `load_dataset` or `load_from_disk`.
     """
-    from datasets import Dataset, load_dataset
+    from datasets import Dataset, DatasetDict, load_dataset
+
+    if kwargs.get("subsets", None) is not None:
+        subsets = kwargs.pop("subsets")
+    else:
+        subsets = None
 
     try:
-        dataset = load_dataset(*args, **kwargs)
+        if subsets is not None:
+            dataset_subsets = {}
+            for subset in subsets:
+                dataset_subsets[subset] = load_dataset(*args, name=subset, **kwargs)
+            dataset = DatasetDict(dataset_subsets)
+        else:
+            dataset = load_dataset(*args, **kwargs)
     except ValueError as e:
         if str(e) == (
             "You are trying to load a dataset that was saved using "
@@ -462,6 +473,7 @@ def load_dataset_plus_plus(*args, **kwargs) -> "Dataset":  # noqa: F821 # type: 
             # if path is provided, put it as dataset_path instead
             if kwargs.get("path"):
                 kwargs["dataset_path"] = kwargs.pop("path")
+
             dataset = Dataset.load_from_disk(*args, **kwargs)
         else:
             raise e
