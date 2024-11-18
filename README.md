@@ -1,5 +1,7 @@
 # Object Material Classification for Robotic Manipulation using Vision Language Models
 
+<img src="./assets/imgs/AI701.drawio (1).svg">
+
 This repository contains the implementation of our research on using Vision-Language Models (VLMs) for object material classification to enhance robotic manipulation. The project explores how different VLM architectures can be efficiently fine-tuned to classify object materials and integrate with robotic systems for adaptive gripping.
 
 ## Overview
