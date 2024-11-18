@@ -132,6 +132,19 @@ class ChameleonInference(BaseInferenceMLLM):
                     logger.info("Index out of range. Try input between 0 and {len_dataset}")
                     continue
                 prediction = self.predict(dataset[text]["resized_image_64"])
-                print(f"Prediction: {prediction}")
+
+                mapping = {
+                    "ceramic": "hard",
+                    "fabric": "soft",
+                    "paper": "soft",
+                    "glass": "soft",
+                    "food": "soft",
+                    "other": "hard",
+                    "unknown": "hard",
+                    "metal": "hard",
+                    "wood": "hard",
+                    "plastic": "hard",
+                }
+                print(f"Prediction: {mapping.get(prediction.lower(), 'hard')}")
         except KeyboardInterrupt:
             logger.info("Iterative inference interrupted by user.")
