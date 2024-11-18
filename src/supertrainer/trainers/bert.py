@@ -32,7 +32,7 @@ from unsloth_zoo.patching_utils import patch_torch_compile
 
 from supertrainer import logger, type_hinting
 from supertrainer.evaluations.classification import compute_metrics
-from supertrainer.trainers.base_trainer import BaseTrainer
+from supertrainer.trainers.base import BaseTrainer
 from supertrainer.utils.helpers import load_model_with_adaptive_attention, remove_config_eval
 
 
@@ -42,10 +42,7 @@ class BERTTrainer(BaseTrainer):
         super().__init__(config, dataset)
 
     def postprocess_config(self, config):
-        # Change design of this since it's weird to keep call super in here
-        # even though it's guarantee that we will always call the super
         config = super().postprocess_config(config)
-
         classes = config.dataset.classes
 
         # create mapping and num of class first
@@ -61,13 +58,17 @@ class BERTTrainer(BaseTrainer):
             # amount of label
             config.trainer.model_kwargs.num_labels = num_classes
 
-            # Set up lora config since we didn't use Unsloth
             config.trainer.peft_config = LoraConfig(
                 **config.trainer.peft_kwargs,
             )
 
             # Add HF to config
             config.trainer.training_kwargs.run_name += "-bert"
+
+            if config.trainer.subset is not None:
+                config.trainer.training_kwargs.run_name += f"-{config.trainer.subset}"
+                config.trainer.training_kwargs.output_dir += f"-{config.trainer.subset}"
+                config.trainer.training_kwargs.hub_model_id += f"-{config.trainer.subset}"
 
         return config
 
@@ -81,7 +82,7 @@ class BERTTrainer(BaseTrainer):
                 **self.config.trainer.peft_kwargs,
             )
             model = load_model_with_adaptive_attention(
-                AutoModelForSequenceClassification,
+                AutoModelForSequenceClassification.from_pretrained,
                 self.config.trainer.model_name,
                 **self.config.trainer.model_kwargs,
             )
@@ -116,20 +117,23 @@ class BERTTrainer(BaseTrainer):
     def train(self):
         if not self.config.is_testing:
             self.create_repo()
+            self.instantiate_wandb()
         logger.debug("Starting training process")
 
         logger.debug("Preparing dataset")
         dataset = self.dataset
         logger.debug("Initializing Trainer")
 
-        if dataset.get("validation", None) is None or self.config.is_testing:
-            eval_dataset = None
-            remove_config_eval(self.config)
-        else:
+        train_dataset = dataset["train"]
+        eval_dataset = None
+        if not self.config.is_testing and dataset.get("validation", None) is not None:
             eval_dataset = dataset["validation"]
 
         with self.config.allow_modification():
             self.config.trainer.training_kwargs.do_eval = not self.config.is_testing
+        if eval_dataset is None:
+            logger.debug("No validation dataset found, skipping evaluation")
+            remove_config_eval(self.config)
 
         data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
 
@@ -137,7 +141,7 @@ class BERTTrainer(BaseTrainer):
             model=self.model,
             # model_init_kwargs=self.config.model_kwargs,
             tokenizer=self.tokenizer,
-            train_dataset=dataset["train"],
+            train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             compute_metrics=compute_metrics,
             args=TrainingArguments(
@@ -153,12 +157,11 @@ class BERTTrainer(BaseTrainer):
 
         self.push_config_to_hf(self.config)
         self.push_config_to_wandb(self.config)
-        self.model.save_pretrained(self.config.trainer.training_kwargs.output_dir)
-        self.model.push_to_hub(self.config.trainer.training_kwargs.hub_model_id, private=True)
-        # Save and push the updated tokenizer
-        self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
-        self.tokenizer.push_to_hub(
-            self.config.trainer.training_kwargs.hub_model_id,
-            private=True,
-        )
+
+        output_dir = self.config.trainer.training_kwargs.output_dir
+        hub_model_id = self.config.trainer.training_kwargs.hub_model_id
+
+        for artifact in [self.model, self.tokenizer]:
+            artifact.save_pretrained(output_dir)
+            artifact.push_to_hub(hub_model_id, private=True)
         print(trainer_stats)

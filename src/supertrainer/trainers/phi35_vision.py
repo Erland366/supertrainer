@@ -28,7 +28,7 @@ from transformers import AutoModelForCausalLM, AutoProcessor, Trainer, TrainingA
 from unsloth_zoo.patching_utils import patch_torch_compile
 
 from supertrainer import logger, type_hinting
-from supertrainer.trainers.base_trainer import BaseMLLMTrainer
+from supertrainer.trainers.base import BaseMLLMTrainer
 from supertrainer.utils.helpers import (
     import_class,
     load_model_with_adaptive_attention,

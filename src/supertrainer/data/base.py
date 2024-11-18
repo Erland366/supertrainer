@@ -94,17 +94,29 @@ class BaseDataset(ABCDataset):
     def dataset(self) -> Dataset | DatasetDict:
         if self._dataset is None:
             self._dataset = load_dataset_plus_plus(**self.config.dataset.dataset_kwargs)
+
             if self.config.is_testing:
-                # if testing, use train dataset only and only use 10 examples
                 logger.debug("Dataset enter testing mode, only using 10 examples")
-                if isinstance(self._dataset, Dataset):
-                    if len(self._dataset) > 10:
-                        self._dataset = self._dataset.shuffle(seed=42).select(range(10))
-                else:
-                    if len(self._dataset["train"]) > 10:
-                        self._dataset = DatasetDict(
-                            dict(train=self._dataset["train"].shuffle(seed=42).select(range(10)))
+                has_subsets = "subsets" in self.config.dataset.dataset_kwargs
+
+                if has_subsets:
+                    # Handle nested DatasetDict(DatasetDict(Dataset)) structure
+                    testing_dataset = DatasetDict()
+                    for subset_name, subset_dict in self._dataset.items():
+                        testing_dataset[subset_name] = DatasetDict(
+                            train=subset_dict["train"].shuffle(seed=42).select(range(10))
                         )
+                    self._dataset = testing_dataset
+                else:
+                    # Handle regular Dataset or DatasetDict
+                    if isinstance(self._dataset, Dataset):
+                        if len(self._dataset) > 10:
+                            self._dataset = self._dataset.shuffle(seed=42).select(range(10))
+                    else:
+                        if len(self._dataset["train"]) > 10:
+                            self._dataset = DatasetDict(
+                                dict(train=self._dataset["train"].shuffle(seed=42).select(range(10)))
+                            )
         return self._dataset
 
     @staticmethod

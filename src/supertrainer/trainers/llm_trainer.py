@@ -26,7 +26,7 @@ from transformers import TrainingArguments
 from trl import SFTTrainer
 
 from supertrainer import logger, type_hinting
-from supertrainer.trainers.base_trainer import BaseTrainer
+from supertrainer.trainers.base import BaseTrainer
 
 
 class LLMTrainer(BaseTrainer):

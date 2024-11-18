@@ -43,13 +43,54 @@ class FactCheckingTrainingDataset(BaseDataset):
 
         return config
 
+    def tokenized_dataset(self, dataset: DatasetDict) -> DatasetDict:
+        def tokenize_and_map(examples: dict, tokenizer: "AutoTokenizer"): # noqa # type: ignore
+            tokenizer.truncation_side = "left"
+            tokenized = tokenizer(
+                examples[self.config.dataset.text_col],
+                truncation=True,
+                padding=True
+            )
+
+            if self.config.dataset.label_col in examples:
+                tokenized[self.config.dataset.label_col] = [
+                    self.config.dataset.class2id[label]
+                    for label in examples[self.config.dataset.label_col]
+                ]
+
+            return tokenized
+
+        if self.config.dataset.dataset_kwargs.get("subsets", [None]) != [None]:
+            # Handle nested DatasetDict
+            processed_dataset = {}
+            for subset_key, subset_dict in dataset.items():
+                processed_subset = {}
+                for split_key, split_dataset in subset_dict.items():
+                    processed_subset[split_key] = split_dataset.map(
+                        lambda x: tokenize_and_map(x, self.tokenizer),
+                        batched=True,
+                        remove_columns=split_dataset.column_names
+                    )
+                processed_dataset[subset_key] = DatasetDict(processed_subset)
+            return DatasetDict(processed_dataset)
+        else:
+            # Handle flat DatasetDict
+            return dataset.map(
+                lambda x: tokenize_and_map(x, self.tokenizer),
+                batched=True,
+                remove_columns=dataset["train"].column_names
+            )
+
     def prepare_dataset(self) -> "DatasetDict":  # noqa # type: ignore
         logger.debug("Preparing dataset")
         dataset = self.dataset
 
+        # BUG! Will fix this
+        # self.test_tokenization(dataset)
+        dataset = self.tokenized_dataset(dataset)
+
         logger.debug(f"Dataset loaded: {dataset}")
 
-        logger.debug("Bert Model preprocessing is in data collator, return the dataset as is")
 
         return dataset
 

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # MIT License
 #
 # Copyright (c) 2024 Edd
@@ -20,18 +22,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import pytest
-from omegaconf import DictConfig
+echo "Training AraBERT!"
+python src/supertrainer/train.py +experiments/fact_checking=train_arabert
 
+echo "Training mBERT!"
+python src/supertrainer/train.py +experiments/fact_checking=train_mbert
 
-@pytest.fixture
-def hf_bert():
-    from supertrainer.trainers.mllm_trainer import BERTTrainer
+echo "Training IndoBERT!"
+python src/supertrainer/train.py +experiments/fact_checking=train_indobert
 
-    return BERTTrainer(DictConfig({"classes": ["a", "b", "c"]}))
-
-
-def test_config(hf_bert):
-    assert hf_bert.config.num_classes == 3
-    assert hf_bert.config.class2id == {"a": 0, "b": 1, "c": 2}
-    assert hf_bert.config.id2class == {0: "a", 1: "b", 2: "c"}
+echo "Training XLMR!"
+python src/supertrainer/train.py +experiments/fact_checking=train_xlmr

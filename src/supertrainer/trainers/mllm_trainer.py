@@ -31,7 +31,7 @@ from transformers import (
 
 import wandb
 from supertrainer import logger, type_hinting
-from supertrainer.trainers.base_trainer import BaseTrainer
+from supertrainer.trainers.base import BaseTrainer
 
 
 class MLLMTrainer(BaseTrainer):

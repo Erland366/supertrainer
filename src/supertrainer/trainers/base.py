@@ -106,14 +106,6 @@ class BaseTrainer(ABCTrainer):
                 run_name = "TESTING_" + run_name
             config.trainer.training_kwargs.run_name = run_name
 
-            # TODO: Move this
-            wandb_kwargs = dict(tags=["testing"]) if config.is_testing else {}
-            wandb.init(
-                project=config.wandb.project,
-                entity=config.wandb.entity,
-                name=config.trainer.training_kwargs.run_name,
-                **wandb_kwargs,
-            )
 
             # output_dir add run_name
             config.trainer.training_kwargs.output_dir = os.path.join(
@@ -141,6 +133,15 @@ class BaseTrainer(ABCTrainer):
 
         logger.debug(f"Configuration loaded: {config}")
         return config
+
+    def instantiate_wandb(self):
+        wandb_kwargs = dict(tags=["testing"]) if self.config.is_testing else {}
+        wandb.init(
+            project=self.config.wandb.project,
+            entity=self.config.wandb.entity,
+            name=self.config.trainer.training_kwargs.run_name,
+            **wandb_kwargs,
+        )
 
     @property
     def tokenizer(self):
@@ -221,6 +222,37 @@ class BaseTrainer(ABCTrainer):
         trainable_params_state_dict = {n: p.data for n, p in trainable_params.items()}
 
         return trainable_params_state_dict
+
+    def reset(self):
+        import gc
+
+        import torch
+
+        # Clear model
+        if hasattr(self, "_model") and self._model is not None:
+            logger.debug(f"Resetting model: {self._model.__class__.__name__}")
+            self._model.cpu()
+            del self._model
+            self._model = None
+
+        # Clear tokenizer
+        if hasattr(self, "_tokenizer") and self._tokenizer is not None:
+            logger.debug(f"Resetting tokenizer: {self._tokenizer.__class__.__name__}")
+            del self._tokenizer
+            self._tokenizer = None
+
+        if hasattr(self, "_processor") and self._processor is not None:
+            logger.debug(f"Resetting processor: {self._processor.__class__.__name__}")
+            del self._processor
+            self._processor = None
+
+        # Clear CUDA cache
+        for _ in range(10):
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+            # Run garbage collector
+            gc.collect()
 
 
 class BaseMLLMTrainer(BaseTrainer):
