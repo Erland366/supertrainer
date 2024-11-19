@@ -53,6 +53,8 @@ Our experiments show that fine-tuned VLMs significantly outperform traditional C
 | Early Fusion | Chameleon | 43.7% |
 | Early Fusion | Deepseek Janus | 73.5% |
 
+The weight for DeepseekVL can be downloaded [here](https://drive.google.com/file/d/1V4rr-JovncbbHZFZAnFOotkPO1hZPQ76/view?usp=sharing)
+
 ## Dataset
 
 We use a subset of the PhysObjects dataset, focusing on material classification:
