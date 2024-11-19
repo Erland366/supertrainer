@@ -13,6 +13,7 @@ inference:
   training_kwargs:
     remove_unused_columns: False
     auto_find_batch_size: False
+  base_only: False
 
   inference_kwargs:
     max_new_tokens: 128
