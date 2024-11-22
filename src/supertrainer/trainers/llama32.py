@@ -93,8 +93,6 @@ class Llama32Trainer(BaseTrainer):
         logger.debug("Initializing Trainer")
         train_dataset = dataset["train"]
 
-        breakpoint()
-
         eval_dataset = None
         if not self.config.is_testing and dataset.get("validation", None) is not None:
             eval_dataset = dataset["validation"]
