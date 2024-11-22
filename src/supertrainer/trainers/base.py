@@ -22,7 +22,6 @@
 
 from __future__ import annotations
 
-import datetime
 import json
 import os
 from abc import ABC, abstractmethod
@@ -82,7 +81,7 @@ class BaseTrainer(ABCTrainer):
             config.trainer.training_kwargs.bf16 = torch.cuda.is_bf16_supported()
             config.trainer.training_kwargs.hub_model_id = (
                 config.trainer.training_kwargs.hub_model_id
-                + datetime.datetime.now().strftime("_%Y%m%d_%H%M%S")
+                + config.run_time
             )
 
             # mainly for data type casting purpose
@@ -99,7 +98,7 @@ class BaseTrainer(ABCTrainer):
 
             run_name = (
                 f"{model_name}_{dataset_name}_r{lora_rank}_lr{learning_rate}_e{num_epochs}_"
-                f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                f"{config.run_time}"
             )
 
             if config.is_testing:

@@ -1,0 +1,33 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default
+- /dataset/llm@dataset: fact_checking
+- _self_
+
+trainer:
+  peft_kwargs:
+    r: 64
+    target_modules:
+      - "q_proj"
+      - "k_proj"
+      - "v_proj"
+      - "o_proj"
+      - "gate_proj"
+      - "up_proj"
+      - "down_proj"
+    lora_alpha: 128
+    lora_dropout: 0
+    bias: "none"
+    use_gradient_checkpointing: "unsloth"
+    random_state: 3407
+    use_rslora: false
+    loftq_config: null
+  training_kwargs:
+    per_device_train_batch_size: 8
+    hub_model_id: "Erland/llama32-fact-checking"
+  processor_kwargs:
+
+  class_name: supertrainer.trainers.qwen25.Qwen25Trainer
+  model_name: unsloth/Qwen2.5-7B-bnb-4bit
+  max_seq_length: 4096

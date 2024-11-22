@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import datetime
 import os
 import sys
 from copy import deepcopy
@@ -62,7 +63,10 @@ def main(config: DictConfig):
 
     subsets = config.dataset.dataset_kwargs.get("subsets", [None])
 
+    run_time = datetime.datetime.now().strftime("_%Y%m%d_%H%M%S")
+
     with config.allow_modification():
+        config.run_time = run_time
         old_config = deepcopy(config)
 
     for subset in subsets:
