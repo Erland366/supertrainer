@@ -115,7 +115,9 @@ class BaseDataset(ABCDataset):
                     else:
                         if len(self._dataset["train"]) > 10:
                             self._dataset = DatasetDict(
-                                dict(train=self._dataset["train"].shuffle(seed=42).select(range(10)))
+                                dict(
+                                    train=self._dataset["train"].shuffle(seed=42).select(range(10))
+                                )
                             )
         return self._dataset
 
@@ -134,6 +136,13 @@ class BaseDataset(ABCDataset):
             self._tokenizer = AutoTokenizer.from_pretrained(
                 self.config.dataset.tokenizer_name_or_path
             )
+
+            if self.config.dataset.get("chat_template", None) is not None:
+                from unsloth import get_chat_template
+
+                self._tokenizer = get_chat_template(
+                    self._tokenizer, self.config.dataset.chat_template
+                )
         return self._tokenizer
 
     def split_dataset(self, dataset: DatasetDict | Dataset) -> DatasetDict:

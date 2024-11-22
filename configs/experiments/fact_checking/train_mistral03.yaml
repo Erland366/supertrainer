@@ -24,10 +24,12 @@ trainer:
     use_rslora: false
     loftq_config: null
   training_kwargs:
-    per_device_train_batch_size: 8
-    hub_model_id: "Erland/llama32-fact-checking"
+    hub_model_id: "Erland/mistral03-fact-checking"
   processor_kwargs:
 
   class_name: supertrainer.trainers.mistral03.Mistral03Trainer
   model_name: unsloth/mistral-7b-v0.3-bnb-4bit
   max_seq_length: 4096
+
+dataset:
+  chat_template: mistral

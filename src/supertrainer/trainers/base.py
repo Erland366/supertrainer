@@ -84,6 +84,7 @@ class BaseTrainer(ABCTrainer):
                 + config.run_time
             )
 
+
             # mainly for data type casting purpose
             config.trainer.dtype = (
                 torch.bfloat16 if config.trainer.training_kwargs.bf16 else torch.float36
@@ -103,6 +104,10 @@ class BaseTrainer(ABCTrainer):
 
             if config.is_testing:
                 run_name = "TESTING_" + run_name
+
+            if config.trainer.subset is not None:
+                config.trainer.training_kwargs.hub_model_id += f"-{config.trainer.subset}"
+                run_name += f"-{config.trainer.subset}"
             config.trainer.training_kwargs.run_name = run_name
 
 

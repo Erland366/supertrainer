@@ -67,7 +67,7 @@ class LlamaInference(BaseInference):
             )
             model = FastLanguageModel.get_peft_model(model, **self.config.inference.peft_kwargs)
             FastLanguageModel.for_inference(model)
-            tokenizer = get_chat_template(tokenizer, self.chat_template)
+            tokenizer = get_chat_template(tokenizer, self.config.dataset.chat_template)
             self._buffer_model = model
             self._buffer_tokenizer = tokenizer
         return self._buffer_tokenizer

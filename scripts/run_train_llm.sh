@@ -26,7 +26,7 @@ echo "Training Gemma2!"
 python src/supertrainer/train.py +experiments/fact_checking=train_gemma2
 
 echo "Training Qwen2.5!"
-python src/supertrainer/train.py +experiments/fact_checking=train_qwen2.5
+python src/supertrainer/train.py +experiments/fact_checking=train_qwen25
 
 echo "Training Mistral-0.3!"
 python src/supertrainer/train.py +experiments/fact_checking=train_mistral03

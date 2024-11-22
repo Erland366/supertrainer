@@ -24,10 +24,12 @@ trainer:
     use_rslora: false
     loftq_config: null
   training_kwargs:
-    per_device_train_batch_size: 8
-    hub_model_id: "Erland/llama32-fact-checking"
+    hub_model_id: "Erland/qwen25-fact-checking"
   processor_kwargs:
 
   class_name: supertrainer.trainers.qwen25.Qwen25Trainer
   model_name: unsloth/Qwen2.5-7B-bnb-4bit
   max_seq_length: 4096
+
+dataset:
+  chat_template: qwen2.5
