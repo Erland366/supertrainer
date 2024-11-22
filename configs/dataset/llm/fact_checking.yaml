@@ -1,2 +1,22 @@
 dataset_kwargs:
-  path: Yoonseong/climatebert_factcheck
+  path: Erland/fake_news_detection_dataset_cross_lingual_formatted_uncased_split
+  subsets:
+    - 'train_claim_en_evidence_en'
+    - 'train_claim_en_evidence_idn'
+    - 'train_claim_en_evidence_arb'
+    - 'train_claim_idn_evidence_en'
+    - 'train_claim_idn_evidence_idn'
+    - 'train_claim_idn_evidence_arb'
+    - 'train_claim_arb_evidence_en'
+    - 'train_claim_arb_evidence_idn'
+    - 'train_claim_arb_evidence_arb'
+
+class_name: supertrainer.data.fact_checking.FactCheckingTrainingLLMDataset
+classes:
+  - REFUTES
+  - SUPPORTS
+  - NOT_ENOUGH_INFO
+
+text_col: text
+label_col: labels
+chat_template: llama-3.1

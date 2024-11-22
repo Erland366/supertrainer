@@ -26,10 +26,108 @@ from supertrainer import logger, type_hinting
 from supertrainer.data.base import BaseDataset, BaseDatasetFormatter
 
 
+class FactCheckingTrainingLLMDataset(BaseDataset):
+    def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
+        super().__init__(self.postprocess_config(config), is_testing)
+
+    def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
+        assert (
+            config.dataset.get("chat_template", None) is not None
+        ), "chat_template is required in self.config.dataset.chat_template"
+
+        # I don't think we want to convert the classes to id here
+        # Maybe just make it always lowercase?
+
+        return config
+
+    def formatting_prompt_func(
+        self,
+        examples: list[type_hinting.Conversation],
+        use_default_system_prompt: bool = True,
+        is_test_dataset: bool = True,
+    ) -> dict[str, str]:
+        """Batch formatting right here"""
+
+        conversations = []
+
+        texts = examples[self.config.dataset.text_col]
+        labels = examples[self.config.dataset.label_col]
+        for text, label in zip(texts, labels):
+            conversation = [
+                {"role": "user", "content": text},
+                {"role": "assistant", "content": label},
+            ]
+
+            forbidden_system_prompts = ["llama-3.1", "llama-31"]
+
+            if (
+                use_default_system_prompt
+                and "system" not in conversation[0].values()
+                and self.config.dataset.chat_template not in forbidden_system_prompts
+            ):
+                conversation.insert(
+                    0,
+                    {
+                        "role": "system",
+                        "content": self.config.dataset.get(
+                            "default_system_prompt", "You are an helpful AI assistant"
+                        ),
+                    },
+                )
+
+            conversations.append(conversation)
+
+        texts = []
+        for convos in conversations:
+            if is_test_dataset:
+                logger.debug(
+                    "Remove assistant output from test dataset "
+                    "instead, add the generation prompt"
+                )
+                convos = convos[:-1]
+                text = self.tokenizer.apply_chat_template(
+                    convos, tokenize=False, add_generation_prompt=True
+                )
+            else:
+                text = self.tokenizer.apply_chat_template(convos, tokenize=False)
+            texts.append(text)
+        return {
+            "text": texts,
+        }
+
+    def format_dataset(self, dataset: type_hinting.Conversation) -> type_hinting.Conversation:
+        processed_dataset = DatasetDict()
+
+        for split_name, split_dataset in dataset.items():
+            is_test_dataset = split_name == "test"
+
+            processed_split = split_dataset.map(
+                lambda examples: self.formatting_prompt_func(
+                    examples, is_test_dataset=is_test_dataset
+                ),
+                batched=True,
+            )
+
+            processed_dataset[split_name] = processed_split
+
+        return processed_dataset
+
+    def prepare_dataset(self) -> "DatasetDict":  # noqa # type: ignore
+        logger.debug("Preparing dataset")
+        dataset = self.dataset
+
+        # BUG! Will fix this
+        # self.test_tokenization(dataset)
+        dataset = self.format_dataset(dataset)
+
+        logger.debug(f"Dataset loaded: {dataset}")
+
+        return dataset
+
+
 class FactCheckingTrainingDataset(BaseDataset):
     def __init__(self, config: type_hinting.Config, is_testing: bool = False) -> None:
         super().__init__(self.postprocess_config(config), is_testing)
-        self._is_prepared = None
 
     def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         classes = config.dataset.classes
@@ -43,13 +141,11 @@ class FactCheckingTrainingDataset(BaseDataset):
 
         return config
 
-    def tokenized_dataset(self, dataset: DatasetDict) -> DatasetDict:
-        def tokenize_and_map(examples: dict, tokenizer: "AutoTokenizer"): # noqa # type: ignore
+    def format_dataset(self, dataset: DatasetDict) -> DatasetDict:
+        def tokenize_and_map(examples: dict, tokenizer: "AutoTokenizer"):  # noqa # type: ignore
             tokenizer.truncation_side = "left"
             tokenized = tokenizer(
-                examples[self.config.dataset.text_col],
-                truncation=True,
-                padding=True
+                examples[self.config.dataset.text_col], truncation=True, padding=True
             )
 
             if self.config.dataset.label_col in examples:
@@ -69,7 +165,7 @@ class FactCheckingTrainingDataset(BaseDataset):
                     processed_subset[split_key] = split_dataset.map(
                         lambda x: tokenize_and_map(x, self.tokenizer),
                         batched=True,
-                        remove_columns=split_dataset.column_names
+                        remove_columns=split_dataset.column_names,
                     )
                 processed_dataset[subset_key] = DatasetDict(processed_subset)
             return DatasetDict(processed_dataset)
@@ -78,7 +174,7 @@ class FactCheckingTrainingDataset(BaseDataset):
             return dataset.map(
                 lambda x: tokenize_and_map(x, self.tokenizer),
                 batched=True,
-                remove_columns=dataset["train"].column_names
+                remove_columns=dataset["train"].column_names,
             )
 
     def prepare_dataset(self) -> "DatasetDict":  # noqa # type: ignore
@@ -87,10 +183,9 @@ class FactCheckingTrainingDataset(BaseDataset):
 
         # BUG! Will fix this
         # self.test_tokenization(dataset)
-        dataset = self.tokenized_dataset(dataset)
+        dataset = self.format_dataset(dataset)
 
         logger.debug(f"Dataset loaded: {dataset}")
-
 
         return dataset
 
