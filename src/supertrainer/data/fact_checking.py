@@ -120,7 +120,7 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
             else:
                 # Handle flat structure for no subset
                 for split_name, split_dataset in current_dataset.items():
-                    processed_dataset[subset] = process_split(split_dataset, split_name)
+                    processed_dataset = process_split(split_dataset, split_name)
 
         return processed_dataset
 

@@ -75,6 +75,10 @@ class BaseEvaluation(ABC):
         if self.config.evaluation.subset is not None:
             folder_name += f"-{self.config.evaluation.subset}"
 
+        if self.config.evaluation.get("base_only", None) is not None:
+            if self.config.evaluation.base_only:
+                folder_name += "-base_only"
+
         public_root = os.environ[SUPERTRAINER_PUBLIC_ROOT]
 
         output_folder = os.path.join(public_root, folder_name)

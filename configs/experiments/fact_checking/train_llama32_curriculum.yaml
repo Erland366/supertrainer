@@ -1,0 +1,45 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default
+- /dataset/llm@dataset: fact_checking
+- _self_
+
+trainer:
+  peft_kwargs:
+    r: 64
+    target_modules:
+      - "q_proj"
+      - "k_proj"
+      - "v_proj"
+      - "o_proj"
+      - "gate_proj"
+      - "up_proj"
+      - "down_proj"
+    lora_alpha: 128
+    lora_dropout: 0
+    bias: "none"
+    use_gradient_checkpointing: "unsloth"
+    random_state: 3407
+    use_rslora: false
+    loftq_config: null
+  training_kwargs:
+    hub_model_id: "Erland/llama32-fact-checking"
+  processor_kwargs:
+
+  class_name: supertrainer.trainers.llama32.Llama32Trainer
+  model_name: unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit
+  max_seq_length: 4096
+
+dataset:
+  chat_template: llama-3.1
+  dataset_kwargs:
+    path: Erland/climate_fever_formatted_base_train
+    subsets:
+      - null
+  default_system_prompt: >-
+    Given the provided claim and evidence, determine the relationship between the claim and the evidence. Select one option from the following list that best describes the relationship: [
+      "REFUTES",
+      "NOT_ENOUGH_INFO",
+      "SUPPORTS"
+    ]
