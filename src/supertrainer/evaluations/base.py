@@ -72,6 +72,9 @@ class BaseEvaluation(ABC):
         model_name = (self.config.evaluation.model_name).split("/")[-1]
         folder_name += f"-{model_name}"
 
+        if self.config.evaluation.subset is not None:
+            folder_name += f"-{self.config.evaluation.subset}"
+
         public_root = os.environ[SUPERTRAINER_PUBLIC_ROOT]
 
         output_folder = os.path.join(public_root, folder_name)

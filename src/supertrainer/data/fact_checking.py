@@ -58,12 +58,12 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
                 {"role": "assistant", "content": label},
             ]
 
-            forbidden_system_prompts = ["llama-3.1", "llama-31"]
+            # forbidden_system_prompts = ["llama-3.1", "llama-31"]
 
             if (
                 use_default_system_prompt
                 and "system" not in conversation[0].values()
-                and self.config.dataset.chat_template not in forbidden_system_prompts
+                # and self.config.dataset.chat_template not in forbidden_system_prompts
             ):
                 conversation.insert(
                     0,
@@ -80,7 +80,7 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
         texts = []
         for convos in conversations:
             if is_test_dataset:
-                logger.debug(
+                logger.warning_once(
                     "Remove assistant output from test dataset "
                     "instead, add the generation prompt"
                 )
@@ -97,18 +97,30 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
 
     def format_dataset(self, dataset: type_hinting.Conversation) -> type_hinting.Conversation:
         processed_dataset = DatasetDict()
+        subsets = self.config.dataset.dataset_kwargs.get("subsets", [None])
 
-        for split_name, split_dataset in dataset.items():
+        def process_split(split_dataset, split_name):
             is_test_dataset = split_name == "test"
-
-            processed_split = split_dataset.map(
+            return split_dataset.map(
                 lambda examples: self.formatting_prompt_func(
                     examples, is_test_dataset=is_test_dataset
                 ),
                 batched=True,
             )
 
-            processed_dataset[split_name] = processed_split
+        for subset in subsets:
+            current_dataset = dataset[subset] if subset is not None else dataset
+
+            if subset is not None:
+                # Handle nested structure for named subsets
+                processed_subset = DatasetDict()
+                for split_name, split_dataset in current_dataset.items():
+                    processed_subset[split_name] = process_split(split_dataset, split_name)
+                processed_dataset[subset] = processed_subset
+            else:
+                # Handle flat structure for no subset
+                for split_name, split_dataset in current_dataset.items():
+                    processed_dataset[subset] = process_split(split_dataset, split_name)
 
         return processed_dataset
 

@@ -1,0 +1,42 @@
+# @package _global_
+
+defaults:
+- /trainer/common/training_kwargs@evaluation.training_kwargs: default
+- /trainer/common/bitsandbytes_kwargs@evaluation.bitsandbytes_kwargs: nf4
+- /trainer/common/model_kwargs@evaluation.model_kwargs: default_no_device_map
+- /dataset/llm@dataset: fact_checking
+- /wandb
+- _self_
+
+wandb:
+  project: nlp701
+
+dataset:
+  tokenizer_name_or_path: ${evaluation.model_name}
+  default_system_prompt: >-
+    Given the provided claim and evidence, determine the relationship between the claim and the evidence. Select one option from the following list that best describes the relationship: [
+      "REFUTES",
+      "NOT_ENOUGH_INFO",
+      "SUPPORTS"
+    ]
+
+
+evaluation:
+  compile: False
+
+  base_only: False
+  max_seq_length: 4096
+
+  training_kwargs:
+    remove_unused_columns: False
+    auto_find_batch_size: False
+
+  inference_kwargs:
+    max_new_tokens: 128
+    use_cache: True
+    temperature: 0.1
+    # do_sample: True
+    # num_beams: 5
+    # top_p: 0.9
+    # repetition_penalty: 1.5
+    # length_penalty: 1.0

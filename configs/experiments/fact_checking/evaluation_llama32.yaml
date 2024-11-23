@@ -1,0 +1,25 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_evaluation
+- _self_
+
+evaluation:
+  peft_kwargs:
+    r: 64
+    lora_alpha: 128
+    lora_dropout: 0.1
+    target_modules:
+      - 'down_proj'
+      - 'o_proj'
+      - 'k_proj'
+      - 'q_proj'
+      - 'gate_proj'
+      - 'up_proj'
+      - 'v_proj'
+    use_dora: False
+    init_lora_weights: "gaussian"
+
+  class_name: supertrainer.evaluations.llama32.Llama32Evaluation
+  model_name: Erland/llama32-fact-checking_20241122_231447-train_claim_arb_evidence_arb
+  chat_template: llama-3.1

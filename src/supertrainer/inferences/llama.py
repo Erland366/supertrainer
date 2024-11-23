@@ -51,8 +51,8 @@ class LlamaInference(BaseInference):
     def _load_model_and_tokenizer(self):
         from unsloth import FastLanguageModel, get_chat_template
 
-        model_name = self.config.inference.pop("model_name", None)
-        chat_template = self.config.inference.pop("chat_template", None)
+        model_name = self.config.inference.get("model_name", None)
+        chat_template = self.config.inference.get("chat_template", None)
 
         assert chat_template is not None, f"chat_template is required for {self.__class__.__name__}"
         assert model_name is not None, f"model_name is required for {self.__class__.__name__}"
