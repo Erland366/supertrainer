@@ -27,7 +27,7 @@ from typing import Literal
 import torch
 from pydantic import BaseModel
 
-from supertrainer import type_hinting
+from supertrainer import logger, type_hinting
 from supertrainer.inferences.base import BaseInference, BaseOutlinesInference
 from supertrainer.utils.deprecation import deprecated
 
@@ -58,6 +58,9 @@ class LlamaInference(BaseInference):
         assert model_name is not None, f"model_name is required for {self.__class__.__name__}"
 
         if self.config.inference.base_only:
+            logger.warning_once(
+                "Use `base_only`, we will load the base model only, not the fine tuned model."
+            )
             from peft import PeftConfig
 
             peft_config = PeftConfig.from_pretrained(model_name)

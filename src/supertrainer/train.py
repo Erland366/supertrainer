@@ -75,7 +75,9 @@ def main(config: DictConfig):
         with config.allow_modification():
             config.trainer.subset = subset
 
-        trainer = import_class(config.trainer.class_name)(config, dataset[subset])
+        trainer = import_class(config.trainer.class_name)(
+            config, dataset[subset] if subset else dataset
+        )
         trainer.train()
 
         wandb.finish()
