@@ -44,6 +44,7 @@ logger.add(sys.stderr, level="DEBUG")
 @hydra.main(config_path="../../configs/", config_name="train", version_base=None)
 def main(config: DictConfig):
     # Enable editing on the omegaconf
+    print("Running the script")
     config = StrictDict(OmegaConf.to_container(config, resolve=True))
     login_hf()
     memory_stats()
@@ -54,22 +55,22 @@ def main(config: DictConfig):
 
     subsets = config.dataset.dataset_kwargs.get("subsets", [None])
 
-    with config.allow_modification():
-        old_config = deepcopy(config)
-
     if subsets[0] is not None:
         for subset in subsets:
             if subset in config.evaluation.model_name:
                 old_name = config.evaluation.model_name
                 with config.allow_modification():
                     config.evaluation.model_name = config.evaluation.model_name.replace(
-                        f"-{config.evaluation.subset}", ""
+                        f"-{subset}", ""
                     )
                 logger.warning(
-                    f"Subset '{config.evaluation.subset}' is in model name '{old_name}'. ",
-                    "We will assume you have multiple models with the same prefix",
-                    f"And we will trim the model name to '{config.evaluation.model_name}'",
+                    f"Subset '{subset}' is in model name '{old_name}'. \
+                    We will assume you have multiple models with the same prefix, \
+                    And we will trim the model name to '{config.evaluation.model_name}'",
                 )
+
+    with config.allow_modification():
+        old_config = deepcopy(config)
 
     for subset in subsets:
         with old_config.allow_modification():
@@ -81,6 +82,8 @@ def main(config: DictConfig):
 
         if subset is not None:
             current_dataset = dataset[subset]
+        else:
+            current_dataset = dataset
 
         if isinstance(dataset, DatasetDict):
             logger.warning("Multiple datasets detected. Using the test dataset by default!.")
@@ -92,4 +95,5 @@ def main(config: DictConfig):
 
 
 if __name__ == "__main__":
+    print("Running the script")
     main()

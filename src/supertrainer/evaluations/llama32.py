@@ -58,12 +58,15 @@ class Llama32Evaluation(BaseEvaluation):
         self.suffix_regex = re.compile("|".join(self.suffix_patterns), re.IGNORECASE)
 
     def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
-        config = super().postprocess_config(config)
         with config.allow_modification():
             config.evaluation.classes = config.dataset.classes
             if config.evaluation.subset is not None:
-                config.evaluation.model_name += f"-{config.evaluation.subset}"
+                config.evaluation.model_name = (
+                    f"{config.evaluation.model_name}-{config.evaluation.subset}"
+                )
                 logger.info(f"Found subset! Model name updated to {config.evaluation.model_name}")
+
+        config = super().postprocess_config(config)
         return config
 
     def clean_prediction(self, prediction: str) -> tuple[str, bool]:
@@ -102,10 +105,7 @@ class Llama32Evaluation(BaseEvaluation):
         ):
             text = data[self.config.dataset.text_col]
             label = data[self.config.dataset.label_col]
-            formatted_text = self.inference.tokenizer.apply_chat_template(
-                [text], add_generation_prompt=True
-            )
-            raw_prediction = self.inference.predict(formatted_text)
+            raw_prediction = self.inference.predict(text)
 
             cleaned_prediction, is_unknown = self.clean_prediction(raw_prediction)
             result = {

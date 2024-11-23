@@ -1,7 +1,7 @@
 # @package _global_
 
 defaults:
-- /experiments/soft_robotics/default_evaluation
+- /experiments/fact_checking/default_evaluation
 - _self_
 
 evaluation:
@@ -22,3 +22,4 @@ evaluation:
 
   class_name: supertrainer.evaluations.llama32.Llama32Evaluation
   model_name: Erland/llama32-fact-checking_20241122_231447-train_claim_arb_evidence_arb
+  chat_template: llama-3.1
