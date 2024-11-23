@@ -13,6 +13,13 @@ wandb:
 
 dataset:
   tokenizer_name_or_path: ${evaluation.model_name}
+  default_system_prompt: >-
+    Given the provided claim and evidence, determine the relationship between the claim and the evidence. Select one option from the following list that best describes the relationship: [
+      "REFUTES",
+      "NOT_ENOUGH_INFO",
+      "SUPPORTS"
+    ]
+
 
 evaluation:
   compile: False

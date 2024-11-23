@@ -58,12 +58,12 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
                 {"role": "assistant", "content": label},
             ]
 
-            forbidden_system_prompts = ["llama-3.1", "llama-31"]
+            # forbidden_system_prompts = ["llama-3.1", "llama-31"]
 
             if (
                 use_default_system_prompt
                 and "system" not in conversation[0].values()
-                and self.config.dataset.chat_template not in forbidden_system_prompts
+                # and self.config.dataset.chat_template not in forbidden_system_prompts
             ):
                 conversation.insert(
                     0,
