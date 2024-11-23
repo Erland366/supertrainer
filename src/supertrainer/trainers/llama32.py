@@ -46,38 +46,31 @@ class Llama32Trainer(BaseTrainer):
             del config.trainer.training_kwargs.gradient_checkpointing_kwargs
         return config
 
+    def _load_model_and_tokenizer(self):
+        from unsloth import FastLanguageModel, get_chat_template
+
+        logger.info("Lazy loading both model and tokenizer")
+        self._model, self._tokenizer = FastLanguageModel.from_pretrained(
+            model_name=self.config.trainer.model_name,
+            max_seq_length=self.config.trainer.max_seq_length,
+            dtype=None,
+            load_in_4bit=True,
+        )
+        self._model = FastLanguageModel.get_peft_model(
+            self._model, **self.config.trainer.peft_kwargs
+        )
+        self._tokenizer = get_chat_template(self._tokenizer, self.config.dataset.chat_template)
+
     @property
     def model(self) -> "AutoModelForCausalLM" | "FastLanguageModel" | None:  # noqa # type: ignore
         if self._model is None or self._tokenizer is None:
-            from unsloth import FastLanguageModel
-
-            logger.info("Lazy loading both model and tokenizer")
-            self._model, self._tokenizer = FastLanguageModel.from_pretrained(
-                model_name=self.config.trainer.model_name,
-                max_seq_length=self.config.trainer.max_seq_length,
-                dtype=None,
-                load_in_4bit=True,
-            )
-            self._model = FastLanguageModel.get_peft_model(
-                self._model, **self.config.trainer.peft_kwargs
-            )
+            self._load_model_and_tokenizer()
         return self._model
 
     @property
     def tokenizer(self) -> "AutoTokenizer":  # noqa # type: ignore
         if self._model is None or self._tokenizer is None:
-            from unsloth import FastLanguageModel
-
-            logger.info("Lazy loading both model and tokenizer")
-            self._model, self._tokenizer = FastLanguageModel.from_pretrained(
-                model_name=self.config.trainer.model_name,
-                max_seq_length=self.config.trainer.max_seq_length,
-                dtype=None,
-                load_in_4bit=True,
-            )
-            self._model = FastLanguageModel.get_peft_model(
-                self._model, **self.config.trainer.peft_kwargs
-            )
+            self._load_model_and_tokenizer()
         return self._tokenizer
 
     def train(self) -> None:
@@ -103,7 +96,6 @@ class Llama32Trainer(BaseTrainer):
             logger.debug("No validation dataset found, skipping evaluation")
             remove_config_eval(self.config)
 
-        # TODO: STILL BUG WHEN SANITY CHECKING, NEED TO REMOVE CERTAIN ARGS WHEN MODE=SANITY_CHECK
         trainer = SFTTrainer(
             model=self.model,
             tokenizer=self.tokenizer,
@@ -111,7 +103,7 @@ class Llama32Trainer(BaseTrainer):
             eval_dataset=eval_dataset,
             dataset_text_field="text",
             max_seq_length=self.config.trainer.max_seq_length,
-            dataset_num_proc=2,
+            # dataset_num_proc=2,
             # Packing still buggy for unsloth (incorrect masking)
             packing=False,  # Can make training 5x faster for short sequences.
             args=TrainingArguments(
@@ -130,18 +122,14 @@ class Llama32Trainer(BaseTrainer):
             # push configs
             self.push_config_to_hf(self.config)
             self.push_config_to_wandb(self.config)
-            self.model.push_to_hub(
+            self.model.save_pretrained_merged(
                 self.config.trainer.training_kwargs.output_dir,
                 self.tokenizer,
                 save_method="lora",
             )
-            # Save and push the updated tokenizer
-            self.tokenizer.save_pretrained(self.config.trainer.training_kwargs.output_dir)
-            self.tokenizer.push_to_hub(
+            self.model.push_to_hub_merged(
                 self.config.trainer.training_kwargs.hub_model_id,
-                tokenizer=self.tokenizer,  # Pass the tokenizer explicitly
+                self.tokenizer,
                 save_method="lora",
-                token=self.config.trainer.training_kwargs.hub_token,
-                private=True,
             )
         print(trainer_stats)

@@ -1,0 +1,37 @@
+# @package _global_
+
+defaults:
+- /trainer/common/training_kwargs@inference.training_kwargs: default
+- /trainer/common/bitsandbytes_kwargs@inference.bitsandbytes_kwargs: nf4
+- /trainer/common/model_kwargs@inference.model_kwargs: default_no_device_map
+- /wandb
+- _self_
+
+wandb:
+  project: nlp701
+
+inference:
+  compile: False
+  training_kwargs:
+    remove_unused_columns: False
+    auto_find_batch_size: False
+
+  inference_kwargs:
+    max_new_tokens: 128
+    use_cache: True
+    temperature: 0.2
+
+  base_only: False
+  max_seq_length: 4096
+
+dataset:
+  subsets:
+    - 'train_claim_en_evidence_en'
+    - 'train_claim_en_evidence_idn'
+    - 'train_claim_en_evidence_arb'
+    - 'train_claim_idn_evidence_en'
+    - 'train_claim_idn_evidence_idn'
+    - 'train_claim_idn_evidence_arb'
+    - 'train_claim_arb_evidence_en'
+    - 'train_claim_arb_evidence_idn'
+    - 'train_claim_arb_evidence_arb'

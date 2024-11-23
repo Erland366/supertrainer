@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # MIT License
 #
 # Copyright (c) 2024 Edd
@@ -22,14 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-echo "Training Gemma2!"
-python src/supertrainer/train.py +experiments/fact_checking=train_gemma2
+from supertrainer.inferences.llama import LlamaInference
 
-echo "Training Qwen2.5!"
-python src/supertrainer/train.py +experiments/fact_checking=train_qwen25
 
-echo "Training Mistral-0.3!"
-python src/supertrainer/train.py +experiments/fact_checking=train_mistral03
-
-echo "Training Llama-3.2!"
-python src/supertrainer/train.py +experiments/fact_checking=train_llama32
+class Qwen25Inference(LlamaInference):
+    # Should be the exact same
+    pass

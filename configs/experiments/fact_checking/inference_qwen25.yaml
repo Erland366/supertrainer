@@ -1,0 +1,23 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_inference
+- _self_
+
+inference:
+  peft_kwargs:
+    r: 64
+    lora_alpha: 128
+    lora_dropout: 0.1
+    target_modules:
+      - "q_proj"
+      - "k_proj"
+      - "v_proj"
+      - "o_proj"
+      - "gate_proj"
+      - "up_proj"
+      - "down_proj"
+
+  class_name: supertrainer.inferences.qwen25.Qwen25Inference
+  model_name: Erland/qwen25-fact-checking_20241122_221408-train_claim_en_evidence_en
+  chat_template: qwen2.5

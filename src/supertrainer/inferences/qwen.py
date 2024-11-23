@@ -21,8 +21,13 @@
 # SOFTWARE.
 
 from supertrainer.inferences.llama import LlamaInference, LlamaOutlinesInference
+from supertrainer.utils.deprecation import deprecated
 
 
+@deprecated(
+    "This module will be deprecated, please use specific `qwen` version instead (e.g. `qwen-2.5`)",
+    alternative="Qwen25Inference",
+)
 class QwenInference(LlamaInference):
     # Generally, everything is able to be used on the parent class without modification here
     def __init__(self, config):
