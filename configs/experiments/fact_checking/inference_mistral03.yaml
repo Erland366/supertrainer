@@ -19,5 +19,5 @@ inference:
       - "down_proj"
 
   class_name: supertrainer.inferences.mistral03.Mistral03Inference
-  model_name: Erland/mistral03-fact-checking_20241122_221408-train_claim_en_evidence_en
+  model_name: Erland/mistral03-fact-checking_20241122_224046-train_claim_arb_evidence_en
   chat_template: mistral
