@@ -20,20 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from supertrainer.inferences.llama import LlamaInference, LlamaOutlinesInference
-from supertrainer.utils.deprecation import deprecated
+from supertrainer.inferences.llama import LlamaInference
 
 
-@deprecated(
-    "This module will be deprecated, please use specific `qwen` version instead (e.g. `qwen-2.5`)",
-    alternative="Qwen25Inference",
-)
-class QwenInference(LlamaInference):
-    # Generally, everything is able to be used on the parent class without modification here
-    def __init__(self, config):
-        super().__init__(config)
-        self.chat_template = "qwen-2.5"
-
-class QwenOutlinesInference(LlamaOutlinesInference):
-    # Generally, everything is able to be used on the parent class without modification here
+class Mistral03Inference(LlamaInference):
+    # Should be the exact same
     pass

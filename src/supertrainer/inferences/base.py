@@ -106,6 +106,7 @@ class BaseInference(ABC):
         self._tokenizer = None
 
     def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
+        logger.debug(f"Configuration loaded: {config}")
         return config
 
     @abstractmethod

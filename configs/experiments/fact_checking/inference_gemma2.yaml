@@ -1,0 +1,24 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_inference
+- _self_
+
+inference:
+  peft_kwargs:
+    r: 64
+    lora_alpha: 128
+    lora_dropout: 0.1
+    target_modules:
+      - "q_proj"
+      - "k_proj"
+      - "v_proj"
+      - "o_proj"
+      - "gate_proj"
+      - "up_proj"
+      - "down_proj"
+
+  class_name: supertrainer.inferences.gemma2.Gemma2Inference
+  model_name: Erland/gemma2-fact-checking_20241122_214003-train_claim_arb_evidence_arb
+
+  chat_template: gemma2_chatml
