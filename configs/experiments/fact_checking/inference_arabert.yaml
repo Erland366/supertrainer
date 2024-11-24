@@ -1,0 +1,14 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_inference
+- _self_
+
+inference:
+
+  model_kwargs:
+    _attn_implementation: eager
+
+
+  class_name: supertrainer.inferences.arabert.AraBertInference
+  model_name: Erland/arabert-fact-checking_20241124_162350-train_claim_en_evidence_idn

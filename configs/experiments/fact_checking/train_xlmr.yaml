@@ -9,21 +9,12 @@ trainer:
     r: 64
     lora_alpha: 128
     lora_dropout: 0.1
-    target_modules:
-      - 'query'
-      - 'key'
-      - 'value'
-      - 'dense'
+    task_type: SEQ_CLS
     use_dora: False
     init_lora_weights: "gaussian"
   training_kwargs:
     per_device_train_batch_size: 16
     hub_model_id: "Erland/xlmr-fact-checking"
-  model_kwargs:
-    _attn_implementation: eager
-
-
-  processor_kwargs:
 
   class_name: supertrainer.trainers.xlmr.XLMRTrainer
   model_name: FacebookAI/xlm-roberta-base

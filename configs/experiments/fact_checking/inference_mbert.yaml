@@ -1,0 +1,9 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_inference
+- _self_
+
+inference:
+  class_name: supertrainer.inferences.mbert.MBertInference
+  model_name: Erland/mbert-fact-checking_20241124_162821-train_claim_en_evidence_arb

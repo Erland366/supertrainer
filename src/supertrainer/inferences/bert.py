@@ -21,13 +21,19 @@
 # SOFTWARE.
 
 import torch
+from peft import PeftConfig, PeftModel
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from supertrainer import logger, type_hinting
 from supertrainer.inferences.base import BaseInference
-from supertrainer.utils.helpers import get_model_name
+from supertrainer.utils.deprecation import deprecated
+from supertrainer.utils.helpers import load_model_with_adaptive_attention
 
 
+@deprecated(
+    "This class is deprecated. Use respected model class instead! (e.g. AraBERT Inference)",
+    alternative="AraBERT Inference",
+)
 class BertInference(BaseInference):
     def __init__(self, config: type_hinting.Config) -> None:
         super().__init__(config)
@@ -43,16 +49,31 @@ class BertInference(BaseInference):
         return config
 
     def load_model(self) -> AutoModelForSequenceClassification:
-        model = AutoModelForSequenceClassification.from_pretrained(
-            self.config.inference.model_name, **self.config.inference.model_kwargs
+        peft_config = PeftConfig.from_pretrained(self.config.inference.model_name)
+
+        model = load_model_with_adaptive_attention(
+            AutoModelForSequenceClassification.from_pretrained,
+            peft_config.base_model_name_or_path,
+            num_labels=len(self.config.inference.classes),
+            trust_remote_code=True,
+            **self.config.inference.model_kwargs,
         )
-        model.to(self.device)
+
+        if not self.config.inference.base_only:
+            logger.info(f"Loading PEFT model: {self.config.inference.model_name}")
+            model = PeftModel.from_pretrained(
+                model,
+                self.config.inference.model_name,
+                device_map=self.config.inference.model_kwargs.get("device_map", "auto"),
+            )
+
         model.eval()
-        logger.debug(f"{get_model_name(model)} model loaded and ready for inference.")
         return model
 
     def load_tokenizer(self) -> AutoTokenizer:
-        tokenizer = AutoTokenizer.from_pretrained(self.config.inference.model_name)
+        tokenizer = AutoTokenizer.from_pretrained(
+            self.config.inference.model_name, trust_remote_code=True
+        )
         if tokenizer.pad_token is None:
             tokenizer.add_special_tokens({"pad_token": tokenizer.eos_token})
         if tokenizer.model_max_length > 100_000:
@@ -60,9 +81,9 @@ class BertInference(BaseInference):
         return tokenizer
 
     def preprocess(self, text: str):
-        return self.tokenizer(text, return_tensors="pt", truncation=True, padding=True).to(
-            self.device
-        )
+        return self.tokenizer(
+            text, return_tensors="pt", truncation=True, padding=True, max_length=512
+        ).to(self.device)
 
     def postprocess(self, outputs):
         logits = outputs.logits

@@ -61,8 +61,7 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
             # forbidden_system_prompts = ["llama-3.1", "llama-31"]
 
             if (
-                use_default_system_prompt
-                and "system" not in conversation[0].values()
+                use_default_system_prompt and "system" not in conversation[0].values()
                 # and self.config.dataset.chat_template not in forbidden_system_prompts
             ):
                 conversation.insert(
@@ -227,21 +226,37 @@ class FactCheckingBERTEvaluationDataset(BaseDataset):
             label = self.config.dataset.class2id[example["labels"]]
             return {"text": text, "labels": label}
 
-        formatted_dataset = dataset.map(format_example)
-        logger.debug("Removing unnecessary columns")
-        formatted_dataset = formatted_dataset.remove_columns(
-            [col for col in formatted_dataset.column_names if col not in ["text", "labels"]]
-        )
+        # Handle nested DatasetDict structure
+        processed_dataset = {}
+        for subset_key, subset_dict in dataset.items():
+            if isinstance(subset_dict, DatasetDict):
+                processed_subset = {}
+                for split_key, split_dataset in subset_dict.items():
+                    # Apply formatting to each split
+                    formatted_split = split_dataset.map(format_example)
+                    # Remove unnecessary columns
+                    formatted_split = formatted_split.remove_columns(
+                        [
+                            col
+                            for col in formatted_split.column_names
+                            if col not in ["text", "labels"]
+                        ]
+                    )
+                    processed_subset[split_key] = formatted_split
+                processed_dataset[subset_key] = DatasetDict(processed_subset)
+            else:
+                # Handle direct Dataset case
+                formatted_dataset = subset_dict.map(format_example)
+                formatted_dataset = formatted_dataset.remove_columns(
+                    [col for col in formatted_dataset.column_names if col not in ["text", "labels"]]
+                )
+                processed_dataset[subset_key] = formatted_dataset
 
-        return formatted_dataset
+        return DatasetDict(processed_dataset)
 
     def prepare_dataset(self):
         logger.debug("Preparing dataset")
         dataset = self.dataset
-
-        if isinstance(dataset, DatasetDict):
-            logger.debug("Found a DatasetDict, we will use the test split")
-            dataset = dataset["test"]
 
         logger.debug(f"Dataset loaded: {dataset}")
 

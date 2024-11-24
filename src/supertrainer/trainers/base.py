@@ -105,6 +105,10 @@ class BaseTrainer(ABCTrainer):
             if config.is_testing:
                 run_name = "TESTING_" + run_name
 
+            if config.trainer.get("without_lora", False):
+                config.trainer.training_kwargs.hub_model_id += "-without_lora"
+                run_name += "-without_lora"
+
             if config.trainer.subset is not None:
                 config.trainer.training_kwargs.hub_model_id += f"-{config.trainer.subset}"
                 run_name += f"-{config.trainer.subset}"

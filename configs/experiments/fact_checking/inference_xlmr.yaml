@@ -1,0 +1,12 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_inference
+- _self_
+
+inference:
+  class_name: supertrainer.inferences.xlmr.XLMRInference
+  model_name: Erland/xlmr-fact-checking_20241124_163707-train_claim_idn_evidence_arb
+  model_kwargs:
+    device_map: null
+    low_cpu_mem_usage: false

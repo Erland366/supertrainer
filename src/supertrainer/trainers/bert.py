@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 import torch
-from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
 from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding,
@@ -33,7 +33,9 @@ from unsloth_zoo.patching_utils import patch_torch_compile
 from supertrainer import logger, type_hinting
 from supertrainer.evaluations.classification import compute_metrics
 from supertrainer.trainers.base import BaseTrainer
-from supertrainer.utils.helpers import load_model_with_adaptive_attention, remove_config_eval
+from supertrainer.utils.helpers import (
+    remove_config_eval,
+)
 
 
 class BERTTrainer(BaseTrainer):
@@ -58,17 +60,19 @@ class BERTTrainer(BaseTrainer):
             # amount of label
             config.trainer.model_kwargs.num_labels = num_classes
 
+            if config.trainer.peft_kwargs.get("task_type", None) is not None:
+                task_type = config.trainer.peft_kwargs.task_type
+                config.trainer.peft_kwargs.task_type = getattr(TaskType, task_type)
+
             config.trainer.peft_config = LoraConfig(
                 **config.trainer.peft_kwargs,
             )
 
+            # config.trainer.bitsandbytes_kwargs.bnb_4bit_compute_dtype = torch_dtype
+            # config.trainer.model_kwargs.torch_dtype = torch_dtype
+
             # Add HF to config
             config.trainer.training_kwargs.run_name += "-bert"
-
-            if config.trainer.subset is not None:
-                config.trainer.training_kwargs.run_name += f"-{config.trainer.subset}"
-                config.trainer.training_kwargs.output_dir += f"-{config.trainer.subset}"
-                config.trainer.training_kwargs.hub_model_id += f"-{config.trainer.subset}"
 
         return config
 
@@ -78,11 +82,22 @@ class BERTTrainer(BaseTrainer):
             from transformers import AutoModelForSequenceClassification
 
             logger.debug("Lazy loading model")
-            lora_config = LoraConfig(
-                **self.config.trainer.peft_kwargs,
-            )
-            model = load_model_with_adaptive_attention(
-                AutoModelForSequenceClassification.from_pretrained,
+
+            lora_config = self.config.trainer.peft_config
+
+            if self.config.trainer.without_lora:
+                with self.config.allow_modification():
+                    if (
+                        self.config.trainer.model_kwargs.get("quantization_config", None)
+                        is not None
+                    ):
+                        logger.warning_once(
+                            "Skipping LoRA! Without LoRA, the training will be slower! \
+                            We will delete the `quantization_config` from the config."
+                        )
+                        del self.config.trainer.model_kwargs.quantization_config
+
+            model = AutoModelForSequenceClassification.from_pretrained(
                 self.config.trainer.model_name,
                 **self.config.trainer.model_kwargs,
             )
@@ -91,14 +106,17 @@ class BERTTrainer(BaseTrainer):
                 gradient_checkpointing_kwargs={"use_reentrant": False}
             )
 
-            model = prepare_model_for_kbit_training(model)
-
-            model = get_peft_model(model, lora_config)
-            model.print_trainable_parameters()
-
-            if self.config.trainer.compile:
-                patch_torch_compile()
-                model = torch.compile(model)
+            if not self.config.trainer.without_lora:
+                model = prepare_model_for_kbit_training(model)
+                model = get_peft_model(model, lora_config)
+                model.print_trainable_parameters()
+            else:
+                try:
+                    if self.config.trainer.compile or self.conig.trainer.without_lora:
+                        patch_torch_compile()
+                        model = torch.compile(model)
+                except Exception as e:
+                    logger.warning_once(f"Failed to compile model: {e}")
             self._model = model
         return self._model
 

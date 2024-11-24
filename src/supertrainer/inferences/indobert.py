@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from supertrainer.inferences.bert import BertInference
 
-from supertrainer.trainers.bert import BERTTrainer
 
-
-class AraBertTrainer(BERTTrainer):
+class IndoBertInference(BertInference):
+    # Should be the exact shame
     pass

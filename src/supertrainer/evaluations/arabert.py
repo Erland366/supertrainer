@@ -20,9 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from supertrainer import type_hinting
+from supertrainer.evaluations.bert import BertEvaluation
+from supertrainer.inferences.arabert import AraBertInference
 
-from supertrainer.trainers.bert import BERTTrainer
 
-
-class AraBertTrainer(BERTTrainer):
-    pass
+class AraBertEvaluation(BertEvaluation):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
+        super().__init__(config, dataset)
+        self.inference = AraBertInference(self.config)

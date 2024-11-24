@@ -121,24 +121,67 @@ def check_flash_attention_2_support() -> bool:
 
 
 def load_model_with_adaptive_attention(model_loader_func, *args, **kwargs):
-    if kwargs.get("_attn_implementation") is not None:
-        attn_implementation = kwargs.pop("_attn_implementation")
+    """
+    Load a model with adaptive attention implementation, falling back gracefully based on
+    hardware support and model compatibility.
+
+    Fallback order:
+    1. Flash Attention 2 (if hardware supports it and model is compatible)
+    2. SDPA (if model is compatible)
+    3. Eager (default fallback)
+
+    Special handling for PEFT models to ensure proper device mapping.
+    """
+    # Save device_map for later
+    device_map = kwargs.pop("device_map", None)
+    torch_dtype = kwargs.pop("torch_dtype", None)
+    if torch_dtype == "auto":
+        torch_dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+
+    # First, determine the attention implementation to use
+    if kwargs.get("attn_implementation") is not None:
+        attn_implementations = [kwargs["attn_implementation"]]
     else:
-        attn_implementation = "flash_attention_2" if check_flash_attention_2_support() else "sdpa"
-    try:
-        model = model_loader_func(*args, _attn_implementation=attn_implementation, **kwargs)
-    except ValueError as e:
-        error_message = str(e)
-        if (
-            "does not support an attention implementation through torch.nn.\
-            functional.scaled_dot_product_attention yet."
-            in error_message
-        ):
-            attn_implementation = "eager"
-            model = model_loader_func(*args, _attn_implementation=attn_implementation, **kwargs)
-        else:
-            raise
-    return model
+        attn_implementations = []
+        if check_flash_attention_2_support():
+            attn_implementations.append("flash_attention_2")
+        attn_implementations.extend(["sdpa", "eager"])
+
+    # Try each attention implementation
+    last_exception = None
+    for attn_impl in attn_implementations:
+        try:
+            # Load without device_map and torch_dtype first
+            current_kwargs = kwargs.copy()
+            current_kwargs["attn_implementation"] = attn_impl
+
+            model = model_loader_func(*args, **current_kwargs)
+
+            # If we got here, the model loaded successfully
+            # Now apply torch_dtype and device_map if they were specified
+            # if torch_dtype is not None:
+            #     model = model.to(dtype=torch_dtype)
+            if device_map is not None:
+                model = model.to(device_map=device_map)
+
+            return model
+
+        except ValueError as e:
+            error_msg = str(e)
+            if "does not support Flash Attention" in error_msg:
+                last_exception = e
+                continue
+            elif "scaled_dot_product_attention" in error_msg:
+                last_exception = e
+                continue
+            else:
+                raise
+        except Exception as e:
+            last_exception = e
+            continue
+
+    # If we got here, none of the attempts worked
+    raise last_exception
 
 
 def memory_stats():

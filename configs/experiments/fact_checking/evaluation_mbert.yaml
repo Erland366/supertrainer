@@ -1,0 +1,13 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_evaluation
+- /dataset/bert@dataset: fact_checking
+- _self_
+
+evaluation:
+  class_name: supertrainer.evaluations.mbert.MBertEvaluation
+  model_name: Erland/mbert-fact-checking_20241124_162821-train_claim_en_evidence_arb
+
+dataset:
+  class_name: supertrainer.data.fact_checking.FactCheckingBERTEvaluationDataset
