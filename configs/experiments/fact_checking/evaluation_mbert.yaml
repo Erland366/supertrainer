@@ -7,7 +7,7 @@ defaults:
 
 evaluation:
   class_name: supertrainer.evaluations.mbert.MBertEvaluation
-  model_name: Erland/mbert-fact-checking_20241124_162821-train_claim_en_evidence_arb
+  model_name: Erland/mbert-fact-checking_20241125_013826-without_lora-train_claim_arb_evidence_idn
 
 dataset:
   class_name: supertrainer.data.fact_checking.FactCheckingBERTEvaluationDataset
