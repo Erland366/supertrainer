@@ -20,9 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from supertrainer import type_hinting
+from supertrainer.evaluations.bert import BertEvaluation
+from supertrainer.inferences.xlmr import XLMRInference
 
-from supertrainer.trainers.bert import BERTTrainer
 
-
-class AraBertTrainer(BERTTrainer):
-    pass
+class XLMREvaluation(BertEvaluation):
+    # Should be the exact shame
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
+        super().__init__(config, dataset)
+        self.inference = XLMRInference(self.config)

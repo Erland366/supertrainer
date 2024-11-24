@@ -56,6 +56,7 @@ class ChameleonInference(BaseInferenceMLLM):
             )
 
             if not self.config.inference.base_only:
+                logger.info(f"Loading PEFT model: {self.config.inference.model_name}")
                 model = PeftModel.from_pretrained(
                     model,
                     self.config.inference.model_name,

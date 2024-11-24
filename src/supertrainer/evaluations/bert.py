@@ -27,14 +27,20 @@ from tqdm import tqdm
 from supertrainer import logger, type_hinting
 from supertrainer.evaluations.base import BaseEvaluation
 from supertrainer.inferences.bert import BertInference
+from supertrainer.utils.deprecation import deprecated
 from supertrainer.utils.helpers import get_model_name
 
 
+@deprecated(
+    "This class is deprecated. Use respected model class instead! (e.g. AraBERT Evaluation)",
+    alternative="AraBERTEvaluation",
+)
 class BertEvaluation(BaseEvaluation):
     def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
         self.config = self.postprocess_config(config)
         self.inference = BertInference(self.config)
         self.dataset = dataset
+
 
     def evaluate(self):
         logger.info(f"Starting {get_model_name(self.inference.model)} evaluation")
@@ -46,7 +52,7 @@ class BertEvaluation(BaseEvaluation):
             results.append(
                 {
                     "text": text,
-                    "true_label": self.config.dataset.id2class.get(true_label, "Unknown"),
+                    "true_label": self.config.inference.id2class.get(true_label, "Unknown"),
                     "predicted_label": predicted_label,
                 }
             )
