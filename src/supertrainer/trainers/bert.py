@@ -22,6 +22,7 @@
 
 import torch
 from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
+from torch import nn
 from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding,
@@ -36,6 +37,20 @@ from supertrainer.trainers.base import BaseTrainer
 from supertrainer.utils.helpers import (
     remove_config_eval,
 )
+
+
+class WeightedTrainer(Trainer):
+    def __init__(self, class_weights, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.class_weights = class_weights
+
+    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+        labels = inputs.get("labels")
+        outputs = model(**inputs)
+        logits = outputs.get("logits")
+        loss_fct = nn.CrossEntropyLoss(weight=self.class_weights)
+        loss = loss_fct(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+        return (loss, outputs) if return_outputs else loss
 
 
 class BERTTrainer(BaseTrainer):
@@ -155,18 +170,34 @@ class BERTTrainer(BaseTrainer):
 
         data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
 
-        trainer = Trainer(
-            model=self.model,
-            # model_init_kwargs=self.config.model_kwargs,
-            tokenizer=self.tokenizer,
-            train_dataset=train_dataset,
-            eval_dataset=eval_dataset,
-            compute_metrics=compute_metrics,
-            args=TrainingArguments(
-                **self.config.trainer.training_kwargs,
-            ),
-            data_collator=data_collator,
-        )
+        if self.config.trainer.class_weights is not None:
+            trainer = WeightedTrainer(
+                model=self.model,
+                # model_init_kwargs=self.config.model_kwargs,
+                tokenizer=self.tokenizer,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                compute_metrics=compute_metrics,
+                args=TrainingArguments(
+                    **self.config.trainer.training_kwargs,
+                ),
+                data_collator=data_collator,
+                class_weights=torch.tensor(self.config.trainer.class_weights, device="cuda"),
+            )
+        else:
+            trainer = Trainer(
+                model=self.model,
+                # model_init_kwargs=self.config.model_kwargs,
+                tokenizer=self.tokenizer,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                compute_metrics=compute_metrics,
+                args=TrainingArguments(
+                    **self.config.trainer.training_kwargs,
+                ),
+                data_collator=data_collator,
+            )
+
         self.memory_stats()
         logger.debug("Starting training")
 

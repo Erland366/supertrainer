@@ -1,5 +1,5 @@
 dataset_kwargs:
-  path: Erland/fake_news_detection_dataset_cross_lingual_formatted_uncased_split
+  path: Erland/f_n_d_d_c_l_f_u_s_c
   subsets:
     - 'train_claim_en_evidence_en'
     - 'train_claim_en_evidence_idn'

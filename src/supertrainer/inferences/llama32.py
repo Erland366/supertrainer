@@ -20,9 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from supertrainer.inferences.llama import LlamaInference
+from supertrainer.inferences.llama import LlamaInference, LlamaNewTokenInference
 
 
 class Llama32Inference(LlamaInference):
+    # Should be the exact same
+    pass
+
+
+class Llama32NewTokenInference(LlamaNewTokenInference):
     # Should be the exact same
     pass

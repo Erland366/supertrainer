@@ -1,0 +1,43 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default
+- /dataset/llm@dataset: fact_checking
+- _self_
+
+trainer:
+  peft_kwargs:
+    r: 64
+    target_modules:
+      - "q_proj"
+      - "k_proj"
+      - "v_proj"
+      - "o_proj"
+      - "gate_proj"
+      - "up_proj"
+      - "down_proj"
+      - "embed_tokens"
+      - "lm_head"
+    lora_alpha: 128
+    lora_dropout: 0
+    bias: "none"
+    use_gradient_checkpointing: "unsloth"
+    random_state: 3407
+    use_rslora: false
+    loftq_config: null
+  training_kwargs:
+    hub_model_id: "Erland/llama32-fact-checking-new_token"
+  processor_kwargs:
+
+  class_name: supertrainer.trainers.llama32.Llama32Trainer
+  model_name: Erland/Meta-Llama-3.1-8B-Instruct-modified-token-bnb-4bit
+  max_seq_length: 4096
+
+dataset:
+  chat_template: llama-3.1
+  class2token:
+    REFUTES: "<|CLASS_1|>"
+    SUPPORTS: "<|CLASS_2|>"
+    NOT_ENOUGH_INFO: "<|CLASS_3|>"
+
+  class_name: supertrainer.data.fact_checking.FactCheckingTrainingLLMNewTokenDataset
