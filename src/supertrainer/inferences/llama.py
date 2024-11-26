@@ -122,6 +122,74 @@ class LlamaInference(BaseInference):
         return prediction
 
 
+class LlamaNewTokenInference(LlamaInference):
+    def __init__(self, config: type_hinting.Config) -> None:
+        self.config = self.postprocess_config(config)
+        super().__init__(config)
+        self._buffer_model = None
+        self._buffer_tokenizer = None
+
+    def get_class_probabilities(
+        self, logits: torch.Tensor, return_all: bool = False
+    ) -> tuple[str, float] | tuple[str, float, list[tuple[str, float]]]:
+        """
+        Calculate probabilities for each class token and return the highest probability class.
+
+        Args:
+            logits: The model's output logits for the last token
+            return_all: If True, return probabilities for all classes
+
+        Returns:
+            If return_all=False: Tuple of (predicted_class, probability)
+            If return_all=True: Tuple of (predicted_class, probability, list of (class, prob) pairs)
+        """
+        # assert (
+        #     self.config.dataset.get("class2token", None) is not None
+        # ), "`class2token` is required for this model"
+        class_tokens = list(self.config.dataset.class2token.values())
+        class_token_ids = self.tokenizer.convert_tokens_to_ids(class_tokens)
+
+        class_probs = torch.softmax(logits[class_token_ids], dim=0)
+
+        max_prob_idx = torch.argmax(class_probs)
+        predicted_class = class_tokens[max_prob_idx]
+        max_probability = class_probs[max_prob_idx].item()
+
+        if not return_all:
+            return predicted_class, max_probability
+
+        all_probs = [(token, prob.item()) for token, prob in zip(class_tokens, class_probs)]
+        return predicted_class, max_probability, all_probs
+
+    def predict(
+        self, text: str, return_probabilities: bool = False
+    ) -> str | tuple[str, float] | tuple[str, float, list[tuple[str, float]]]:
+        """
+        Predict the most likely class for the input text.
+
+        Args:
+            text: Input text to classify
+            return_probabilities: If True, return probability scores
+
+        Returns:
+            If return_probabilities=False: predicted class string
+            If return_probabilities=True: (predicted_class, probability, [(class, prob), ...])
+        """
+
+        inputs = self.preprocess(text)
+
+        with torch.no_grad():
+            outputs = self.model(input_ids=inputs)
+
+        last_token_logits = outputs.logits[0, -1, :]
+
+        if return_probabilities:
+            return self.get_class_probabilities(last_token_logits, return_all=True)
+
+        predicted_class, _ = self.get_class_probabilities(last_token_logits)
+        return predicted_class
+
+
 class LlamaOutlinesInference(BaseOutlinesInference):
     def __init__(self, config: type_hinting.Config) -> None:
         self.config = self.postprocess_config(config)

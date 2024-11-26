@@ -35,9 +35,6 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
             config.dataset.get("chat_template", None) is not None
         ), "chat_template is required in self.config.dataset.chat_template"
 
-        # I don't think we want to convert the classes to id here
-        # Maybe just make it always lowercase?
-
         return config
 
     def formatting_prompt_func(
@@ -58,12 +55,7 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
                 {"role": "assistant", "content": label},
             ]
 
-            # forbidden_system_prompts = ["llama-3.1", "llama-31"]
-
-            if (
-                use_default_system_prompt and "system" not in conversation[0].values()
-                # and self.config.dataset.chat_template not in forbidden_system_prompts
-            ):
+            if use_default_system_prompt and "system" not in conversation[0].values():
                 conversation.insert(
                     0,
                     {
@@ -134,6 +126,60 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
         logger.debug(f"Dataset loaded: {dataset}")
 
         return dataset
+
+
+class FactCheckingTrainingLLMNewTokenDataset(FactCheckingTrainingLLMDataset):
+    def formatting_prompt_func(
+        self,
+        examples: list[type_hinting.Conversation],
+        use_default_system_prompt: bool = True,
+        is_test_dataset: bool = True,
+    ) -> dict[str, str]:
+        """Batch formatting right here"""
+
+        conversations = []
+
+        class2token = self.config.dataset.get("class2token", None)
+        assert class2token is not None, "class2token is required"
+
+        texts = examples[self.config.dataset.text_col]
+        labels = [class2token[label] for label in examples[self.config.dataset.label_col]]
+        for text, label in zip(texts, labels):
+            conversation = [
+                {"role": "user", "content": text},
+                {"role": "assistant", "content": label},
+            ]
+
+            if use_default_system_prompt and "system" not in conversation[0].values():
+                conversation.insert(
+                    0,
+                    {
+                        "role": "system",
+                        "content": self.config.dataset.get(
+                            "default_system_prompt", "You are an helpful AI assistant"
+                        ),
+                    },
+                )
+
+            conversations.append(conversation)
+
+        texts = []
+        for convos in conversations:
+            if is_test_dataset:
+                logger.warning_once(
+                    "Remove assistant output from test dataset "
+                    "instead, add the generation prompt"
+                )
+                convos = convos[:-1]
+                text = self.tokenizer.apply_chat_template(
+                    convos, tokenize=False, add_generation_prompt=True
+                )
+            else:
+                text = self.tokenizer.apply_chat_template(convos, tokenize=False)
+            texts.append(text)
+        return {
+            "text": texts,
+        }
 
 
 class FactCheckingTrainingDataset(BaseDataset):

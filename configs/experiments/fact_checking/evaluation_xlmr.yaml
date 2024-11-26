@@ -7,7 +7,7 @@ defaults:
 
 evaluation:
   class_name: supertrainer.evaluations.xlmr.XLMREvaluation
-  model_name: Erland/xlmr-fact-checking_20241125_015734-without_lora-train_claim_arb_evidence_arb
+  model_name: Erland/xlmr-fact-checking_20241126_210720-without_lora-train_claim_arb_evidence_arb
 
 dataset:
   class_name: supertrainer.data.fact_checking.FactCheckingBERTEvaluationDataset

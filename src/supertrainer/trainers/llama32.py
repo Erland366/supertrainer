@@ -36,6 +36,10 @@ class Llama32Trainer(BaseTrainer):
         super().__init__(config, dataset)
 
     def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
+
+        with config.allow_modification():
+            if config.trainer.get("without_lora", False):
+                config.trainer.without_lora = False
         config = super().postprocess_config(config)
 
         with config.allow_modification():

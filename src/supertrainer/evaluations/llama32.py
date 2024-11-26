@@ -27,7 +27,7 @@ from tqdm import tqdm
 
 from supertrainer import logger, type_hinting
 from supertrainer.evaluations.base import BaseEvaluation
-from supertrainer.inferences.llama32 import Llama32Inference
+from supertrainer.inferences.llama32 import Llama32Inference, Llama32NewTokenInference
 from supertrainer.utils.helpers import get_model_name
 
 
@@ -182,3 +182,59 @@ class Llama32Evaluation(BaseEvaluation):
             "recall": recall,
             "f1_score": f1,
         }
+
+class Llama32EvaluationNewToken(Llama32Evaluation):
+    def __init__(self, config: type_hinting.Config, dataset: type_hinting.Dataset):
+        self.config = self.postprocess_config(config)
+        self.inference = Llama32NewTokenInference(self.config)
+        self.dataset = dataset
+
+        self.prefix_patterns = [
+            r"^i see (a |an )?",
+            r"^this (appears|looks|seems) to be (a |an )?",
+            r"^the image shows (a |an )?",
+            r"^this is (a |an )?",
+            r"^i believe this is (a |an )?",
+            r"^the object (appears|looks|seems) to be (a |an )?",
+            r"^it'?s (a |an )?",
+            r"^there is (a |an )?",
+            r"^we can see (a |an )?",
+        ]
+        self.suffix_patterns = [
+            r"\s+in (the|this) (image|picture|photo)$",
+            r"\s+object$",
+            r"\s+here$",
+        ]
+
+        self.prefix_regex = re.compile("|".join(self.prefix_patterns), re.IGNORECASE)
+        self.suffix_regex = re.compile("|".join(self.suffix_patterns), re.IGNORECASE)
+
+    def evaluate(self):
+        logger.info(f"Starting {get_model_name(self.inference.model)} evaluation")
+        results = []
+
+        class2token = self.config.dataset.get("class2token", None)
+        assert class2token is not None, "class2token is required"
+        token2class = {v: k for k, v in class2token.items()}
+
+        for i, data in enumerate(
+            tqdm(self.dataset, desc=f"Evaluating {get_model_name(self.inference.model)}")
+        ):
+            text = data[self.config.dataset.text_col]
+            label = data[self.config.dataset.label_col]
+            raw_prediction = self.inference.predict(text)
+
+            cleaned_prediction = raw_prediction
+            result = {
+                "text": text,
+                "true_label": label,
+                "predicted_label": token2class[cleaned_prediction],
+                "raw_prediction": raw_prediction,
+            }
+            results.append(result)
+
+        metrics = self.compute_metrics(results)
+        logger.info(f"Evaluation metrics: {metrics}")
+
+        self.save_results(results, metrics)
+        return metrics
