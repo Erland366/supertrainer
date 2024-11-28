@@ -1,0 +1,202 @@
+[
+    {
+        "text": "banyak bukti, termasuk akuntansi sederhana, menunjukkan tanpa keraguan bahwa peningkatan co2 atmosfer disebabkan oleh pembakaran bahan bakar fosil manusia.. evidence: while co 2 absorption and release is always happening as a result of natural processes, the recent rise in co 2 levels in the atmosphere is known to be mainly due to human (anthropogenic) activity.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "permukaan laut di tuvalu tidak naik.. evidence: tuvaluan leaders have been concerned about the effects of rising sea levels.",
+        "true_label": "REFUTES",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "jadi sekarang jelas bahwa kita tidak mengalami pemanasan global yang berbahaya, dan model iklimnya salah.. evidence: tipping points are \"perhaps the most \u2018dangerous\u2019 aspect of future climate changes\", leading to irreversible impacts on society.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "meskipun kita mencapai target perjanjian paris untuk pemanasan global dua derajat, kota-kota seperti karachi dan kolkata akan menjadi hampir tidak layak huni, dan setiap tahun mengalami gelombang panas mematikan seperti yang melumpuhkan mereka pada tahun 2015.. evidence: the aim of the agreement is to decrease global warming described in its article 2, \"enhancing the implementation\" of the unfccc through: (a) holding the increase in the global average temperature to well below 2\u00a0\u00b0c above pre-industrial levels and to pursue efforts to limit the temperature increase to 1.5\u00a0\u00b0c above pre-industrial levels, recognizing that this would significantly reduce the risks and impacts of climate change; (b) increasing the ability to adapt to the adverse impacts of climate change and foster climate resilience and low greenhouse gas emissions development, in a manner that does not threaten food production; (c) making finance flows consistent with a pathway towards low greenhouse gas emissions and climate-resilient development.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "sementara wilayah timur laut, tengah barat, dan dataran tinggi utara mengalami peningkatan 30% dalam episode hujan lebat \u2013 yang dianggap sebagai hujan lebat yang terjadi sekali dalam lima tahun \u2013 sebagian wilayah barat, khususnya california, telah dilanda kekeringan.. evidence: drought is much more common in the west than the rest of the united states.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "benny peiser melakukan pencarian literatur yang ditinjau sejawat pada basis data isi web of science antara tahun 1993 dan 2003.. evidence: released in beta in november 2004, the google scholar index includes most peer-reviewed online academic journals and books, conference papers, theses and dissertations, preprints, abstracts, technical reports, and other scholarly literature, including court opinions and patents.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "survei terbaru terhadap ilmuwan iklim menunjukkan bahwa sekitar 57 persen tidak setuju dengan gagasan bahwa 95 persen perubahan iklim disebabkan oleh co2.. evidence: most of the climatic warming over the last 50 years is likely to have been caused by increased concentrations of greenhouse gases in the atmosphere.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "mereka sekarang dapat memodelkan seberapa besar kemungkinan suatu peristiwa tertentu akan terjadi dalam kondisi historis, dibandingkan dengan suhu rekor yang kita alami.. evidence: the authors used computational models developed by ncar to simulate the climatic effects of a soot cloud that they suggest would be a result, of a regional nuclear war in which 100 \"small\" (15 kt) weapons are detonated over cities.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "lima puluh lima ribu tahun yang lalu, seluruh dunia 2\u00b0c lebih hangat daripada saat ini[...]. evidence: consequently, summers are 2.3\u00a0\u00b0c (4\u00a0\u00b0f) warmer in the northern hemisphere than in the southern hemisphere under similar conditions.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "sebelas persen dari populasi dunia saat ini rentan terhadap dampak perubahan iklim seperti kekeringan, banjir, gelombang panas, peristiwa cuaca ekstrem, dan kenaikan permukaan laut.. evidence: impacts include the direct effects of extreme weather, leading to injury and loss of life; and indirect effects, such as undernutrition brought on by crop failures.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "data tersebut dilaporkan oleh pusat penelitian iklim arktik universitas illinois, dan diperoleh dari pengamatan satelit di wilayah kutub utara dan selatan (daily tech).. evidence: it was developed completely from surface-based weather observations, including descriptions of clouds found near frontal boundaries.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "laporan tersebut menunjukkan bahwa total kehilangan massa es secara keseluruhan jauh lebih kecil dibandingkan perkiraan sebelumnya.. evidence: as with glaciers worldwide, those of the greater himalayan region are experiencing a decline in mass, and researchers claim that between the early 1970s and early 2000s, there had been a 9\u00a0percent reduction in ice mass.",
+        "true_label": "REFUTES",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "lihatlah, harga bensin di amerika sangat murah karena fracking,\" katanya.. evidence: natural gas for industrial use has become cheaper by around 30% compared to the rest of the us.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "kegagalan model kelangsungan hidup beruang kutub tahun 2007 merupakan fakta sederhana yang mematahkan mitos bahwa beruang kutub menuju kepunahan.. evidence: for the first time since the demise of the dinosaurs 65 million years ago, we face a global mass extinction of wildlife.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "beradaptasi dengan pemanasan global lebih murah daripada mencegahnya.. evidence: \"eat less meat to avoid dangerous global warming, scientists say\".",
+        "true_label": "REFUTES",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "namun seperti kebanyakan klaim mengenai pemanasan global, efek sebenarnya kecil, mungkin sementara, dan kemungkinan besar disebabkan oleh pola cuaca alamiah.. evidence: climate change may be due to natural internal processes or external forcings such as modulations of the solar cycles, volcanic eruptions and persistent anthropogenic changes in the composition of the atmosphere or in land use.\"",
+        "true_label": "SUPPORTS",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "sekitar 60% dari pemanasan yang teramati dari tahun 1970 hingga 2000 sangat mungkin disebabkan oleh siklus iklim alami 60 tahun ini selama fase pemanasannya.... evidence: in the scientific literature, there is an overwhelming consensus that global surface temperatures have increased in recent decades and that the trend is caused mainly by human-induced emissions of greenhouse gases.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "meskipun suhu maksimum musim panas menunjukkan sedikit tren, suhu rata-rata tahunan di arktika telah meningkat tajam dalam beberapa dekade terakhir.. evidence: the ipcc also indicate that, over the last 100 years, the annually averaged temperature in the arctic has increased by almost twice as much as the global mean temperature has.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "tempat berlindung di negara-negara miskin tidak dicat ulang sesering mungkin, dan stasiun yang lebih gelap menyerap lebih banyak energi matahari.. evidence: acute conditions such as sunburn, dehydration, heat stroke and allergic reactions are also common.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "misalnya, pada tongkat hoki asli (berakhir 1980), 30-40 tahun data terakhir menunjukkan sedikit penurunan.. evidence: since the direct temperature record is more accurate than the proxies (indeed, it is needed to calibrate them) it is used when available: i.e., from 1850 onwards.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "jika suhu air tetap moderat, bagian-bagian terumbu karang great barrier reef yang rusak mungkin akan tertutup karang lagi dalam waktu sesingkat 10 atau 15 tahun.. evidence: sea level on the great barrier reef has not changed significantly in the last 6,000 years.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "cuaca dan iklim berbeda; prediksi iklim tidak memerlukan detail cuaca.. evidence: documented long-term climate changes include changes in arctic temperatures and ice, widespread changes in precipitation amounts, ocean salinity, wind patterns and extreme weather including droughts, heavy precipitation, heat waves and the intensity of tropical cyclones.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "dunia menghadapi masa depan mengerikan dengan kekurangan pangan yang semakin parah, kebakaran hutan yang meluas, dan kematian massal terumbu karang, semua ini diperkirakan akan terjadi secepatnya pada tahun 2040. . evidence: battle for the reef \u2013 four corners \u2013 abc.au great barrier reef scientists confirm largest die-off of corals recorded.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "tren jangka panjang dari albedo adalah pendinginan.. evidence: orbital forcing from cycles in the earth's orbit around the sun has, for the past 2,000 years, caused a long-term northern hemisphere cooling trend that continued through the middle ages and the little ice age.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "kenaikan permukaan air laut, yang terjadi jauh sebelum manusia dapat disalahkan, tidak mengalami percepatan dan masih hanya mencapai 1 inci setiap sepuluh tahun.. evidence: a 2018 systematic review study estimated that ice loss across the entire continent was 43 gigatons (gt) per year on average during the period from 1992 to 2002, but has accelerated to an average of 220 gt per year during the five years from 2012 to 2017.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "di sisi lain, la ni\u00f1a dicirikan oleh suhu air di pasifik yang lebih dingin dari rata-rata.. evidence: latent heat) at the temperature of the warm ocean surface (during evaporation, the ocean cools and the air warms).",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "es laut musim panas di arktik telah menyusut dengan luas yang sama dengan australia barat, dan mungkin akan hilang sepenuhnya dalam satu dekade.. evidence: research shows that the arctic may become ice-free in the summer for the first time in human history by 2040.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "pemerintah palin ... adalah seseorang yang sebenarnya tidak percaya bahwa perubahan iklim disebabkan oleh manusia.. evidence: climate change means a change of climate which is attributed directly or indirectly to human activity that alters the composition of the global atmosphere and which is in addition to natural climate variability observed over comparable time periods.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "lebih dari 100 model iklim selama 30 tahun terakhir tidak memprediksi apa yang sebenarnya terjadi karena diasumsikan bahwa karbon dioksida memiliki peran utama dalam mendorong perubahan iklim dan bahwa efek awan, radiasi balik, dan matahari adalah sepele.. evidence: computer models are run on supercomputers to reproduce and predict the circulation of the oceans, the annual cycle of the seasons, and the flows of carbon between the land surface and the atmosphere.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "tren pemanasan yang sedikit signifikan dalam data selama beberapa tahun terakhir, menghapus dataran tinggi suhu yang membuat para pembuat alarm iklim kesulitan untuk dijelaskan.. evidence: over several decades of development, models have consistently provided a robust and unambiguous picture of significant climate warming in response to increasing greenhouse gases.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "perdebatan terkini tentang hubungan antara emisi co2 dan perubahan iklim sebagian besar mengabaikan masalah independen dan sama seriusnya, yaitu meningkatnya keasaman lautan kita.. evidence: this will cause an elevation of ocean alkalinity, leading to the enhancement of the ocean as a reservoir for co 2 with implications for climate change as more co 2 leaves the atmosphere for the ocean.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "kami menemukan stasiun cuaca [amerika serikat] yang terletak di sebelah kipas pembuangan unit pendingin udara, dikelilingi oleh lahan parkir aspal dan jalan, di atas atap yang sangat panas, dan di dekat trotoar dan bangunan yang menyerap dan memancarkan panas.. evidence: all flight operations were controlled from an air conditioned observation room in the control tower of this building, which had windows overlooking the runway and landing mat areas.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "dengan el ni\u00f1o yang rekor, seharusnya kita mengalami suhu tinggi yang rekor.. evidence: [citation needed] the east coast had records various record low temperatures in southern states such as georgia alabama and florida in the us.the eastern seaboard, had like the western seaboard also suffered one of the worst winters on record.",
+        "true_label": "REFUTES",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "lebih dari 100 persen pemanasan selama abad terakhir disebabkan oleh tindakan manusia. . evidence: the global warming observed over the past 50 years is due primarily to human-induced emissions of heat-trapping gases.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "mei 2018 menandai bulan ke-401 berturut-turut suhu global melebihi rata-rata abad ke-20.. evidence: 1956 1956 european cold wave \u2013 february 1956 was the coldest month of the twentieth century over large areas of western europe, with mean temperatures below 0\u00a0\u00b0c (32\u00a0\u00b0f) as far south as marseilles being utterly unprecedented in records dating back into the eighteenth century.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "mars, triton, pluto, dan jupiter semuanya menunjukkan pemanasan global, yang menunjukkan bahwa matahari merupakan pengaruh dominan dalam menentukan iklim di seluruh tata surya.. evidence: it is a major aspect of climate change and has been demonstrated by direct temperature measurements and by measurements of various effects of the warming.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "kenaikan permukaan laut tampaknya tidak bergantung pada suhu laut, dan tentu saja tidak pada co2.. evidence: the heat needed to raise an average temperature increase of the entire world ocean by 0.01\u00a0\u00b0c would increase the atmospheric temperature by approximately 10 \u00b0c.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "pengaruh gas rumah kaca yang disebut-sebut terhadap suhu permukaan bumi - belum sepenuhnya terbukti.. evidence: before the industrial revolution, naturally occurring amounts of greenhouse gases caused the air near the surface to be warmer by about 33\u00a0\u00b0c (59\u00a0\u00b0f) than it would be in their absence.",
+        "true_label": "REFUTES",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "saya perhatikan khususnya bahwa kenaikan permukaan laut tidak dipengaruhi oleh pemanasan; hal itu berlanjut pada tingkat yang sama, 1,8 milimeter per tahun, menurut tinjauan tahun 1990 oleh andrew s. trupin dan john wahr.. evidence: the sea-level rise due to antarctica has been estimated to be 0.25\u00a0mm per year from 1993\u20132005, and 0.42\u00a0mm per year from 2005 to 2015.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "uap air adalah gas rumah kaca yang paling kuat.. evidence: water vapor is the most potent greenhouse gas owing to the presence of the hydroxyl bond which strongly absorbs in the infra-red region of the light spectrum.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS"
+    }
+]

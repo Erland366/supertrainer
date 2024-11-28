@@ -1,0 +1,8 @@
+{
+    "accuracy": 0.5,
+    "precision": 0.32748538011695905,
+    "recall": 0.3866666666666667,
+    "f1_score": 0.3408295852073963,
+    "unknown_count": 0,
+    "unknown_percentage": 0.0
+}

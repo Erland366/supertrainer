@@ -1,0 +1,202 @@
+[
+    {
+        "text": "many lines of evidence, including simple accounting, demonstrate beyond a shadow of a doubt that the increase in atmospheric co2 is due to human fossil fuel burning.. evidence: while co 2 absorption and release is always happening as a result of natural processes, the recent rise in co 2 levels in the atmosphere is known to be mainly due to human (anthropogenic) activity.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "tuvalu sea level isn't rising. evidence: tuvaluan leaders have been concerned about the effects of rising sea levels.",
+        "true_label": "REFUTES",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "so it\u2019s clear now we\u2019re not seeing dangerous global warming, and the climate models are wrong.. evidence: tipping points are \"perhaps the most \u2018dangerous\u2019 aspect of future climate changes\", leading to irreversible impacts on society.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "\u201ceven if we meet the paris goals of two degrees warming, cities like karachi and kolkata will become close to uninhabitable, annually encountering deadly heat waves like those that crippled them in 2015.. evidence: the aim of the agreement is to decrease global warming described in its article 2, \"enhancing the implementation\" of the unfccc through: (a) holding the increase in the global average temperature to well below 2\u00a0\u00b0c above pre-industrial levels and to pursue efforts to limit the temperature increase to 1.5\u00a0\u00b0c above pre-industrial levels, recognizing that this would significantly reduce the risks and impacts of climate change; (b) increasing the ability to adapt to the adverse impacts of climate change and foster climate resilience and low greenhouse gas emissions development, in a manner that does not threaten food production; (c) making finance flows consistent with a pathway towards low greenhouse gas emissions and climate-resilient development.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "while the north-east, midwest and upper great plains have experienced a 30% increase in heavy rainfall episodes \u2013 considered once-in-every-five year downpours \u2013 parts of the west, particularly california, have been parched by drought.. evidence: drought is much more common in the west than the rest of the united states.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "benny peiser conducted a search of peer-reviewed literature on the isi web of science database between 1993 and 2003.. evidence: released in beta in november 2004, the google scholar index includes most peer-reviewed online academic journals and books, conference papers, theses and dissertations, preprints, abstracts, technical reports, and other scholarly literature, including court opinions and patents.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "the most recent survey of climate scientists said about 57 percent don't agree with the idea that 95 percent of the change in the climate is caused by co2.. evidence: most of the climatic warming over the last 50 years is likely to have been caused by increased concentrations of greenhouse gases in the atmosphere.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "they can now model how likely a specific event would be to occur under historical conditions, compared to the record temperatures we\u2019re experiencing.. evidence: the authors used computational models developed by ncar to simulate the climatic effects of a soot cloud that they suggest would be a result, of a regional nuclear war in which 100 \"small\" (15 kt) weapons are detonated over cities.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "fifty-five thousand years ago the whole world was 2\u00b0c warmer than it is today[...]. evidence: consequently, summers are 2.3\u00a0\u00b0c (4\u00a0\u00b0f) warmer in the northern hemisphere than in the southern hemisphere under similar conditions.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "eleven percent of the world\u2019s population is currently vulnerable to climate change impacts such as droughts, floods, heat waves, extreme weather events and sea-level rise.. evidence: impacts include the direct effects of extreme weather, leading to injury and loss of life; and indirect effects, such as undernutrition brought on by crop failures.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "the data is being reported by the university of illinois's arctic climate research center, and is derived from satellite observations of the northern and southern hemisphere polar regions (daily tech).. evidence: it was developed completely from surface-based weather observations, including descriptions of clouds found near frontal boundaries.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "the report suggests significantly smaller overall  ice-mass losses than previous estimates.. evidence: as with glaciers worldwide, those of the greater himalayan region are experiencing a decline in mass, and researchers claim that between the early 1970s and early 2000s, there had been a 9\u00a0percent reduction in ice mass.",
+        "true_label": "REFUTES",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "\u201d \u2018you see, gas in america is incredibly cheap, because of fracking,\u2019 he says.. evidence: natural gas for industrial use has become cheaper by around 30% compared to the rest of the us.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "the failure of the 2007 polar bear survival model is a simple fact that explodes the myth that polar bears are on their way to extinction.. evidence: for the first time since the demise of the dinosaurs 65 million years ago, we face a global mass extinction of wildlife.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "adapting to global warming is cheaper than preventing it.. evidence: \"eat less meat to avoid dangerous global warming, scientists say\".",
+        "true_label": "REFUTES",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "but like most claims regarding global warming, the real effect is small, probably temporary, and most likely due to natural weather patterns. evidence: climate change may be due to natural internal processes or external forcings such as modulations of the solar cycles, volcanic eruptions and persistent anthropogenic changes in the composition of the atmosphere or in land use.\"",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "about 60% of the warming observed from 1970 to 2000 was very likely caused by this natural 60-year climatic cycle during its warming phase.... evidence: in the scientific literature, there is an overwhelming consensus that global surface temperatures have increased in recent decades and that the trend is caused mainly by human-induced emissions of greenhouse gases.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "while summer maximums have showed little trend, the annual average arctic temperature has risen sharply in recent decades.. evidence: the ipcc also indicate that, over the last 100 years, the annually averaged temperature in the arctic has increased by almost twice as much as the global mean temperature has.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "shelters in poorer countries are not repainted as often, and darker stations absorb more of the sun\u2019s energy.. evidence: acute conditions such as sunburn, dehydration, heat stroke and allergic reactions are also common.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "for instance, in the original hockey stick (ending 1980) the last 30-40 years of data points slightly downwards.. evidence: since the direct temperature record is more accurate than the proxies (indeed, it is needed to calibrate them) it is used when available: i.e., from 1850 onwards.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "if water temperatures stay moderate, the damaged sections of the great barrier reef may be covered with corals again in as few as 10 or 15 years. evidence: sea level on the great barrier reef has not changed significantly in the last 6,000 years.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "weather and climate are different; climate predictions do not need weather detail.. evidence: documented long-term climate changes include changes in arctic temperatures and ice, widespread changes in precipitation amounts, ocean salinity, wind patterns and extreme weather including droughts, heavy precipitation, heat waves and the intensity of tropical cyclones.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "describes a world of worsening food shortages and wildfires, and a mass die-off of coral reefs as soon as 2040. evidence: battle for the reef \u2013 four corners \u2013 abc.au great barrier reef scientists confirm largest die-off of corals recorded.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "the long term trend from albedo is of cooling.. evidence: orbital forcing from cycles in the earth's orbit around the sun has, for the past 2,000 years, caused a long-term northern hemisphere cooling trend that continued through the middle ages and the little ice age.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "\u201csea level rise, which was occurring long before humans could be blamed, has not accelerated and still amounts to only 1 inch every ten years.. evidence: a 2018 systematic review study estimated that ice loss across the entire continent was 43 gigatons (gt) per year on average during the period from 1992 to 2002, but has accelerated to an average of 220 gt per year during the five years from 2012 to 2017.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "la ni\u00f1as, on the other hand, feature cooler than average waters in the pacific. evidence: latent heat) at the temperature of the warm ocean surface (during evaporation, the ocean cools and the air warms).",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "arctic summer sea ice has shrunk by an area equal to western australia, and might be all gone in a decade.. evidence: research shows that the arctic may become ice-free in the summer for the first time in human history by 2040.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "gov. palin ... is somebody who actually doesn't believe that climate change is man-made.. evidence: climate change means a change of climate which is attributed directly or indirectly to human activity that alters the composition of the global atmosphere and which is in addition to natural climate variability observed over comparable time periods.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "more than 100 climate models over the past 30 years did not predict what actually happened because it was assumed carbon dioxide had the pivotal role in driving climate change and that the effects of clouds, back-radiation and the sun were trivial.. evidence: computer models are run on supercomputers to reproduce and predict the circulation of the oceans, the annual cycle of the seasons, and the flows of carbon between the land surface and the atmosphere.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "a marginally significant warming trend in the data over the past several years, erasing the temperature plateau that vexed climate alarmists have found difficult to explain.. evidence: over several decades of development, models have consistently provided a robust and unambiguous picture of significant climate warming in response to increasing greenhouse gases.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "the current debate on the connection between co2\u00a0emissions and climate change has largely overlooked an independent and equally serious problem, the increasing acidity of our oceans.. evidence: this will cause an elevation of ocean alkalinity, leading to the enhancement of the ocean as a reservoir for co 2 with implications for climate change as more co 2 leaves the atmosphere for the ocean.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "\"we found [u.s. weather] stations located next to  the exhaust fans of air conditioning units, surrounded by asphalt  parking lots and roads,\u00a0on blistering-hot rooftops, and near sidewalks  and buildings that absorb and radiate heat.. evidence: all flight operations were controlled from an air conditioned observation room in the control tower of this building, which had windows overlooking the runway and landing mat areas.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "\u201cwith a record el ni\u00f1o, we should have experienced record high temperatures.. evidence: [citation needed] the east coast had records various record low temperatures in southern states such as georgia alabama and florida in the us.the eastern seaboard, had like the western seaboard also suffered one of the worst winters on record.",
+        "true_label": "REFUTES",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "more than 100 per cent of the warming over the past century is due to human actions.. evidence: the global warming observed over the past 50 years is due primarily to human-induced emissions of heat-trapping gases.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "may 2018 marked the 401st straight month of global temperatures exceeding the 20th century average.. evidence: 1956 1956 european cold wave \u2013 february 1956 was the coldest month of the twentieth century over large areas of western europe, with mean temperatures below 0\u00a0\u00b0c (32\u00a0\u00b0f) as far south as marseilles being utterly unprecedented in records dating back into the eighteenth century.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS"
+    },
+    {
+        "text": "mars, triton, pluto and jupiter all show global warming, pointing to the sun as the dominating influence in determining climate throughout the solar system.\". evidence: it is a major aspect of climate change and has been demonstrated by direct temperature measurements and by measurements of various effects of the warming.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "sea-level rise does not seem to depend on ocean temperature, and certainly not on co2.. evidence: the heat needed to raise an average temperature increase of the entire world ocean by 0.01\u00a0\u00b0c would increase the atmospheric temperature by approximately 10 \u00b0c.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "REFUTES"
+    },
+    {
+        "text": "\"[t]he influence of  so-called greenhouse gases on near-surface temperature - is not yet  absolutely proven.. evidence: before the industrial revolution, naturally occurring amounts of greenhouse gases caused the air near the surface to be warmer by about 33\u00a0\u00b0c (59\u00a0\u00b0f) than it would be in their absence.",
+        "true_label": "REFUTES",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "i note particularly that sea-level rise is not affected by the warming; it continues at the same rate, 1.8 millimeters a year, according to a 1990 review by andrew s. trupin and john wahr.. evidence: the sea-level rise due to antarctica has been estimated to be 0.25\u00a0mm per year from 1993\u20132005, and 0.42\u00a0mm per year from 2005 to 2015.",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO"
+    },
+    {
+        "text": "water vapor is the most powerful greenhouse gas. evidence: water vapor is the most potent greenhouse gas owing to the presence of the hydroxyl bond which strongly absorbs in the infra-red region of the light spectrum.",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS"
+    }
+]

@@ -1,0 +1,196 @@
+{
+    "is_testing": false,
+    "evaluation": {
+        "training_kwargs": {
+            "gradient_accumulation_steps": 16,
+            "warmup_steps": 5,
+            "num_train_epochs": 3,
+            "per_device_train_batch_size": 4,
+            "per_device_eval_batch_size": 1,
+            "learning_rate": 2e-05,
+            "fp16": false,
+            "bf16": true,
+            "logging_steps": 1,
+            "logging_strategy": "steps",
+            "optim": "adamw_8bit",
+            "weight_decay": 0.01,
+            "lr_scheduler_type": "linear",
+            "seed": 3407,
+            "report_to": "wandb",
+            "output_dir": "./assets_local/run_outputs",
+            "load_best_model_at_end": 1,
+            "metric_for_best_model": "eval_loss",
+            "save_total_limit": 2,
+            "eval_strategy": "steps",
+            "eval_steps": 200,
+            "save_steps": 400,
+            "eval_on_start": true,
+            "hub_model_id": "Erland/training_run",
+            "hub_private_repo": true,
+            "hub_strategy": "every_save",
+            "push_to_hub": true,
+            "auto_find_batch_size": false,
+            "include_tokens_per_second": true,
+            "include_num_input_tokens_seen": true,
+            "gradient_checkpointing": true,
+            "gradient_checkpointing_kwargs": {
+                "use_reentrant": false
+            },
+            "remove_unused_columns": false
+        },
+        "bitsandbytes_kwargs": {
+            "load_in_4bit": true,
+            "bnb_4bit_quant_type": "nf4",
+            "bnb_4bit_compute_dtype": null,
+            "bnb_4bit_use_double_quant": true
+        },
+        "model_kwargs": {
+            "torch_dtype": "auto",
+            "use_cache": false,
+            "low_cpu_mem_usage": true
+        },
+        "compile": false,
+        "base_only": true,
+        "max_seq_length": 4096,
+        "classes": [
+            "REFUTES",
+            "SUPPORTS",
+            "NOT_ENOUGH_INFO"
+        ],
+        "inference_kwargs": {
+            "max_new_tokens": 128,
+            "use_cache": true,
+            "temperature": 0.1
+        },
+        "class_name": "supertrainer.evaluations.arabert.AraBertEvaluation",
+        "model_name": "Erland/arabert-fact-checking_20241126_203654-without_lora-train_claim_arb_evidence_arb",
+        "subset": "train_claim_arb_evidence_arb",
+        "id2class": {
+            "0": "REFUTES",
+            "1": "SUPPORTS",
+            "2": "NOT_ENOUGH_INFO"
+        },
+        "class2id": {
+            "REFUTES": 0,
+            "SUPPORTS": 1,
+            "NOT_ENOUGH_INFO": 2
+        }
+    },
+    "dataset": {
+        "dataset_kwargs": {
+            "path": "Erland/f_n_d_d_c_l_f_u_s_c",
+            "subsets": [
+                "train_claim_en_evidence_en",
+                "train_claim_en_evidence_idn",
+                "train_claim_en_evidence_arb",
+                "train_claim_idn_evidence_en",
+                "train_claim_idn_evidence_idn",
+                "train_claim_idn_evidence_arb",
+                "train_claim_arb_evidence_en",
+                "train_claim_arb_evidence_idn",
+                "train_claim_arb_evidence_arb"
+            ]
+        },
+        "class_name": "supertrainer.data.fact_checking.FactCheckingBERTEvaluationDataset",
+        "classes": [
+            "REFUTES",
+            "SUPPORTS",
+            "NOT_ENOUGH_INFO"
+        ],
+        "text_col": "text",
+        "label_col": "labels",
+        "chat_template": "llama-3.1",
+        "tokenizer_name_or_path": "Erland/arabert-fact-checking_20241126_203654-without_lora-train_claim_arb_evidence_idn",
+        "class2id": {
+            "REFUTES": 0,
+            "SUPPORTS": 1,
+            "NOT_ENOUGH_INFO": 2
+        },
+        "id2class": {
+            "0": "REFUTES",
+            "1": "SUPPORTS",
+            "2": "NOT_ENOUGH_INFO"
+        },
+        "num_classes": 3
+    },
+    "wandb": {
+        "project": "nlp701",
+        "entity": null
+    },
+    "inference": {
+        "training_kwargs": {
+            "gradient_accumulation_steps": 16,
+            "warmup_steps": 5,
+            "num_train_epochs": 3,
+            "per_device_train_batch_size": 4,
+            "per_device_eval_batch_size": 1,
+            "learning_rate": 2e-05,
+            "fp16": false,
+            "bf16": true,
+            "logging_steps": 1,
+            "logging_strategy": "steps",
+            "optim": "adamw_8bit",
+            "weight_decay": 0.01,
+            "lr_scheduler_type": "linear",
+            "seed": 3407,
+            "report_to": "wandb",
+            "output_dir": "./assets_local/run_outputs",
+            "load_best_model_at_end": 1,
+            "metric_for_best_model": "eval_loss",
+            "save_total_limit": 2,
+            "eval_strategy": "steps",
+            "eval_steps": 200,
+            "save_steps": 400,
+            "eval_on_start": true,
+            "hub_model_id": "Erland/training_run",
+            "hub_private_repo": true,
+            "hub_strategy": "every_save",
+            "push_to_hub": true,
+            "auto_find_batch_size": false,
+            "include_tokens_per_second": true,
+            "include_num_input_tokens_seen": true,
+            "gradient_checkpointing": true,
+            "gradient_checkpointing_kwargs": {
+                "use_reentrant": false
+            },
+            "remove_unused_columns": false
+        },
+        "bitsandbytes_kwargs": {
+            "load_in_4bit": true,
+            "bnb_4bit_quant_type": "nf4",
+            "bnb_4bit_compute_dtype": null,
+            "bnb_4bit_use_double_quant": true
+        },
+        "model_kwargs": {
+            "torch_dtype": "auto",
+            "use_cache": false,
+            "low_cpu_mem_usage": true
+        },
+        "compile": false,
+        "base_only": true,
+        "max_seq_length": 4096,
+        "classes": [
+            "REFUTES",
+            "SUPPORTS",
+            "NOT_ENOUGH_INFO"
+        ],
+        "inference_kwargs": {
+            "max_new_tokens": 128,
+            "use_cache": true,
+            "temperature": 0.1
+        },
+        "class_name": "supertrainer.evaluations.arabert.AraBertEvaluation",
+        "model_name": "Erland/arabert-fact-checking_20241126_203654-without_lora-train_claim_arb_evidence_arb",
+        "subset": "train_claim_arb_evidence_arb",
+        "id2class": {
+            "0": "REFUTES",
+            "1": "SUPPORTS",
+            "2": "NOT_ENOUGH_INFO"
+        },
+        "class2id": {
+            "REFUTES": 0,
+            "SUPPORTS": 1,
+            "NOT_ENOUGH_INFO": 2
+        }
+    }
+}

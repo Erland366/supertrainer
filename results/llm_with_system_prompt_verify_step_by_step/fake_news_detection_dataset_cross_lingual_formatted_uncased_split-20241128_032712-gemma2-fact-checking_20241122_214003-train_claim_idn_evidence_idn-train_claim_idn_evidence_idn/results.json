@@ -1,0 +1,282 @@
+[
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nbanyak bukti, termasuk akuntansi sederhana, menunjukkan tanpa keraguan bahwa peningkatan co2 atmosfer disebabkan oleh pembakaran bahan bakar fosil manusia.. evidence: meskipun penyerapan dan pelepasan co2 selalu terjadi akibat proses alamiah, peningkatan kadar co2 di atmosfer belakangan ini diketahui terutama disebabkan oleh aktivitas manusia (antropogenik).<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\npermukaan laut di tuvalu tidak naik.. evidence: para pemimpin tuvalu telah merasa khawatir tentang dampak kenaikan permukaan air laut.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "REFUTES",
+        "predicted_label": "NOT_ENOUGH_INFO",
+        "raw_prediction": "NOT_ENOUGH_INFO",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\njadi sekarang jelas bahwa kita tidak mengalami pemanasan global yang berbahaya, dan model iklimnya salah.. evidence: titik puncak adalah \"mungkin aspek paling 'berbahaya' dari perubahan iklim di masa depan\", yang menyebabkan dampak yang tidak dapat diubah pada masyarakat.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO",
+        "raw_prediction": "NOT_ENOUGH_INFO",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nmeskipun kita mencapai target perjanjian paris untuk pemanasan global dua derajat, kota-kota seperti karachi dan kolkata akan menjadi hampir tidak layak huni, dan setiap tahun mengalami gelombang panas mematikan seperti yang melumpuhkan mereka pada tahun 2015.. evidence: tujuan dari perjanjian ini adalah untuk mengurangi pemanasan global yang dijelaskan dalam pasal 2-nya, \"meningkatkan implementasi\" unfccc melalui: \n \n (a) menahan kenaikan suhu rata-rata global jauh di bawah 2\u00b0c di atas tingkat pra-industri dan berupaya untuk membatasi kenaikan suhu hingga 1.5\u00b0c di atas tingkat pra-industri, mengakui bahwa hal ini akan secara signifikan mengurangi risiko dan dampak perubahan iklim;\n (b) meningkatkan kemampuan untuk beradaptasi dengan dampak buruk perubahan iklim dan mendorong ketahanan iklim dan pengembangan emisi gas rumah kaca rendah, dengan cara yang tidak mengancam produksi pangan;\n (c) membuat arus keuangan konsisten dengan jalur menuju emisi gas rumah kaca rendah dan pembangunan yang tahan iklim.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nsementara wilayah timur laut, tengah barat, dan dataran tinggi utara mengalami peningkatan 30% dalam episode hujan lebat \u2013 yang dianggap sebagai hujan lebat yang terjadi sekali dalam lima tahun \u2013 sebagian wilayah barat, khususnya california, telah dilanda kekeringan.. evidence: kekeringan jauh lebih umum di barat daripada di bagian amerika serikat lainnya.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nbenny peiser melakukan pencarian literatur yang ditinjau sejawat pada basis data isi web of science antara tahun 1993 dan 2003.. evidence: diluncurkan dalam versi beta pada november 2004, indeks google scholar mencakup sebagian besar jurnal akademik daring yang ditinjau sejawat, buku, makalah konferensi, tesis dan disertasi, pracetakan, abstrak, laporan teknis, dan literatur ilmiah lainnya, termasuk opini pengadilan dan paten.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nsurvei terbaru terhadap ilmuwan iklim menunjukkan bahwa sekitar 57 persen tidak setuju dengan gagasan bahwa 95 persen perubahan iklim disebabkan oleh co2.. evidence: sebagian besar pemanasan iklim selama 50 tahun terakhir kemungkinan besar disebabkan oleh peningkatan konsentrasi gas rumah kaca di atmosfer.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nmereka sekarang dapat memodelkan seberapa besar kemungkinan suatu peristiwa tertentu akan terjadi dalam kondisi historis, dibandingkan dengan suhu rekor yang kita alami.. evidence: none<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO",
+        "raw_prediction": "NOT_ENOUGH_INFO",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nlima puluh lima ribu tahun yang lalu, seluruh dunia 2\u00b0c lebih hangat daripada saat ini[...]. evidence: akibatnya, musim panas di belahan bumi utara 2,3 \u00b0c (4 \u00b0f) lebih hangat daripada di belahan bumi selatan dalam kondisi yang sama.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nsebelas persen dari populasi dunia saat ini rentan terhadap dampak perubahan iklim seperti kekeringan, banjir, gelombang panas, peristiwa cuaca ekstrem, dan kenaikan permukaan laut.. evidence: damak yang ditimbulkan meliputi efek langsung dari cuaca ekstrem, yang mengakibatkan cedera dan hilangnya nyawa; serta efek tidak langsung, seperti kekurangan gizi yang disebabkan oleh gagal panen.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ndata tersebut dilaporkan oleh pusat penelitian iklim arktik universitas illinois, dan diperoleh dari pengamatan satelit di wilayah kutub utara dan selatan (daily tech).. evidence: hal itu dikembangkan sepenuhnya dari pengamatan cuaca permukaan, termasuk deskripsi awan yang ditemukan di dekat batas muka udara.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nlaporan tersebut menunjukkan bahwa total kehilangan massa es secara keseluruhan jauh lebih kecil dibandingkan perkiraan sebelumnya.. evidence: seperti halnya gletser di seluruh dunia, gletser di wilayah himalaya yang lebih luas sedang mengalami penurunan massa, dan para peneliti menyatakan bahwa antara awal tahun 1970-an dan awal tahun 2000-an, telah terjadi pengurangan massa es sebesar 9%.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "REFUTES",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nlihatlah, harga bensin di amerika sangat murah karena fracking,\" katanya.. evidence: gas alam untuk penggunaan industri telah menjadi lebih murah sekitar 30% dibandingkan dengan wilayah lain di amerika serikat.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nkegagalan model kelangsungan hidup beruang kutub tahun 2007 merupakan fakta sederhana yang mematahkan mitos bahwa beruang kutub menuju kepunahan.. evidence: untuk pertama kalinya sejak kepunahan dinosaurus 65 juta tahun yang lalu, kita menghadapi kepunahan massal satwa liar di seluruh dunia.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "NOT_ENOUGH_INFO",
+        "raw_prediction": "NOT_ENOUGH_INFO",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nberadaptasi dengan pemanasan global lebih murah daripada mencegahnya.. evidence: para ilmuwan mengatakan bahwa makan lebih sedikit daging dapat membantu menghindari pemanasan global yang berbahaya.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "REFUTES",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nnamun seperti kebanyakan klaim mengenai pemanasan global, efek sebenarnya kecil, mungkin sementara, dan kemungkinan besar disebabkan oleh pola cuaca alamiah.. evidence: perubahan iklim dapat disebabkan oleh proses internal alami atau paksaan eksternal seperti modulasi siklus matahari, letusan gunung berapi, dan perubahan antropogenik yang berkelanjutan dalam komposisi atmosfer atau penggunaan lahan.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "NOT_ENOUGH_INFO",
+        "raw_prediction": "NOT_ENOUGH_INFO",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nsekitar 60% dari pemanasan yang teramati dari tahun 1970 hingga 2000 sangat mungkin disebabkan oleh siklus iklim alami 60 tahun ini selama fase pemanasannya.... evidence: dalam literatur ilmiah, terdapat konsensus yang kuat bahwa suhu permukaan global telah meningkat dalam beberapa dekade terakhir dan bahwa tren tersebut terutama disebabkan oleh emisi gas rumah kaca yang diinduksi manusia.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nmeskipun suhu maksimum musim panas menunjukkan sedikit tren, suhu rata-rata tahunan di arktika telah meningkat tajam dalam beberapa dekade terakhir.. evidence: ipcc juga menunjukkan bahwa, selama 100 tahun terakhir, suhu rata-rata tahunan di arktik telah meningkat hampir dua kali lipat dibandingkan dengan peningkatan suhu rata-rata global.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ntempat berlindung di negara-negara miskin tidak dicat ulang sesering mungkin, dan stasiun yang lebih gelap menyerap lebih banyak energi matahari.. evidence: kondisi akut seperti sengatan matahari, dehidrasi, sengatan panas, dan reaksi alergi juga umum terjadi.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nmisalnya, pada tongkat hoki asli (berakhir 1980), 30-40 tahun data terakhir menunjukkan sedikit penurunan.. evidence: karena catatan suhu langsung lebih akurat daripada proksi (sebenarnya, catatan langsung diperlukan untuk kalibrasi proksi), maka catatan langsung digunakan saat tersedia: yaitu, sejak tahun 1850 dan seterusnya.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\njika suhu air tetap moderat, bagian-bagian terumbu karang great barrier reef yang rusak mungkin akan tertutup karang lagi dalam waktu sesingkat 10 atau 15 tahun.. evidence: permukaan laut di great barrier reef tidak mengalami perubahan signifikan dalam 6.000 tahun terakhir.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ncuaca dan iklim berbeda; prediksi iklim tidak memerlukan detail cuaca.. evidence: perubahan iklim jangka panjang yang terdokumentasikan meliputi perubahan suhu dan es di arktik, perubahan luas dalam jumlah curah hujan, salinitas laut, pola angin, dan cuaca ekstrem termasuk kekeringan, curah hujan lebat, gelombang panas, dan intensitas siklon tropis.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ndunia menghadapi masa depan mengerikan dengan kekurangan pangan yang semakin parah, kebakaran hutan yang meluas, dan kematian massal terumbu karang, semua ini diperkirakan akan terjadi secepatnya pada tahun 2040. . evidence: pertempuran untuk terumbu karang - empat sudut - abc.au - ilmuwan terumbu karang besar mengkonfirmasi kepunahan terbesar karang yang tercatat.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ntren jangka panjang dari albedo adalah pendinginan.. evidence: pemaksaan orbital dari siklus dalam orbit bumi mengelilingi matahari, selama 2.000 tahun terakhir, telah menyebabkan tren pendinginan jangka panjang di belahan bumi utara yang berlanjut melalui abad pertengahan dan zaman es kecil.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nkenaikan permukaan air laut, yang terjadi jauh sebelum manusia dapat disalahkan, tidak mengalami percepatan dan masih hanya mencapai 1 inci setiap sepuluh tahun.. evidence: sebuah studi tinjauan sistematis tahun 2018 memperkirakan bahwa hilangnya es di seluruh benua mencapai rata-rata 43 gigaton (gt) per tahun selama periode 1992 hingga 2002, tetapi telah meningkat pesat menjadi rata-rata 220 gt per tahun selama lima tahun dari 2012 hingga 2017.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ndi sisi lain, la ni\u00f1a dicirikan oleh suhu air di pasifik yang lebih dingin dari rata-rata.. evidence: kalor laten (panas laten) pada suhu permukaan laut yang hangat (selama penguapan, laut mendingin dan udara menghangat).<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nes laut musim panas di arktik telah menyusut dengan luas yang sama dengan australia barat, dan mungkin akan hilang sepenuhnya dalam satu dekade.. evidence: penelitian menunjukkan bahwa arktik mungkin akan bebas es di musim panas untuk pertama kalinya dalam sejarah manusia pada tahun 2040.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\npemerintah palin ... adalah seseorang yang sebenarnya tidak percaya bahwa perubahan iklim disebabkan oleh manusia.. evidence: perubahan iklim berarti perubahan iklim yang disebabkan secara langsung atau tidak langsung oleh aktivitas manusia yang mengubah komposisi atmosfer global, dan yang merupakan tambahan terhadap variabilitas iklim alami yang diamati dalam periode waktu yang sebanding.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nlebih dari 100 model iklim selama 30 tahun terakhir tidak memprediksi apa yang sebenarnya terjadi karena diasumsikan bahwa karbon dioksida memiliki peran utama dalam mendorong perubahan iklim dan bahwa efek awan, radiasi balik, dan matahari adalah sepele.. evidence: model komputer dijalankan pada superkomputer untuk mereproduksi dan memprediksi sirkulasi lautan, siklus tahunan, dan aliran karbon diantara permukaan daratan dan lapisan atmosfer<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ntren pemanasan yang sedikit signifikan dalam data selama beberapa tahun terakhir, menghapus dataran tinggi suhu yang membuat para pembuat alarm iklim kesulitan untuk dijelaskan.. evidence: selama beberapa dekade pengembangan, model-model telah secara konsisten memberikan gambaran yang kuat dan jelas tentang pemanasan iklim yang signifikan sebagai respons terhadap peningkatan gas rumah kaca.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nperdebatan terkini tentang hubungan antara emisi co2 dan perubahan iklim sebagian besar mengabaikan masalah independen dan sama seriusnya, yaitu meningkatnya keasaman lautan kita.. evidence: ini akan menyebabkan peningkatan alkalinitas laut, yang mengarah pada peningkatan kemampuan laut sebagai reservoir untuk co2 dengan implikasi terhadap perubahan iklim karena lebih banyak co2 meninggalkan atmosfer menuju laut.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nkami menemukan stasiun cuaca [amerika serikat] yang terletak di sebelah kipas pembuangan unit pendingin udara, dikelilingi oleh lahan parkir aspal dan jalan, di atas atap yang sangat panas, dan di dekat trotoar dan bangunan yang menyerap dan memancarkan panas.. evidence: semua operasi penerbangan dikendalikan dari ruang observasi ber-ac di menara kendali gedung ini, yang memiliki jendela menghadap landasan pacu dan area landasan.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\ndengan el ni\u00f1o yang rekor, seharusnya kita mengalami suhu tinggi yang rekor.. evidence: [rujukan dibutuhkan] pantai timur amerika serikat mencatatkan suhu terendah baru di berbagai negara bagian selatan seperti georgia, alabama, dan florida. pantai timur, seperti pantai barat, juga mengalami salah satu musim dingin terburuk yang pernah tercatat.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "REFUTES",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nlebih dari 100 persen pemanasan selama abad terakhir disebabkan oleh tindakan manusia. . evidence: pemanasan global yang diamati selama 50 tahun terakhir terutama disebabkan oleh emisi gas penangkap panas yang diinduksi manusia.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nmei 2018 menandai bulan ke-401 berturut-turut suhu global melebihi rata-rata abad ke-20.. evidence: gelombang dingin eropa 1956 - februari 1956 menjadi bulan terdingin pada abad ke-20 di wilayah luas eropa barat, dengan suhu rata-rata di bawah 0 \u00b0c (32 \u00b0f) hingga selatan marseilles, yang sama sekali belum pernah terjadi sebelumnya dalam catatan yang tercatat hingga abad ke-18.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nmars, triton, pluto, dan jupiter semuanya menunjukkan pemanasan global, yang menunjukkan bahwa matahari merupakan pengaruh dominan dalam menentukan iklim di seluruh tata surya.. evidence: ini adalah aspek utama perubahan iklim dan telah dibuktikan oleh pengukuran suhu secara langsung dan oleh pengukuran berbagai efek pemanasan.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nkenaikan permukaan laut tampaknya tidak bergantung pada suhu laut, dan tentu saja tidak pada co2.. evidence: panaskan yang dibutuhkan untuk meningkatkan kenaikan suhu rata-rata seluruh samudra dunia sebesar 0,01\u00a0\u00b0c akan meningkatkan suhu atmosfer sekitar 10 \u00b0c.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\npengaruh gas rumah kaca yang disebut-sebut terhadap suhu permukaan bumi - belum sepenuhnya terbukti.. evidence: sebelum revolusi industri, jumlah gas rumah kaca yang terjadi secara alami menyebabkan suhu udara di dekat permukaan lebih hangat sekitar 33 \u00b0c (59 \u00b0f) daripada jika tidak ada gas rumah kaca.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "REFUTES",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nsaya perhatikan khususnya bahwa kenaikan permukaan laut tidak dipengaruhi oleh pemanasan; hal itu berlanjut pada tingkat yang sama, 1,8 milimeter per tahun, menurut tinjauan tahun 1990 oleh andrew s. trupin dan john wahr.. evidence: kenaikan permukaan laut akibat antartika diperkirakan mencapai 0,25 mm per tahun dari 1993\u20132005, dan 0,42 mm per tahun dari 2005 hingga 2015.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "NOT_ENOUGH_INFO",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    },
+    {
+        "text": "<bos><|im_start|>system\nYou are an helpful AI assistant<|im_end|>\n<|im_start|>user\nuap air adalah gas rumah kaca yang paling kuat.. evidence: uap air merupakan gas rumah kaca paling kuat karena adanya ikatan hidroksil yang sangat menyerap dalam spektrum cahaya inframerah.<|im_end|>\n<|im_start|>assistant\n",
+        "true_label": "SUPPORTS",
+        "predicted_label": "SUPPORTS",
+        "raw_prediction": "SUPPORTS",
+        "is_unknown": false
+    }
+]
