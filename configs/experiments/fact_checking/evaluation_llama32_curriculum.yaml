@@ -21,7 +21,7 @@ evaluation:
     init_lora_weights: "gaussian"
 
   class_name: supertrainer.evaluations.llama32.Llama32Evaluation
-  model_name: Erland/llama32-fact-checking_20241123_214538-train_claim_arb_evidence_arb
+  model_name: Erland/llama32-fact-checking_20241123_214538-train_claim_en_evidence_en
   chat_template: llama-3.1
 
 dataset:
