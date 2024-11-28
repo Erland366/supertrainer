@@ -30,6 +30,21 @@ evaluation:
     remove_unused_columns: False
     auto_find_batch_size: False
 
+  system_prompt: >-
+    Given the provided claim and evidence, determine the relationship between the claim and the evidence. Select one option from the following list that best describes the relationship: [
+      "REFUTES",
+      "NOT_ENOUGH_INFO",
+      "SUPPORTS"
+    ]
+
+  # system_prompt: >-
+  #   let's reason step by step always before answering
+  #   Given the provided claim and evidence, determine the relationship between the claim and the evidence. Select one option from the following list that best describes the relationship : [
+  #     "REFUTES",
+  #     "NOT_ENOUGH_INFO",
+  #     "SUPPORTS"
+  #   ]
+
   inference_kwargs:
     max_new_tokens: 128
     use_cache: True

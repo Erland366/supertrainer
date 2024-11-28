@@ -1,0 +1,20 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_evaluation
+- /dataset/bert@dataset: fact_checking
+- _self_
+
+evaluation:
+  system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"
+  model_name: "${evaluation.client_kwargs.model}"
+
+  class_name: supertrainer.evaluations.sonnet.SonnetEvaluation
+  client_kwargs:
+    model: "claude-3-5-sonnet-20240620"
+    max_tokens: 1024
+    temperature: 0.8
+    top_p: 1
+
+dataset:
+  class_name: supertrainer.data.fact_checking.FactCheckingSonnetEvaluationDataset

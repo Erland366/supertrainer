@@ -21,7 +21,7 @@ evaluation:
     init_lora_weights: "gaussian"
 
   class_name: supertrainer.evaluations.llama32.Llama32EvaluationNewToken
-  model_name: Erland/llama32-fact-checking-new_token_20241125_201759-without_lora-train_claim_arb_evidence_arb
+  model_name: Erland/llama32-fact-checking-new_token_20241125_201759-without_lora-train_claim_en_evidence_idn
   chat_template: llama-3.1
 
 dataset:

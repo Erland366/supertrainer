@@ -14,7 +14,7 @@ trainer:
     init_lora_weights: "gaussian"
   training_kwargs:
     per_device_train_batch_size: 16
-    hub_model_id: "Erland/indobert-fact-checking"
+    hub_model_id: "Erland/indobert-fact-checking-combineddata"
 
   class_name: supertrainer.trainers.indobert.IndoBERTTrainer
   model_name: indolem/indobert-base-uncased

@@ -99,5 +99,10 @@ class BaseEvaluation(ABC):
         with open(metrics_file, "w") as f:
             json.dump(metrics, f, indent=4)
 
+        config_file = os.path.join(output_folder, "config.json")
+        with open(config_file, "w") as f:
+            json.dump(self.config.to_serializable_dict(), f, indent=4)
+
         logger.info(f"Results saved to {results_file}")
         logger.info(f"Metrics saved to {metrics_file}")
+        logger.info(f"Config saved to {config_file}")
