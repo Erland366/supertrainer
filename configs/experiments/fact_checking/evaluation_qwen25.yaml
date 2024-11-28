@@ -21,5 +21,8 @@ evaluation:
     init_lora_weights: "gaussian"
 
   class_name: supertrainer.evaluations.qwen25.Qwen25Evaluation
-  model_name: Erland/llama32-fact-checking_20241122_231447-train_claim_arb_evidence_arb
+  model_name: Erland/qwen25-fact-checking_20241122_221408-train_claim_en_evidence_arb
+  chat_template: qwen2.5
+
+dataset:
   chat_template: qwen2.5

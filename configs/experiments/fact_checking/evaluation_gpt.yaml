@@ -1,0 +1,20 @@
+# @package _global_
+
+defaults:
+- /experiments/fact_checking/default_evaluation
+- /dataset/bert@dataset: fact_checking
+- _self_
+
+evaluation:
+  system_prompt: "You are an helpful AI assistant. You are asked to provide a fact-checking response to the following claim:"
+  model_name: "${evaluation.client_kwargs.model}"
+
+  class_name: supertrainer.evaluations.gpt.GPTEvaluation
+  client_kwargs:
+    model: "gpt-4o-mini"
+    max_tokens: 1024
+    temperature: 0.8
+    top_p: 1
+
+dataset:
+  class_name: supertrainer.data.fact_checking.FactCheckingGPTEvaluationDataset

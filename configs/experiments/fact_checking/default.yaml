@@ -26,6 +26,7 @@ trainer:
     remove_unused_columns: True
     auto_find_batch_size: False
     per_device_train_batch_size: 16
+    logging_steps: 10
 
   model_kwargs:
     device_map:

@@ -202,7 +202,10 @@ class FactCheckingTrainingDataset(BaseDataset):
         def tokenize_and_map(examples: dict, tokenizer: "AutoTokenizer"):  # noqa # type: ignore
             tokenizer.truncation_side = "left"
             tokenized = tokenizer(
-                examples[self.config.dataset.text_col], truncation=True, padding=True
+                examples[self.config.dataset.text_col],
+                truncation=True,
+                padding=True,
+                max_length=512,
             )
 
             if self.config.dataset.label_col in examples:

@@ -14,7 +14,7 @@ trainer:
     init_lora_weights: "gaussian"
   training_kwargs:
     per_device_train_batch_size: 16
-    hub_model_id: "Erland/mbert-fact-checking"
+    hub_model_id: "Erland/mbert-fact-checking-combineddata"
 
   class_name: supertrainer.trainers.mbert.mBERTTrainer
   model_name: google-bert/bert-base-multilingual-uncased
