@@ -21,7 +21,7 @@ evaluation:
     init_lora_weights: "gaussian"
 
   class_name: supertrainer.evaluations.gemma2.Gemma2Evaluation
-  model_name: Erland/gemma2-fact-checking_20241122_214003-train_claim_en_evidence_en
+  model_name: unsloth/gemma-2-9b-it-bnb-4bit
   chat_template: gemma2_chatml
 
 dataset:

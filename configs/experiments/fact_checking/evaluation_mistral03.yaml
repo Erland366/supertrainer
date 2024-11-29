@@ -21,7 +21,7 @@ evaluation:
     init_lora_weights: "gaussian"
 
   class_name: supertrainer.evaluations.mistral03.Mistral03Evaluation
-  model_name: Erland/mistral03-fact-checking_20241122_224046-train_claim_idn_evidence_en
+  model_name: unsloth/mistral-7b-instruct-v0.3-bnb-4bit
   chat_template: mistral
 
 dataset:
