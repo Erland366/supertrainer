@@ -39,9 +39,9 @@ class BaseEvaluation(ABC):
     def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
         with config.allow_modification():
             if config.evaluation.subset is not None:
-                # config.evaluation.model_name = (
-                #     f"{config.evaluation.model_name}-{config.evaluation.subset}"
-                # )
+                config.evaluation.model_name = (
+                    f"{config.evaluation.model_name}-{config.evaluation.subset}"
+                )
                 logger.info(f"Found subset! Model name updated to {config.evaluation.model_name}")
 
             config.inference = config.evaluation
