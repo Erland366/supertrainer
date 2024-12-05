@@ -40,7 +40,7 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
     def formatting_prompt_func(
         self,
         examples: list[type_hinting.Conversation],
-        use_default_system_prompt: bool = True,
+        use_default_system_prompt: bool = False,
         is_test_dataset: bool = True,
     ) -> dict[str, str]:
         """Batch formatting right here"""
@@ -91,7 +91,7 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
         subsets = self.config.dataset.dataset_kwargs.get("subsets", [None])
 
         def process_split(split_dataset, split_name):
-            is_test_dataset = split_name == "test"
+            is_test_dataset = split_name == "test" or split_name == "validation"
             return split_dataset.map(
                 lambda examples: self.formatting_prompt_func(
                     examples, is_test_dataset=is_test_dataset
@@ -111,7 +111,7 @@ class FactCheckingTrainingLLMDataset(BaseDataset):
             else:
                 # Handle flat structure for no subset
                 for split_name, split_dataset in current_dataset.items():
-                    processed_dataset = process_split(split_dataset, split_name)
+                    processed_dataset[split_name] = process_split(split_dataset, split_name)
 
         return processed_dataset
 

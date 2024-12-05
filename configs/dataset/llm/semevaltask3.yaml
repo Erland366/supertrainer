@@ -1,0 +1,7 @@
+dataset_kwargs:
+  path: "Erland/NLP701_Assignment2_Subtask3"
+
+text_col: text
+label_col: label
+class_name: supertrainer.data.semevaltask3.SemevalTask3TrainingLLMDataset
+chat_template: llama-3.1
