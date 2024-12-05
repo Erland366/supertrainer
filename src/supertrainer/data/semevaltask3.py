@@ -20,13 +20,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from supertrainer.trainers.llama32 import Llama32KTOTrainer, Llama32Trainer
+from datasets import DatasetDict
+
+from supertrainer import logger
+from supertrainer.data.fact_checking import FactCheckingTrainingLLMDataset
 
 
-class Gemma2Trainer(Llama32Trainer):
-    # They are should implement the same thing
+class SemevalTask3TrainingLLMDataset(FactCheckingTrainingLLMDataset):
     pass
 
+class SemevalTask3KTOTrainingLLMDataset(FactCheckingTrainingLLMDataset):
+    def prepare_dataset(self) -> "DatasetDict":  # noqa # type: ignore
+        logger.debug("Preparing dataset")
+        dataset = self.dataset
 
-class Gemma2KTOTrainer(Llama32KTOTrainer):
-    pass
+        logger.debug("KTO Dataset, skip processing!")
+        logger.debug(f"Dataset loaded: {dataset}")
+
+        return dataset

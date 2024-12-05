@@ -36,7 +36,6 @@ class Llama32Trainer(BaseTrainer):
         super().__init__(config, dataset)
 
     def postprocess_config(self, config: type_hinting.Config) -> type_hinting.Config:
-
         with config.allow_modification():
             if config.trainer.get("without_lora", False):
                 config.trainer.without_lora = False
@@ -111,6 +110,82 @@ class Llama32Trainer(BaseTrainer):
             # Packing still buggy for unsloth (incorrect masking)
             packing=False,  # Can make training 5x faster for short sequences.
             args=TrainingArguments(
+                **self.config.trainer.training_kwargs,
+            ),
+        )
+        self.memory_stats()
+
+        logger.debug("Starting Training")
+        trainer_stats = trainer.train()
+
+        logger.debug("Training completed")
+        logger.debug(f"Training completed. Stats: {trainer_stats}")
+
+        if not self.config.is_testing:
+            # push configs
+            self.push_config_to_hf(self.config)
+            self.push_config_to_wandb(self.config)
+            self.model.save_pretrained_merged(
+                self.config.trainer.training_kwargs.output_dir,
+                self.tokenizer,
+                save_method="lora",
+            )
+            self.model.push_to_hub_merged(
+                self.config.trainer.training_kwargs.hub_model_id,
+                self.tokenizer,
+                save_method="lora",
+            )
+        print(trainer_stats)
+
+
+class Llama32KTOTrainer(Llama32Trainer):
+    def train(self) -> None:
+        from trl import KTOConfig, KTOTrainer
+
+        if not self.config.is_testing:
+            self.create_repo()
+            self.instantiate_wandb()
+
+        logger.debug("Starting training process")
+
+        logger.debug("Preparing dataset")
+        dataset = self.dataset
+
+        logger.debug("Initializing Trainer")
+        train_dataset = dataset["train"]
+
+        try:
+            from unsloth import PatchKTOTrainer
+
+            PatchKTOTrainer()
+        except ImportError:
+            pass
+
+        assert "prompt" in train_dataset.column_names, "Prompt is required for KTO training"
+        assert "completion" in train_dataset.column_names, "Completion is required for KTO training"
+        assert "label" in train_dataset.column_names, "Label is required for KTO training"
+
+        eval_dataset = None
+        if not self.config.is_testing and dataset.get("validation", None) is not None:
+            eval_dataset = dataset["validation"]
+
+        with self.config.allow_modification():
+            self.config.trainer.training_kwargs.do_eval = not self.config.is_testing
+
+            # Error for KTO, disable it
+            self.config.trainer.training_kwargs.include_num_input_tokens_seen = False
+        if eval_dataset is None:
+            logger.debug("No validation dataset found, skipping evaluation")
+            remove_config_eval(self.config)
+
+        trainer = KTOTrainer(
+            model=self.model,
+            tokenizer=self.tokenizer,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            # dataset_num_proc=2,
+            # Packing still buggy for unsloth (incorrect masking)
+            args=KTOConfig(
                 **self.config.trainer.training_kwargs,
             ),
         )

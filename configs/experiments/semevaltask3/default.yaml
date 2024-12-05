@@ -1,0 +1,33 @@
+# @package _global_
+
+defaults:
+- /trainer/common/training_kwargs@trainer.training_kwargs: default
+- /trainer/common/bitsandbytes_kwargs@trainer.bitsandbytes_kwargs: nf4
+- /trainer/common/model_kwargs@trainer.model_kwargs: default_no_device_map
+- /dataset/llm@dataset: semevaltask3
+- /wandb
+- _self_
+
+wandb:
+  project: nlp701semeval
+
+dataset:
+  tokenizer_name_or_path: ${trainer.model_name}
+
+trainer:
+  compile: False
+  without_lora: True
+  training_kwargs:
+    learning_rate: 2e-5
+    gradient_accumulation_steps: 1
+    weight_decay: 0.01
+    warmup_steps: 10
+    num_train_epochs: 10
+    remove_unused_columns: True
+    auto_find_batch_size: False
+    per_device_train_batch_size: 16
+    logging_steps: 10
+
+  model_kwargs:
+    device_map:
+    _attn_implementation: eager

@@ -19,14 +19,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from supertrainer.trainers.llama32 import Llama32KTOTrainer, Llama32Trainer
-
-
-class Gemma2Trainer(Llama32Trainer):
-    # They are should implement the same thing
-    pass
-
-
-class Gemma2KTOTrainer(Llama32KTOTrainer):
-    pass
